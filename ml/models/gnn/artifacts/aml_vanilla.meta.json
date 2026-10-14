@@ -1,0 +1,46 @@
+{
+  "model": "Temporal edge GNN (vanilla attention), IBM AML HI-Small laundering detection",
+  "file": "aml_vanilla.pt",
+  "selected": "seed 0 = best valid PR-AUC of 3 seeds",
+  "trained_by": "python -m ml.models.gnn.train --attn vanilla --epochs 20 --neg-frac 0.3 --seed 0",
+  "torch_version": "2.14.1+cu126",
+  "params": 126657,
+  "best_epoch": 15,
+  "config": {
+    "k": 32,
+    "d_model": 128,
+    "heads": 4,
+    "lr": 0.001,
+    "batch_size": 2048,
+    "neg_frac": 0.3,
+    "pos_weight": 10.0
+  },
+  "edge_numeric_features": [
+    "log_amt_paid",
+    "log_amt_recv",
+    "cross_currency",
+    "self_loop",
+    "same_bank",
+    "hour_sin",
+    "hour_cos"
+  ],
+  "valid": {
+    "pr_auc": 0.6018,
+    "roc_auc": 0.9844,
+    "f1": 0.6365,
+    "precision": 0.8195,
+    "recall": 0.5203,
+    "threshold": 0.93093
+  },
+  "test": {
+    "pr_auc": 0.7,
+    "roc_auc": 0.9877,
+    "f1": 0.7035,
+    "precision": 0.7895,
+    "recall": 0.6344,
+    "threshold": 0.93093
+  },
+  "decision_threshold": 0.93093,
+  "note": "Currency/format embedding ids come from ml.models.gnn.data.load_aml factorisation of HI-Small_Trans.csv; rebuild the cache from the same CSV. Feature normalisation stats are stored in the state_dict (edge_enc.mean / edge_enc.std). Diff and vanilla attention are statistically tied on this data; see ml/reports/gnn_aml.md.",
+  "usage": "ck = torch.load('aml_vanilla.pt', weights_only=False); sd = ck['state_dict']; m = TemporalEdgeModel(7, g.n_cur, g.n_fmt, sd['edge_enc.mean'], sd['edge_enc.std'], d_model=128, heads=4, attn='vanilla'); m.load_state_dict(sd); p = models.gnn.train.predict(m, EdgeData(g, 'cuda', 32), edge_ids, 16384)"
+}
