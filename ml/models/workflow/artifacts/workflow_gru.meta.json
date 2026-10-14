@@ -1,0 +1,158 @@
+{
+  "model": "Causal GRU workflow detector (scam-in-progress, stage, typology) on simulator sessions",
+  "file": "workflow_gru.pt",
+  "selected": "seed 0 = best valid stage macro-F1 of 3 seeds (s0: 0.868, s1: 0.8664, s2: 0.866)",
+  "trained_by": "python -m ml.models.workflow.train --seed 0",
+  "data": "python -m ml.models.workflow.data (50k sessions, seed 11, 20% scams, mule syndicates, per-session random streams; split by start day 60/75), then python -m ml.campaign.attach (honest payee score) and python -m ml.models.biometrics.session_scores (real HMOG biometrics deviation per touch window)",
+  "torch_version": "2.14.1+cu126",
+  "config": {
+    "epochs": 20,
+    "batch_size": 256,
+    "lr": 0.001,
+    "d": 128,
+    "dropout": 0.2,
+    "seed": 0,
+    "max_steps": 0
+  },
+  "num_features": [
+    "call_active",
+    "call_video",
+    "screen_share_active",
+    "sideloaded_app_present",
+    "accessibility_granted",
+    "sms_has_link",
+    "payee_is_merchant",
+    "payee_is_new",
+    "log_call_min",
+    "has_payee",
+    "log_vpa_age",
+    "mule_score",
+    "has_amount",
+    "log_amt_vs_avg",
+    "has_bio",
+    "bio_pressure_vs_base",
+    "bio_swipe_velocity_vs_base",
+    "bio_tap_interval_ms_vs_base",
+    "bio_hesitation_ms_vs_base",
+    "bio_orientation_var_vs_base",
+    "bio_model_dev",
+    "caller_reported",
+    "log_dt_prev",
+    "log_t_session"
+  ],
+  "categorical_vocab": {
+    "event": [
+      "CALL_START",
+      "CALL_END",
+      "SMS_RECEIVED",
+      "LINK_CLICK",
+      "APP_INSTALL",
+      "ACCESSIBILITY_GRANT",
+      "SCREEN_SHARE_START",
+      "SCREEN_SHARE_END",
+      "OTP_RECEIVED",
+      "UPI_APP_OPEN",
+      "BALANCE_CHECK",
+      "PAYEE_ADD",
+      "PAYMENT_ATTEMPT",
+      "PAYMENT_SUCCESS",
+      "CREDIT_RECEIVED",
+      "BIO_WINDOW",
+      "DEVICE_CHANGE"
+    ],
+    "caller_kind": [
+      "None",
+      "contact",
+      "unknown",
+      "voip_intl"
+    ],
+    "sms_sender_kind": [
+      "None",
+      "bank_shortcode",
+      "unknown"
+    ],
+    "app_source": [
+      "None",
+      "play_store",
+      "sideload"
+    ]
+  },
+  "stages": [
+    "none",
+    "contact",
+    "pretext",
+    "isolation",
+    "extraction"
+  ],
+  "typologies": [
+    "digital_arrest",
+    "fake_kyc_apk",
+    "investment_task",
+    "voice_clone_relative",
+    "routine",
+    "family_transfer",
+    "new_payee_service",
+    "large_new_payee",
+    "urgent_bill",
+    "support_install",
+    "hospital_emergency",
+    "bank_app_update",
+    "legit_investing",
+    "genuine_urgent_family"
+  ],
+  "test": {
+    "payment_attempt_pr_auc": 0.9942,
+    "stage_macro_f1_scam_sessions": 0.8867,
+    "stage_accuracy_scam_sessions": 0.9651,
+    "typology_acc_at_first_extraction": 0.9953,
+    "budget_1%": {
+      "threshold": 0.36817,
+      "benign_false_alert_rate": 0.0097,
+      "scams_caught_in_time": 0.9953,
+      "scams_caught_any_time": 0.9971,
+      "money_saved_pct": 99.68,
+      "precision_at_0.5pct_prevalence": 0.341,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 1.0,
+        "fake_kyc_apk": 1.0,
+        "investment_task": 1.0,
+        "voice_clone_relative": 0.984
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.0,
+        "legit_investing": 0.204,
+        "genuine_urgent_family": 0.032
+      }
+    },
+    "budget_5%": {
+      "threshold": 0.02156,
+      "benign_false_alert_rate": 0.0489,
+      "scams_caught_in_time": 0.9994,
+      "scams_caught_any_time": 0.9994,
+      "money_saved_pct": 99.99,
+      "precision_at_0.5pct_prevalence": 0.0931,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 1.0,
+        "fake_kyc_apk": 1.0,
+        "investment_task": 1.0,
+        "voice_clone_relative": 0.998
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.004,
+        "bank_app_update": 0.03,
+        "legit_investing": 0.38,
+        "genuine_urgent_family": 0.73
+      }
+    }
+  },
+  "decision_thresholds_from_valid": {
+    "budget_1%": 0.36817,
+    "budget_2%": 0.10029,
+    "budget_5%": 0.02156
+  },
+  "recommended_use": "Live stage + typology tracking; reads payee_mule_score, which the backend fills from the campaign service.",
+  "limitations": "Trained and evaluated on synthetic sessions only; near-separable simulator, not real-world accuracy."
+}
