@@ -1,0 +1,66 @@
+{
+  "full": {
+    "payment_pr_auc": 0.9999,
+    "fake_kyc_vs_lookalike_pr_auc": 1.0,
+    "gain_bio_dev": 5.0,
+    "gain_caller_reported": 1.74,
+    "scams_expected_stopped_in_time_pct": 89.38,
+    "expected_money_saved_pct": 89.85,
+    "benign_interruptions_per_1k_sessions": 1.1,
+    "benign_holds_per_1k_sessions": 0.3,
+    "lookalike_interrupted_pct": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.0,
+      "legit_investing": 0.0,
+      "genuine_urgent_family": 2.8
+    }
+  },
+  "stand-in biometrics": {
+    "payment_pr_auc": 0.9999,
+    "fake_kyc_vs_lookalike_pr_auc": 1.0,
+    "gain_bio_dev": 3.0,
+    "gain_caller_reported": 3.15,
+    "scams_expected_stopped_in_time_pct": 89.57,
+    "expected_money_saved_pct": 89.89,
+    "benign_interruptions_per_1k_sessions": 1.1,
+    "benign_holds_per_1k_sessions": 0.3,
+    "lookalike_interrupted_pct": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.0,
+      "legit_investing": 0.0,
+      "genuine_urgent_family": 2.8
+    }
+  },
+  "no touch signal": {
+    "payment_pr_auc": 0.9999,
+    "fake_kyc_vs_lookalike_pr_auc": 1.0,
+    "gain_bio_dev": 0.0,
+    "gain_caller_reported": 3.74,
+    "scams_expected_stopped_in_time_pct": 89.36,
+    "expected_money_saved_pct": 89.86,
+    "benign_interruptions_per_1k_sessions": 0.9,
+    "benign_holds_per_1k_sessions": 0.3,
+    "lookalike_interrupted_pct": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.0,
+      "legit_investing": 0.0,
+      "genuine_urgent_family": 2.4
+    }
+  },
+  "no telecom signal": {
+    "payment_pr_auc": 0.9999,
+    "fake_kyc_vs_lookalike_pr_auc": 1.0,
+    "gain_bio_dev": 4.83,
+    "gain_caller_reported": 0.0,
+    "scams_expected_stopped_in_time_pct": 89.38,
+    "expected_money_saved_pct": 89.85,
+    "benign_interruptions_per_1k_sessions": 1.1,
+    "benign_holds_per_1k_sessions": 0.3,
+    "lookalike_interrupted_pct": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.0,
+      "legit_investing": 0.0,
+      "genuine_urgent_family": 2.8
+    }
+  }
+}
