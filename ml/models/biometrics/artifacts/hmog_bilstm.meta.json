@@ -1,0 +1,82 @@
+{
+  "model": "BiLSTM gesture-sequence encoder (CosFace), HMOG continuous authentication",
+  "file": "hmog_bilstm.pt",
+  "selected": "seed 2 = best mean valid EER (N10, N20) of 3 seeds",
+  "trained_by": "python -m ml.models.biometrics.train --seed 2",
+  "torch_version": "2.14.1+cu126",
+  "params": 728192,
+  "best_epoch": 22,
+  "config": {
+    "hidden": 128,
+    "emb": 128,
+    "dropout": 0.4,
+    "weight_decay": 0.05,
+    "noise": 0.3,
+    "feat_drop": 0.2,
+    "lr": 0.0005,
+    "min_len": 8,
+    "train_len": 20
+  },
+  "features": [
+    "log_duration_ms",
+    "log_gap_ms",
+    "size_mean",
+    "size_max",
+    "dx",
+    "dy",
+    "log_path_len",
+    "log_speed",
+    "log_n_points",
+    "x0",
+    "y0",
+    "is_tap",
+    "acc_mean",
+    "acc_std",
+    "acc_pre",
+    "acc_resist",
+    "gyr_mean",
+    "gyr_std",
+    "gyr_pre",
+    "gyr_resist",
+    "rotated"
+  ],
+  "checkpoint_contents": "state_dict, args, features, std_mean/std_std (train-user standardisation), user split",
+  "valid": {
+    "n10": {
+      "eer": 0.1464,
+      "per_user_eer_mean": 0.143,
+      "n_users": 15,
+      "n_probe_windows": 2180,
+      "eer_sitting": 0.1343,
+      "eer_walking": 0.1636
+    },
+    "n20": {
+      "eer": 0.128,
+      "per_user_eer_mean": 0.1485,
+      "n_users": 15,
+      "n_probe_windows": 1047,
+      "eer_sitting": 0.107,
+      "eer_walking": 0.1575
+    }
+  },
+  "test": {
+    "n10": {
+      "eer": 0.1561,
+      "per_user_eer_mean": 0.1602,
+      "n_users": 15,
+      "n_probe_windows": 2518,
+      "eer_sitting": 0.1685,
+      "eer_walking": 0.1484
+    },
+    "n20": {
+      "eer": 0.1508,
+      "per_user_eer_mean": 0.1542,
+      "n_users": 15,
+      "n_probe_windows": 1219,
+      "eer_sitting": 0.1524,
+      "eer_walking": 0.1492
+    }
+  },
+  "recommended_use": "Combine with the window-stats LDA score (models.biometrics.metrics.fuse); see reports/biometrics_hmog.md. Alone it is weaker than LDA. Output = similarity to the user's enrolled profile; 1 - similarity is the behavioural-deviation signal for fusion.",
+  "limitations": "HMOG has no coercion labels (signal = deviation from own baseline, not coercion); touch pressure is constant on the HMOG phone; 15 test users, so +/- ~1pt differences are noise."
+}
