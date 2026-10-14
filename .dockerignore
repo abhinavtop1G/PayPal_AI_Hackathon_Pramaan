@@ -1,0 +1,13 @@
+DATA/
+data/
+checkpoints/
+frontend/
+tests/
+**/__pycache__/
+*.log
+*.parquet
+.git/
+.pytest_cache/
+catboost_info/
+ml/models/gnn/artifacts/
+ml/models/tabular/artifacts/
