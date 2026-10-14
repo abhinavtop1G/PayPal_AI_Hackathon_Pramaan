@@ -1,11 +1,6 @@
-import { AppShell } from "@/components/layout/AppShell";
-import { DemoProvider } from "@/context/DemoContext";
+import { AuthConsole } from "@/components/auth/AuthConsole";
 
-/** The RAKSHAM demo: session replay, bank-wide wall, mule network and a live session builder (see AppShell). */
-export default function DemoPage() {
-  return (
-    <DemoProvider>
-      <AppShell />
-    </DemoProvider>
-  );
+/** BIOS: risk-based transaction authentication console (the RAKSHAM scam-session demo lives at /scam). */
+export default function AuthPage() {
+  return <AuthConsole />;
 }
