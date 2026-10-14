@@ -115,3 +115,55 @@ class DemoLoad(BaseModel):
 class HoldRequest(BaseModel):
     analyst: str = Field(min_length=1)
     reason: str = ""
+
+
+# ---------------------------------------------------------------------------- transaction authentication (BIOS)
+class AuthDevice(BaseModel):
+    device_id: str = Field(description="stable device identifier from the SDK (app install ID / FingerprintJS visitor ID)")
+    platform: Literal["android", "ios", "web"] | None = None
+    is_emulator: bool = False
+    is_rooted: bool = False
+    remote_access_app: bool = Field(False, description="a remote-control / screen-mirroring app is running")
+    screen_share_active: bool = False
+    sim_change_hours: float | None = Field(None, ge=0, description="hours since the SIM in this phone changed (SDK / telecom API); null = unknown")
+
+
+class AuthNetwork(BaseModel):
+    ip: str | None = Field(None, description="client IP (the API also reads it from the request)")
+    lat: float | None = Field(None, ge=-90, le=90)
+    lon: float | None = Field(None, ge=-180, le=180)
+    city: str | None = Field(None, description="usually from the load balancer's geo header X-Client-Geo-Location")
+
+
+class AuthBehaviour(BaseModel):
+    gestures: list[dict[str, float | None]] | None = Field(
+        None, description="last 10-20 touch gestures (ml.models.biometrics.data.FEATURES), verified against the user's enrolled profile")
+    time_to_submit_s: float | None = Field(None, ge=0, description="seconds from opening the payment screen to submit")
+    input_events: int | None = Field(None, ge=0, description="touch / key / pointer events before submit")
+    unknown_call_active: bool = Field(False, description="the phone is on a call with a number not in contacts")
+
+
+class AuthTransaction(BaseModel):
+    amount: float = Field(0.0, ge=0, description="INR; 0 for a login")
+    payee_id: str | None = None
+    payee_is_merchant: bool | None = None
+    payee_risk: float | None = Field(None, ge=0, le=1, description="receiving-account risk if the caller has it; "
+                                     "otherwise taken from payee intelligence when the account is known")
+
+
+class AuthRequest(BaseModel):
+    """One login or payment to decide: allow, challenge (and which challenge) or block."""
+    request_id: str | None = Field(None, description="idempotency / correlation id; becomes decision_id")
+    user_id: str
+    ts: datetime | None = Field(None, description="event time; default: now")
+    channel: Literal["mobile", "web"] = "mobile"
+    event_type: Literal["payment", "login"] = "payment"
+    device: AuthDevice
+    network: AuthNetwork = AuthNetwork()
+    behaviour: AuthBehaviour = AuthBehaviour()
+    transaction: AuthTransaction = AuthTransaction()
+
+
+class ChallengeResult(BaseModel):
+    decision_id: str
+    passed: bool = Field(description="did the user complete the step-up (OTP / passkey / call-back / cool-off)?")
