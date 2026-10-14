@@ -1,0 +1,12 @@
+# Serving image (CPU). torch is installed separately from the CPU wheel index (see Dockerfile).
+# Pinned to the versions the artefacts were trained / pickled with (bio_calib.pkl needs the same scikit-learn).
+numpy==2.4.6
+pandas==3.0.6
+pyarrow==25.0.1
+scikit-learn==1.9.1
+xgboost==3.2.0
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+redis>=5.0
+psycopg[binary]>=3.2
