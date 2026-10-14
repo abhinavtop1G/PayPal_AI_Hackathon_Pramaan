@@ -20,8 +20,8 @@ const deva = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "RAKSHAM — Scam Workflow Defence",
-  description: "Live demo: a Digital Arrest scam on a UPI app, caught and explained in real time.",
+  title: "BIOS — Risk-based Transaction Authentication",
+  description: "Allow, challenge or block an online transaction from behaviour, device and transaction signals, and see why.",
 };
 
 export const viewport: Viewport = {
