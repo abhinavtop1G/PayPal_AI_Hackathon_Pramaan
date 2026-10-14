@@ -96,13 +96,17 @@ class HmogBank:
 
     def resolve(self, ref: str) -> tuple[int, list[dict]]:
         """(owner subject, the 10 gestures) for a reference made by `window_ref`."""
-        owner, source, session, offset, profile, intensity = ref.split("|")
+        return int(ref.split("|", 1)[0]), self._dicts(self.resolve_array(ref))
+
+    def resolve_array(self, ref: str) -> np.ndarray:
+        """The gestures of a reference as a raw [WINDOW, len(FEATURES)] array (NaN = missing feature)."""
+        _, source, session, offset, profile, intensity = ref.split("|")
         lo, _ = self.blocks[(int(source), int(session))]
         x = self.x[lo + int(offset): lo + int(offset) + WINDOW].copy()
         for f, shift in PERTURB.get(profile, {}).items():
             j = FEATURES.index(f)
             x[:, j] += float(intensity) * shift * self.scale[j]
-        return int(owner), self._dicts(x)
+        return x
 
 
 @lru_cache(maxsize=2)
