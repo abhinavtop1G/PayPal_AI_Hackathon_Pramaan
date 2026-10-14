@@ -1,0 +1,487 @@
+{
+  "fusion_gain_importance": {
+    "gru_logit": 1222.85,
+    "mule_score": 16.57,
+    "bio_dev": 5.0,
+    "log_amt_vs_avg": 3.95,
+    "payee_is_new": 1.98,
+    "unknown_call_active": 0.0,
+    "caller_reported_active": 1.74,
+    "payee_known_trusted": 0.0
+  },
+  "real_prior": 0.005,
+  "tiers": {
+    "allow": {
+      "efficacy": 0.0,
+      "friction": 0.0
+    },
+    "nudge": {
+      "efficacy": 0.2,
+      "friction": 10.0
+    },
+    "cool_off": {
+      "efficacy": 0.5,
+      "friction": 60.0
+    },
+    "hold": {
+      "efficacy": 0.9,
+      "friction": 250.0
+    }
+  },
+  "detector": {
+    "gru": {
+      "payment_attempt_pr_auc": 0.9958,
+      "budget_1%": {
+        "threshold": 0.1904,
+        "benign_false_alert_rate": 0.0078,
+        "scams_caught_in_time": 0.9982,
+        "scams_caught_any_time": 0.9994,
+        "money_saved_pct": 99.95,
+        "precision_at_0.5pct_prevalence": 0.3907,
+        "median_lead_time_min": 0.0,
+        "in_time_by_typology": {
+          "digital_arrest": 1.0,
+          "fake_kyc_apk": 1.0,
+          "investment_task": 1.0,
+          "voice_clone_relative": 0.994
+        },
+        "false_alert_rate_lookalikes": {
+          "hospital_emergency": 0.0,
+          "bank_app_update": 0.0,
+          "legit_investing": 0.164,
+          "genuine_urgent_family": 0.016
+        }
+      },
+      "budget_5%": {
+        "threshold": 0.00506,
+        "benign_false_alert_rate": 0.044,
+        "scams_caught_in_time": 1.0,
+        "scams_caught_any_time": 1.0,
+        "money_saved_pct": 100.0,
+        "precision_at_0.5pct_prevalence": 0.1024,
+        "median_lead_time_min": 0.0,
+        "in_time_by_typology": {
+          "digital_arrest": 1.0,
+          "fake_kyc_apk": 1.0,
+          "investment_task": 1.0,
+          "voice_clone_relative": 1.0
+        },
+        "false_alert_rate_lookalikes": {
+          "hospital_emergency": 0.004,
+          "bank_app_update": 0.057,
+          "legit_investing": 0.292,
+          "genuine_urgent_family": 0.665
+        }
+      }
+    },
+    "fused": {
+      "payment_attempt_pr_auc": 0.9913,
+      "budget_1%": {
+        "threshold": -7.30525,
+        "benign_false_alert_rate": 0.0104,
+        "scams_caught_in_time": 0.9976,
+        "scams_caught_any_time": 0.9988,
+        "money_saved_pct": 99.94,
+        "precision_at_0.5pct_prevalence": 0.3246,
+        "median_lead_time_min": 0.0,
+        "in_time_by_typology": {
+          "digital_arrest": 1.0,
+          "fake_kyc_apk": 1.0,
+          "investment_task": 1.0,
+          "voice_clone_relative": 0.992
+        },
+        "false_alert_rate_lookalikes": {
+          "hospital_emergency": 0.0,
+          "bank_app_update": 0.003,
+          "legit_investing": 0.109,
+          "genuine_urgent_family": 0.127
+        }
+      },
+      "budget_5%": {
+        "threshold": -13.68435,
+        "benign_false_alert_rate": 0.0446,
+        "scams_caught_in_time": 1.0,
+        "scams_caught_any_time": 1.0,
+        "money_saved_pct": 100.0,
+        "precision_at_0.5pct_prevalence": 0.1012,
+        "median_lead_time_min": 0.0,
+        "in_time_by_typology": {
+          "digital_arrest": 1.0,
+          "fake_kyc_apk": 1.0,
+          "investment_task": 1.0,
+          "voice_clone_relative": 1.0
+        },
+        "false_alert_rate_lookalikes": {
+          "hospital_emergency": 0.009,
+          "bank_app_update": 0.057,
+          "legit_investing": 0.292,
+          "genuine_urgent_family": 0.657
+        }
+      }
+    }
+  },
+  "policies": {
+    "GRU threshold -> hold": {
+      "benign_interruptions_per_1k_sessions": 8.0,
+      "benign_sessions_interrupted_pct": 0.8,
+      "benign_holds_per_1k_sessions": 8.0,
+      "benign_users_interrupted_pct": 1.02,
+      "benign_users_interrupted_3plus_pct": 0.0,
+      "lookalike_interrupted_pct": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.0,
+        "legit_investing": 16.4,
+        "genuine_urgent_family": 1.6
+      },
+      "lookalike_sessions": {
+        "hospital_emergency": 228,
+        "bank_app_update": 349,
+        "legit_investing": 274,
+        "genuine_urgent_family": 251
+      },
+      "scams_with_in_time_interruption_pct": 99.82,
+      "scams_expected_stopped_in_time_pct": 89.84,
+      "expected_money_saved_pct": 89.95,
+      "action_mix_all_attempts": {
+        "allow": 11839,
+        "hold": 5124
+      }
+    },
+    "Fused threshold -> hold": {
+      "benign_interruptions_per_1k_sessions": 10.6,
+      "benign_sessions_interrupted_pct": 1.06,
+      "benign_holds_per_1k_sessions": 10.6,
+      "benign_users_interrupted_pct": 1.36,
+      "benign_users_interrupted_3plus_pct": 0.0,
+      "lookalike_interrupted_pct": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.3,
+        "legit_investing": 10.9,
+        "genuine_urgent_family": 12.7
+      },
+      "lookalike_sessions": {
+        "hospital_emergency": 228,
+        "bank_app_update": 349,
+        "legit_investing": 274,
+        "genuine_urgent_family": 251
+      },
+      "scams_with_in_time_interruption_pct": 99.76,
+      "scams_expected_stopped_in_time_pct": 89.79,
+      "expected_money_saved_pct": 89.95,
+      "action_mix_all_attempts": {
+        "allow": 11852,
+        "hold": 5111
+      }
+    },
+    "Engine (EV tiers, no anti-fatigue)": {
+      "benign_interruptions_per_1k_sessions": 1.1,
+      "benign_sessions_interrupted_pct": 0.11,
+      "benign_holds_per_1k_sessions": 0.3,
+      "benign_users_interrupted_pct": 0.14,
+      "benign_users_interrupted_3plus_pct": 0.0,
+      "lookalike_interrupted_pct": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.0,
+        "legit_investing": 0.0,
+        "genuine_urgent_family": 2.8
+      },
+      "lookalike_sessions": {
+        "hospital_emergency": 228,
+        "bank_app_update": 349,
+        "legit_investing": 274,
+        "genuine_urgent_family": 251
+      },
+      "scams_with_in_time_interruption_pct": 99.53,
+      "scams_expected_stopped_in_time_pct": 91.16,
+      "expected_money_saved_pct": 96.76,
+      "action_mix_all_attempts": {
+        "allow": 12056,
+        "hold": 4849,
+        "nudge": 25,
+        "monitor": 24,
+        "cool_off": 9
+      }
+    },
+    "Engine (full)": {
+      "benign_interruptions_per_1k_sessions": 1.1,
+      "benign_sessions_interrupted_pct": 0.11,
+      "benign_holds_per_1k_sessions": 0.3,
+      "benign_users_interrupted_pct": 0.14,
+      "benign_users_interrupted_3plus_pct": 0.0,
+      "lookalike_interrupted_pct": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.0,
+        "legit_investing": 0.0,
+        "genuine_urgent_family": 2.8
+      },
+      "lookalike_sessions": {
+        "hospital_emergency": 228,
+        "bank_app_update": 349,
+        "legit_investing": 274,
+        "genuine_urgent_family": 251
+      },
+      "scams_with_in_time_interruption_pct": 99.53,
+      "scams_expected_stopped_in_time_pct": 89.38,
+      "expected_money_saved_pct": 89.85,
+      "action_mix_all_attempts": {
+        "allow": 12056,
+        "hold": 4849,
+        "nudge": 25,
+        "monitor": 24,
+        "cool_off": 9
+      }
+    }
+  },
+  "operating_curve": [
+    {
+      "real_prior": 0.001,
+      "benign_interruptions_per_1k_sessions": 0.3,
+      "benign_holds_per_1k_sessions": 0.2,
+      "scams_expected_stopped_in_time_pct": 89.02,
+      "expected_money_saved_pct": 89.74,
+      "genuine_urgent_family_interrupted_pct": 0.8
+    },
+    {
+      "real_prior": 0.002,
+      "benign_interruptions_per_1k_sessions": 0.3,
+      "benign_holds_per_1k_sessions": 0.3,
+      "scams_expected_stopped_in_time_pct": 89.25,
+      "expected_money_saved_pct": 89.82,
+      "genuine_urgent_family_interrupted_pct": 0.8
+    },
+    {
+      "real_prior": 0.005,
+      "benign_interruptions_per_1k_sessions": 1.1,
+      "benign_holds_per_1k_sessions": 0.3,
+      "scams_expected_stopped_in_time_pct": 89.38,
+      "expected_money_saved_pct": 89.85,
+      "genuine_urgent_family_interrupted_pct": 2.8
+    },
+    {
+      "real_prior": 0.01,
+      "benign_interruptions_per_1k_sessions": 2.7,
+      "benign_holds_per_1k_sessions": 0.3,
+      "scams_expected_stopped_in_time_pct": 89.54,
+      "expected_money_saved_pct": 89.93,
+      "genuine_urgent_family_interrupted_pct": 6.4
+    },
+    {
+      "real_prior": 0.02,
+      "benign_interruptions_per_1k_sessions": 5.8,
+      "benign_holds_per_1k_sessions": 0.3,
+      "scams_expected_stopped_in_time_pct": 89.68,
+      "expected_money_saved_pct": 90.02,
+      "genuine_urgent_family_interrupted_pct": 13.9
+    },
+    {
+      "real_prior": 0.05,
+      "benign_interruptions_per_1k_sessions": 10.4,
+      "benign_holds_per_1k_sessions": 1.1,
+      "scams_expected_stopped_in_time_pct": 89.76,
+      "expected_money_saved_pct": 90.08,
+      "genuine_urgent_family_interrupted_pct": 24.3
+    }
+  ],
+  "examples": [
+    {
+      "typology": "digital_arrest",
+      "ts_min": 14.1,
+      "amount": 21000.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99888",
+      "action": "hold",
+      "notify": true,
+      "suppressed_by": null,
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "the number calling you has been reported for fraud"
+      ],
+      "message_en": "This payment is on hold and your bank will call you on your registered number. Police, CBI or customs never ask you to transfer money or stay on a video call. This matches a 'digital arrest' scam. Hang up and call 1930.",
+      "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। पुलिस, CBI या कस्टम कभी भी पैसे ट्रांसफ़र करने या वीडियो कॉल पर बने रहने को नहीं कहते। यह 'डिजिटल अरेस्ट' ठगी जैसा है। कॉल काटें और 1930 पर कॉल करें।"
+    },
+    {
+      "typology": "digital_arrest",
+      "ts_min": 31.4,
+      "amount": 29554.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99666",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "digital_arrest",
+      "ts_min": 35.1,
+      "amount": 41000.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99945",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "digital_arrest",
+      "ts_min": 39.6,
+      "amount": 57925.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99960",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "voice_clone_relative",
+      "ts_min": 3.5,
+      "amount": 38000.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99473",
+      "action": "hold",
+      "notify": true,
+      "suppressed_by": null,
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "This payment is on hold and your bank will call you on your registered number. Callers can clone a relative's voice. Before paying, call your relative back on the number saved in your phone.",
+      "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। ठग किसी रिश्तेदार की आवाज़ की नकल कर सकते हैं। पैसे भेजने से पहले उन्हें आपके फ़ोन में सेव किए गए नंबर पर वापस कॉल करें।"
+    },
+    {
+      "typology": "genuine_urgent_family",
+      "ts_min": 27.1,
+      "amount": 8000.0,
+      "stage_pred": "none",
+      "fused_p_real_prior": "0.00003",
+      "action": "allow",
+      "notify": false,
+      "suppressed_by": null,
+      "reasons": [],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 17.1,
+      "amount": 34226.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99979",
+      "action": "hold",
+      "notify": true,
+      "suppressed_by": null,
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "This payment is on hold and your bank will call you on your registered number. Banks never ask you to install apps from links or share OTPs to update KYC. Uninstall the app you just installed and call your bank.",
+      "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। बैंक कभी भी लिंक से ऐप इंस्टॉल करने या KYC अपडेट के लिए OTP शेयर करने को नहीं कहते। अभी इंस्टॉल किया गया ऐप हटाएँ और अपने बैंक को कॉल करें।"
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 17.5,
+      "amount": 41854.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99971",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 18.3,
+      "amount": 21541.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99955",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 18.9,
+      "amount": 42458.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99942",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 19.6,
+      "amount": 30676.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99939",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    },
+    {
+      "typology": "fake_kyc_apk",
+      "ts_min": 20.1,
+      "amount": 43454.0,
+      "stage_pred": "extraction",
+      "fused_p_real_prior": "0.99955",
+      "action": "hold",
+      "notify": false,
+      "suppressed_by": "session_on_hold",
+      "reasons": [
+        "session follows a known scam pattern",
+        "receiving account is linked to suspected mule activity",
+        "touch behaviour differs from your usual pattern"
+      ],
+      "message_en": "",
+      "message_hi": ""
+    }
+  ]
+}
