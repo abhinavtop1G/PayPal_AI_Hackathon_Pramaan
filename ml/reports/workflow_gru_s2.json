@@ -1,0 +1,183 @@
+{
+  "model": "workflow_gru",
+  "seed": 2,
+  "best_valid_stage_macro_f1": 0.866,
+  "payment_attempt_pr_auc": 0.994,
+  "budget_1%": {
+    "threshold": 0.17287,
+    "benign_false_alert_rate": 0.0081,
+    "scams_caught_in_time": 0.9976,
+    "scams_caught_any_time": 0.9988,
+    "money_saved_pct": 99.94,
+    "precision_at_0.5pct_prevalence": 0.3814,
+    "median_lead_time_min": 0.0,
+    "in_time_by_typology": {
+      "digital_arrest": 1.0,
+      "fake_kyc_apk": 1.0,
+      "investment_task": 1.0,
+      "voice_clone_relative": 0.992
+    },
+    "false_alert_rate_lookalikes": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.0,
+      "legit_investing": 0.172,
+      "genuine_urgent_family": 0.016
+    }
+  },
+  "budget_2%": {
+    "threshold": 0.03158,
+    "benign_false_alert_rate": 0.0195,
+    "scams_caught_in_time": 0.9982,
+    "scams_caught_any_time": 0.9994,
+    "money_saved_pct": 99.95,
+    "precision_at_0.5pct_prevalence": 0.2048,
+    "median_lead_time_min": 0.0,
+    "in_time_by_typology": {
+      "digital_arrest": 1.0,
+      "fake_kyc_apk": 1.0,
+      "investment_task": 1.0,
+      "voice_clone_relative": 0.994
+    },
+    "false_alert_rate_lookalikes": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.014,
+      "legit_investing": 0.285,
+      "genuine_urgent_family": 0.135
+    }
+  },
+  "budget_5%": {
+    "threshold": 0.0061,
+    "benign_false_alert_rate": 0.0476,
+    "scams_caught_in_time": 1.0,
+    "scams_caught_any_time": 1.0,
+    "money_saved_pct": 100.0,
+    "precision_at_0.5pct_prevalence": 0.0956,
+    "median_lead_time_min": 0.0,
+    "in_time_by_typology": {
+      "digital_arrest": 1.0,
+      "fake_kyc_apk": 1.0,
+      "investment_task": 1.0,
+      "voice_clone_relative": 1.0
+    },
+    "false_alert_rate_lookalikes": {
+      "hospital_emergency": 0.0,
+      "bank_app_update": 0.04,
+      "legit_investing": 0.31,
+      "genuine_urgent_family": 0.701
+    }
+  },
+  "stage_macro_f1_scam_sessions": 0.87,
+  "stage_accuracy_scam_sessions": 0.9583,
+  "typology_acc_at_first_extraction": 0.9947,
+  "history": [
+    {
+      "epoch": 0,
+      "loss": 1.1916,
+      "valid_stage_macro_f1": 0.8113
+    },
+    {
+      "epoch": 1,
+      "loss": 0.484,
+      "valid_stage_macro_f1": 0.8323
+    },
+    {
+      "epoch": 2,
+      "loss": 0.3875,
+      "valid_stage_macro_f1": 0.8323
+    },
+    {
+      "epoch": 3,
+      "loss": 0.3612,
+      "valid_stage_macro_f1": 0.8365
+    },
+    {
+      "epoch": 4,
+      "loss": 0.3465,
+      "valid_stage_macro_f1": 0.8493
+    },
+    {
+      "epoch": 5,
+      "loss": 0.3396,
+      "valid_stage_macro_f1": 0.8561
+    },
+    {
+      "epoch": 6,
+      "loss": 0.3344,
+      "valid_stage_macro_f1": 0.866
+    },
+    {
+      "epoch": 7,
+      "loss": 0.3323,
+      "valid_stage_macro_f1": 0.8621
+    },
+    {
+      "epoch": 8,
+      "loss": 0.3288,
+      "valid_stage_macro_f1": 0.8568
+    },
+    {
+      "epoch": 9,
+      "loss": 0.3249,
+      "valid_stage_macro_f1": 0.8646
+    },
+    {
+      "epoch": 10,
+      "loss": 0.3236,
+      "valid_stage_macro_f1": 0.8609
+    },
+    {
+      "epoch": 11,
+      "loss": 0.3214,
+      "valid_stage_macro_f1": 0.8603
+    },
+    {
+      "epoch": 12,
+      "loss": 0.3208,
+      "valid_stage_macro_f1": 0.8605
+    },
+    {
+      "epoch": 13,
+      "loss": 0.3199,
+      "valid_stage_macro_f1": 0.862
+    },
+    {
+      "epoch": 14,
+      "loss": 0.3189,
+      "valid_stage_macro_f1": 0.8659
+    },
+    {
+      "epoch": 15,
+      "loss": 0.3176,
+      "valid_stage_macro_f1": 0.8609
+    },
+    {
+      "epoch": 16,
+      "loss": 0.3173,
+      "valid_stage_macro_f1": 0.8621
+    },
+    {
+      "epoch": 17,
+      "loss": 0.3175,
+      "valid_stage_macro_f1": 0.8632
+    },
+    {
+      "epoch": 18,
+      "loss": 0.3156,
+      "valid_stage_macro_f1": 0.8633
+    },
+    {
+      "epoch": 19,
+      "loss": 0.3162,
+      "valid_stage_macro_f1": 0.8632
+    }
+  ],
+  "config": {
+    "epochs": 20,
+    "batch_size": 256,
+    "lr": 0.001,
+    "d": 128,
+    "dropout": 0.2,
+    "seed": 2,
+    "max_steps": 0
+  }
+}

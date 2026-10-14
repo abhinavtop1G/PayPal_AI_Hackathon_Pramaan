@@ -1,0 +1,95 @@
+{
+  "rule": {
+    "budget_n/a": {
+      "threshold": 0.5,
+      "benign_false_alert_rate": 0.1588,
+      "scams_caught_in_time": 0.5483,
+      "scams_caught_any_time": 0.5483,
+      "money_saved_pct": 49.72,
+      "precision_at_0.5pct_prevalence": 0.0171,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 0.84,
+        "fake_kyc_apk": 0.0,
+        "investment_task": 0.0,
+        "voice_clone_relative": 1.0
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.996,
+        "bank_app_update": 0.0,
+        "legit_investing": 0.0,
+        "genuine_urgent_family": 0.676
+      }
+    }
+  },
+  "xgb_bag_of_events": {
+    "best_iteration": 1415,
+    "payment_attempt_pr_auc": 0.9913,
+    "budget_1%": {
+      "threshold": 0.19014,
+      "benign_false_alert_rate": 0.0104,
+      "scams_caught_in_time": 0.9965,
+      "scams_caught_any_time": 0.9976,
+      "money_saved_pct": 99.87,
+      "precision_at_0.5pct_prevalence": 0.3243,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 1.0,
+        "fake_kyc_apk": 1.0,
+        "investment_task": 1.0,
+        "voice_clone_relative": 0.988
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.009,
+        "legit_investing": 0.167,
+        "genuine_urgent_family": 0.068
+      }
+    },
+    "budget_2%": {
+      "threshold": 0.08118,
+      "benign_false_alert_rate": 0.0175,
+      "scams_caught_in_time": 0.9976,
+      "scams_caught_any_time": 0.9982,
+      "money_saved_pct": 99.9,
+      "precision_at_0.5pct_prevalence": 0.2228,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 1.0,
+        "fake_kyc_apk": 1.0,
+        "investment_task": 1.0,
+        "voice_clone_relative": 0.992
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.0,
+        "bank_app_update": 0.021,
+        "legit_investing": 0.253,
+        "genuine_urgent_family": 0.115
+      }
+    },
+    "budget_5%": {
+      "threshold": 0.01121,
+      "benign_false_alert_rate": 0.0431,
+      "scams_caught_in_time": 1.0,
+      "scams_caught_any_time": 1.0,
+      "money_saved_pct": 100.0,
+      "precision_at_0.5pct_prevalence": 0.1044,
+      "median_lead_time_min": 0.0,
+      "in_time_by_typology": {
+        "digital_arrest": 1.0,
+        "fake_kyc_apk": 1.0,
+        "investment_task": 1.0,
+        "voice_clone_relative": 1.0
+      },
+      "false_alert_rate_lookalikes": {
+        "hospital_emergency": 0.008,
+        "bank_app_update": 0.076,
+        "legit_investing": 0.433,
+        "genuine_urgent_family": 0.317
+      }
+    },
+    "stage_macro_f1_scam_sessions": 0.8146,
+    "stage_accuracy_scam_sessions": 0.9312,
+    "typology_acc_at_first_extraction": 0.9947
+  }
+}
