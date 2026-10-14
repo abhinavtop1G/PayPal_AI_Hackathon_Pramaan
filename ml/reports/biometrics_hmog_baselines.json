@@ -1,0 +1,78 @@
+{
+  "stats_cosine": {
+    "valid": {
+      "n10": {
+        "eer": 0.1734,
+        "per_user_eer_mean": 0.1706,
+        "n_users": 15,
+        "n_probe_windows": 2180,
+        "eer_sitting": 0.1511,
+        "eer_walking": 0.19
+      },
+      "n20": {
+        "eer": 0.153,
+        "per_user_eer_mean": 0.161,
+        "n_users": 15,
+        "n_probe_windows": 1047,
+        "eer_sitting": 0.13,
+        "eer_walking": 0.1755
+      }
+    },
+    "test": {
+      "n10": {
+        "eer": 0.2009,
+        "per_user_eer_mean": 0.1883,
+        "n_users": 15,
+        "n_probe_windows": 2518,
+        "eer_sitting": 0.2389,
+        "eer_walking": 0.1765
+      },
+      "n20": {
+        "eer": 0.1891,
+        "per_user_eer_mean": 0.1641,
+        "n_users": 15,
+        "n_probe_windows": 1219,
+        "eer_sitting": 0.2275,
+        "eer_walking": 0.1623
+      }
+    }
+  },
+  "stats_lda": {
+    "valid": {
+      "n10": {
+        "eer": 0.1305,
+        "per_user_eer_mean": 0.1296,
+        "n_users": 15,
+        "n_probe_windows": 2180,
+        "eer_sitting": 0.1026,
+        "eer_walking": 0.1595
+      },
+      "n20": {
+        "eer": 0.1068,
+        "per_user_eer_mean": 0.113,
+        "n_users": 15,
+        "n_probe_windows": 1047,
+        "eer_sitting": 0.0727,
+        "eer_walking": 0.1383
+      }
+    },
+    "test": {
+      "n10": {
+        "eer": 0.1478,
+        "per_user_eer_mean": 0.1328,
+        "n_users": 15,
+        "n_probe_windows": 2518,
+        "eer_sitting": 0.1547,
+        "eer_walking": 0.1432
+      },
+      "n20": {
+        "eer": 0.1304,
+        "per_user_eer_mean": 0.1128,
+        "n_users": 15,
+        "n_probe_windows": 1219,
+        "eer_sitting": 0.1368,
+        "eer_walking": 0.126
+      }
+    }
+  }
+}
