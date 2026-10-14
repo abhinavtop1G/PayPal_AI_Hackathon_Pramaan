@@ -1,0 +1,26 @@
+{
+  "model": "XGBoost, label-encoded categoricals (serving model)",
+  "best_iteration": 988,
+  "cpu_vs_gpu_max_abs_diff_test": 2.2649765014648438e-06,
+  "test_raw_scores": {
+    "roc_auc": 0.9034,
+    "pr_auc": 0.5419,
+    "recall_at_1pct_fpr": 0.4633,
+    "brier": 0.02201,
+    "threshold": 0.0225,
+    "precision_at_thr": 0.2129,
+    "recall_at_thr": 0.7338,
+    "alerts_per_1k_txn": 118.59,
+    "fraud_amt_caught_pct": 74.81,
+    "expected_cost": 263870.0,
+    "cost_saved_vs_no_model_pct": 56.74
+  },
+  "previous_native_categorical_model_test": {
+    "roc_auc": 0.8994,
+    "pr_auc": 0.5134,
+    "recall_at_1pct_fpr": 0.4333,
+    "alerts_per_1k_txn": 135.32,
+    "cost_saved_vs_no_model_pct": 49.02
+  },
+  "train_seconds": 59.9
+}
