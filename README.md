@@ -1,114 +1,104 @@
-# RAKSHAM — AI-driven scam recognition for UPI (PS-02)
+# BIOS — fast and secure online transaction authentication
 
-Two layers that see different halves of the same scam, joined at one number — **the risk of the payee**:
+A cloud risk-authentication service: for every login or payment it combines **behaviour**, **device information**
+and **transaction patterns**, decides **allow / challenge / block** in real time, picks the challenge that actually
+stops the likely attack, and returns **the signals behind the decision**.
 
-| layer | where it runs | sees | decides |
-|---|---|---|---|
-| **Payer side** — session engine | inside the payer's bank / PSP app | call state, screen-share, sideloaded apps, SMS links, touch behaviour, amount, payee | one explained alert at the payment attempt: allow / nudge / cool-off / hold |
-| **Payee side** — campaign engine | the beneficiary bank / UPI switch | credits and debits of receiving accounts: fan-in, pass-through, age, who paid, where money went | which accounts form a scam campaign, and a rupee-ranked case for the fraud team |
+```
+POST /v1/authenticate  →  { decision, risk_score, challenge_type, reasons (EN/HI), signals (tree-SHAP), latency_ms }
+POST /v1/challenge/verify  →  passed: allow (+ trust the device) · failed: block, lock 30 min
+```
 
-The payee side gives the payer side a real payee-risk score (replacing a simulator stand-in) and tells the fraud
-team which accounts to hold. The payer side covers what the payee side cannot: the first victim of a brand-new mule
-account, who is only visible from the victim's own session. See `docs/ARCHITECTURE.md`.
+Built on the RAKSHAM scam-detection work (IIT Delhi): its touch-biometrics model, payee-risk model and API skeleton
+are reused; the scam-session demo is kept at `/scam` in the console and documented in `docs/README_RAKSHAM.md`.
 
-> Everything here is trained and evaluated on **synthetic or public data** whose behaviours we wrote ourselves.
-> The reports validate the pipelines and show their failure modes; they are not real-world accuracy.
+> Attack and genuine behaviours are **simulated**; touch windows are **real** HMOG gestures scored by the real model;
+> challenge efficacies are **assumptions**. The numbers validate the service and compare designs, not real-world accuracy.
+
+## Results (`ml/reports/auth.md`, `backend/reports/auth_latency.md`)
+
+3,000 simulated customers, 273k requests over 60 days; trained on days 0–35, test days 45–60 replayed through the
+service, including simulated challenge outcomes.
+
+| design | genuine requests challenged | genuine finally blocked | attack requests stopped | attack money stopped |
+|---|---|---|---|---|
+| **risk engine (all signals)** | **2.0%** | **0.09%** | **85.8%** | **87.4%** |
+| behaviour signals only | 3.9% | 0.14% | 62.8% | 65.2% |
+| device signals only | 0.7% | 0.04% | 50.2% | 51.4% |
+| transaction signals only | 4.8% | 0.23% | 76.4% | 79.4% |
+| SMS OTP on every payment | 100% | 3.0% | 24.2% | 24.0% |
+| rules engine + SMS OTP | 3.7% | 0.12% | 30.2% | 31.1% |
+
+* Test ROC-AUC 0.997 (all signals) vs 0.80 / 0.76 / 0.95 for one family alone.
+* Per attack (finally stopped): stolen credentials 100%, SIM swap 100%, bots 100%, remote-access takeover 87%,
+  **coached victim 59%** (the real owner on their own phone is the hardest case). Hard-difficulty attacks: 73%.
+* Device binding: the first payment from a device never seen on the account is always stepped up (passkey on the
+  registered phone when one exists or the SIM just changed), however low the model's risk.
+* Latency over HTTP on a laptop **CPU** with API-key + HMAC checks: **p95 42 ms** (no touch data),
+  **p95 69 ms** with 10 touch gestures verified by the BiLSTM. In-process decision (features + model + SHAP + policy): p95 13 ms.
 
 ## Layout
 
 ```
-ml/
-  sim/        session simulator (scam workflows + benign look-alikes; mules belong to syndicates)
-  campaign/   payee-side layer: ledger, causal features, payee-risk model, campaign tracker, radar, evaluation
-  models/     workflow GRU | tabular (IEEE-CIS) | temporal GNN (IBM AML) | behavioural biometrics (HMOG)
-  engine/     session fusion (monotone XGBoost) + alert policy (expected-value tiers, anti-fatigue rules)
-  reports/    results of every training / evaluation run (campaign.md is the payee-side report)
-backend/      FastAPI service: session, campaign, gnn, biometrics, tabular
-tests/        pytest (ml + backend)
-docs/         ARCHITECTURE.md
-DATA/ data/   raw public datasets / generated data (git-ignored)
+ml/auth/          the authentication service core (BIOS)
+  geo.py            IP intelligence (hosting / anonymiser ranges), distances, load-balancer geo header
+  state.py          live state: users, device registry, per-device / per-IP fan-out, pending challenges (memory | Redis)
+  features.py       26 causal features: behaviour 5 · device 13 · transaction 8
+  sim.py            account-takeover simulator (genuine look-alikes + 5 attacks, difficulty knob, real HMOG touch)
+  model.py          monotone XGBoost, prior correction, tree-SHAP
+  policy.py         challenge choice (sms_otp | passkey | bank_callback | cool_off) + expected-cost decision
+  engine.py         decision + challenge loop
+  evaluate.py       training + replay evaluation -> ml/reports/auth.md
+  demo.py           demo customer and scenarios; packed real gestures for containers
+backend/          FastAPI: app.py, auth_service.py, security.py (keys, HMAC, replay, rate limit), audit.py
+frontend/         Next.js console: / (authentication) and /scam (RAKSHAM scam-session layer)
+deploy/           cloudrun.sh (Cloud Run, Secret Manager, Memorystore, load balancer + Cloud Armor)
+Dockerfile, docker-compose.yml, requirements-serve.txt
+ml/models, ml/campaign, ml/engine, ml/sim   RAKSHAM components (touch biometrics, payee risk, scam sessions)
+docs/             ARCHITECTURE.md (BIOS), DEPLOY.md, ARCHITECTURE_RAKSHAM.md, README_RAKSHAM.md
+tests/            pytest (100 tests; tests/test_auth.py covers the BIOS service)
 ```
 
-Not built yet: the analyst console UI, the on-device SDK that would collect call/screen-share signals, any
-integration with a real bank or PSP.
-
-## Setup (Windows)
+## Run it
 
 ```bash
-python -m venv ~/envs/raksham          # keep the venv outside OneDrive
 source ~/envs/raksham/Scripts/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt        # needs xgboost>=2.1 (older xgboost cannot load XGBClassifier models under scikit-learn 1.6)
-# GPU torch (later): pip install torch --index-url https://download.pytorch.org/whl/cu124
-pytest tests -q                        # tests that need trained session models / datasets / CUDA skip themselves
+pip install -r requirements.txt          # + torch (CUDA or CPU build)
+
+# API (touch biometrics + payee intelligence + authentication); docs at http://127.0.0.1:8000/docs
+BIOS_SERVICES=biometrics,campaign,auth uvicorn backend.app:app --port 8000
+
+# console on http://localhost:3000 (without NEXT_PUBLIC_BIOS_API it plays the recorded scenarios)
+cd frontend && npm ci && NEXT_PUBLIC_BIOS_API=http://127.0.0.1:8000 npm run dev
 ```
 
-## Payee-side layer (`ml/campaign`)
+On Windows Git Bash, prefix commands that set path-like env values (e.g. `BIOS_OPEN_PATHS=/v1/...`) with
+`MSYS_NO_PATHCONV=1`, otherwise Git Bash rewrites them into Windows paths.
+
+Rebuild everything from data:
 
 ```bash
-python -m ml.campaign.evaluate --n-sessions 10000 --save-model    # ~4 min -> ml/reports/campaign.{md,json} + ml/campaign/artifacts/
-python -m ml.campaign.attach --sim data/sim_wf                    # write the honest payee score into the session simulator's events
+python -m ml.models.biometrics.data      # HMOG gesture cache from DATA/hmog_dataset.zip (once)
+python -m ml.auth.evaluate               # simulate, train, evaluate (~12 min) -> ml/reports/auth.md + model
+python -m ml.auth.demo                   # packed demo gestures
+python -m backend.record_auth_demo       # console recording -> frontend/public/data/auth_demo.json
+python -m backend.bench_auth --url http://127.0.0.1:8000     # HTTP latency -> backend/reports/auth_latency.md
+pytest tests -q
 ```
 
-After `attach`, add the real biometrics scores and retrain the session models against both:
+Cloud deployment: `docs/DEPLOY.md` (Docker / Cloud Run in Mumbai, asia-south1). The Dockerfile and deploy script
+have not been run on this machine yet (no Docker or gcloud installed).
 
-```bash
-python -m ml.models.biometrics.session_scores --sim data/sim_wf   # real HMOG BiLSTM+LDA deviation per touch window
-python -m ml.models.workflow.train --seed 0 && python -m ml.engine.oof && python -m ml.engine.fit
-python -m ml.engine.simulate     # engine results            -> ml/reports/engine.md
-python -m ml.engine.ablation     # what each signal adds     -> ml/reports/ablation.md
-python -m ml.engine.robustness   # adaptive scammers (~10 m) -> ml/reports/robustness.md
-```
-
-## Session simulator and models
-
-```bash
-python -m ml.sim.generate --n-sessions 10000 --scam-rate 0.2 --seed 7 --out data/sim
-python -m ml.sim.generate --demo digital_arrest --out data/sim/demo
-```
-
-Outputs (parquet): `events`, `sessions`, `users`, `payees` (`payees.syndicate` is the mule's syndicate; a scam session
-only pays mules of one syndicate). `events` has one row per event with the session context snapshot (`call_active`,
-`caller_kind`, `caller_number`, `caller_reported`, `screen_share_active`, `sideloaded_app_present`, ...); `sessions` has
-`typology, is_scam, extraction_ts` (the deadline for a useful alert) and `loss_amount`. Stages:
-`contact → pretext → isolation → extraction`.
-
-Two signals come from outside the simulator's own assumptions:
-- **Touch**: each customer is mapped to a held-out HMOG subject; every touch window (`BIO_WINDOW`) references 10 real
-  gestures (`bio_ref`, `ml/sim/hmog_bank.py`). Someone else's hands (overlay / remote-control fraud) are another HMOG
-  subject's real gestures; "coerced" is the customer's own gestures with a documented shift (HMOG has no coercion labels).
-- **Caller reputation**: calls carry a number; scam syndicates reuse numbers, a share of which the telecom already has
-  on its reported list (`ml/sim/telecom.py`). The API checks numbers by private set intersection
-  (`infra/privacy/psi.py`, `reputation.py`) and only if the customer consented (`infra/privacy/consent.py`).
-
-Each session runs on its own random stream, so `generate(..., adversary={...})` (`ml/sim/builder.py ADVERSARY_KNOBS`)
-changes only the scam sessions: the robustness worlds share every genuine session with the baseline.
-
-## REST API (`backend/`)
-
-```bash
-python -m ml.engine.oof && python -m ml.engine.fit          # once: session fusion artifact
-python -m ml.campaign.evaluate --save-model                 # once: payee-risk model
-uvicorn backend.app:app --port 8000                         # docs: http://127.0.0.1:8000/docs
-python -m backend.bench --url http://127.0.0.1:8000         # latency -> backend/reports/serve_latency.md
-```
+## API
 
 | endpoint | what it does |
 |---|---|
-| `GET /health` | loaded services, device, load errors |
-| `POST /v1/session/{id}/start` · `/events` | stream raw session events. At `PAYMENT_ATTEMPT`: payee risk (from the campaign service unless the client sends one) → workflow GRU → fusion → alert policy → action, reasons, EN/HI message |
-| `POST /v1/demo/{typology}?persona=` | replay a deterministic simulator scenario through the session pipeline (senior / student / professional customer) |
-| `POST /v1/consent/check` · `POST /v1/telecom/psi/demo` | DPDP purpose gate (audited); full DH private set intersection between bank numbers and the telecom's reported list |
-| `GET /v1/demo/touch` · `GET /v1/demo/numbers` | builder helpers: a real HMOG touch window (own / coerced / someone else's hands); reported and clean demo numbers |
-| `POST /v1/payee/score` | payer-side question: how risky is this payee for ₹X? Read-only, with reason codes and the case it belongs to |
-| `POST /v1/campaign/ingest` | feed one completed transfer into the payee-side state |
-| `POST /v1/campaign/demo/load` | replay the synthetic ledger up to a day (call again with a later day to advance it) |
-| `GET /v1/campaign/cases` | cases ranked by recoverable rupees, each with an EN/HI summary and recommended actions |
-| `POST /v1/campaign/cases/{id}/hold` · `/v1/campaign/release` | analyst action: transaction-level credit hold (a named analyst is required; never automatic) |
-| `POST /v1/gnn/score` | laundering probability of an account-to-account transfer (IBM AML) |
-| `POST /v1/biometrics/enroll` · `/verify` | gesture-profile enrolment and BiLSTM+LDA verification (HMOG) |
-| `POST /v1/tabular/score` | IEEE-CIS transaction risk from engineered features |
-| `POST /v1/admin/reset` | clear session, campaign and GNN state |
+| `POST /v1/authenticate` | decide a login / payment: decision, risk, challenge type, EN/HI reasons, all signal contributions |
+| `POST /v1/challenge/verify` | result of the step-up → final allow / block; passkey or call-back makes the device trusted |
+| `POST /v1/biometrics/enroll` | enrol a user's touch profile (≥ 20 gestures) |
+| `GET /v1/auth/decisions` · `/v1/auth/stats` | audit feed and counters (decisions, challenge mix, p50/p95 latency) |
+| `GET /v1/auth/scenarios` · `POST /v1/auth/demo/{scenario}` · `POST /v1/auth/demo/verify` | demo customer (open paths for the public console) |
+| `GET /health` | loaded services, security mode, model version, state / audit backends |
 
-Services that fail to load are reported in `/health` and return 503; the rest keep working.
-Select services with `RAKSHAM_SERVICES=campaign,session,...`.
+Security (env-configured, see `docs/DEPLOY.md`): `X-API-Key`; `X-Timestamp` + `X-Signature` = HMAC-SHA256 of
+`"<timestamp>.<body>"` with 5-minute window and replay rejection; per-key token-bucket rate limit; TLS at the load balancer.
