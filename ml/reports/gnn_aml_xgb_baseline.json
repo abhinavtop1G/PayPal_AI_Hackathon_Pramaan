@@ -1,0 +1,84 @@
+{
+  "model": "xgb_neighbourhood",
+  "k": 32,
+  "best_iteration": 1472,
+  "train_seconds": 117,
+  "valid": {
+    "pr_auc": 0.543,
+    "roc_auc": 0.9829,
+    "f1": 0.5687,
+    "precision": 0.7322,
+    "recall": 0.4649,
+    "threshold": 0.1263
+  },
+  "test": {
+    "pr_auc": 0.6031,
+    "roc_auc": 0.9851,
+    "f1": 0.6105,
+    "precision": 0.7192,
+    "recall": 0.5303,
+    "threshold": 0.1263
+  },
+  "top_gain_features": [
+    [
+      "fmt",
+      269.2
+    ],
+    [
+      "self_loop",
+      253.8
+    ],
+    [
+      "cross_currency",
+      198.9
+    ],
+    [
+      "u_n_1h",
+      76.4
+    ],
+    [
+      "same_bank",
+      61.7
+    ],
+    [
+      "u_dt_last_min",
+      34.2
+    ],
+    [
+      "v_n_1h",
+      31.2
+    ],
+    [
+      "log_amt_recv",
+      19.8
+    ],
+    [
+      "v_dt_last_min",
+      18.3
+    ],
+    [
+      "u_n_distinct_cp",
+      18.2
+    ],
+    [
+      "u_n_24h",
+      16.2
+    ],
+    [
+      "u_frac_out",
+      15.7
+    ],
+    [
+      "cur_paid",
+      13.9
+    ],
+    [
+      "v_n_distinct_cp",
+      13.7
+    ],
+    [
+      "u_log_n_prior",
+      13.3
+    ]
+  ]
+}
