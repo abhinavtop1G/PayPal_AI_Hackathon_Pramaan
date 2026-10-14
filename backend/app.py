@@ -1,4 +1,4 @@
-"""RAKSHAM scam-detection API.
+"""BIOS transaction-authentication API (built on the RAKSHAM scam-detection services).
 
     uvicorn backend.app:app --port 8000          # docs at http://127.0.0.1:8000/docs
 
@@ -19,10 +19,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ml.sim.generate import generate_demo
 
-from .schemas import (ConsentCheck, DemoLoad, Gestures, HoldRequest, LedgerTransfer, PayeeQuery, PSIDemo, SessionEvent,
-                      SessionStart, TabularRequest, Transfer)
+from ml.auth.geo import parse_geo_header
 
-SERVICES = ("campaign", "session", "gnn", "biometrics", "tabular")
+from . import security
+from .schemas import (AuthRequest, ChallengeResult, ConsentCheck, DemoLoad, Gestures, HoldRequest, LedgerTransfer,
+                      PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest, Transfer)
+
+# load order matters: `session` uses `campaign`; `auth` uses `biometrics` (touch) and `campaign` (payee intelligence)
+SERVICES = ("campaign", "session", "gnn", "biometrics", "tabular", "auth")
 REGISTRY: dict = {"services": {}, "errors": {}, "load_seconds": {}}
 
 
@@ -39,6 +43,9 @@ def _load(name: str, device: str):
     if name == "biometrics":
         from .bio_service import BioService
         return BioService(device)
+    if name == "auth":
+        from .auth_service import AuthService
+        return AuthService(bio=REGISTRY["services"].get("biometrics"), payee=REGISTRY["services"].get("campaign"))
     from .tabular_service import TabularService
     return TabularService()  # always CPU (see tabular_service docstring)
 
@@ -47,7 +54,9 @@ def _load(name: str, device: str):
 async def lifespan(app: FastAPI):
     device = os.environ.get("RAKSHAM_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
     REGISTRY["device"] = device
-    wanted = [s.strip() for s in os.environ.get("RAKSHAM_SERVICES", ",".join(SERVICES)).split(",") if s.strip()]
+    wanted = [s.strip() for s in os.environ.get("BIOS_SERVICES", os.environ.get("RAKSHAM_SERVICES", ",".join(SERVICES))).split(",")
+              if s.strip()]
+    wanted = sorted(wanted, key=lambda n: SERVICES.index(n) if n in SERVICES else len(SERVICES))
     for name in wanted:
         t0 = time.perf_counter()
         try:
@@ -60,15 +69,19 @@ async def lifespan(app: FastAPI):
     REGISTRY["services"].clear()
 
 
-app = FastAPI(title="RAKSHAM scam-detection API", version="0.1.0", lifespan=lifespan,
-              description="Workflow-aware UPI scam detection: session pipeline, mule GNN, behavioural biometrics, "
-                          "transaction risk. Simulator stand-ins are documented per endpoint.")
+app = FastAPI(title="BIOS transaction-authentication API", version="0.2.0", lifespan=lifespan,
+              description="Real-time allow / challenge / block decisions for online transactions from behaviour, device "
+                          "and transaction-pattern signals, with the signals behind every decision. Also serves the "
+                          "RAKSHAM components (session scam pipeline, payee intelligence, GNN, biometrics, IEEE-CIS).")
 
 
 # the demo frontend (Next.js dev server) calls the API from the browser; override with a comma-separated list
 app.add_middleware(CORSMiddleware, allow_methods=["*"], allow_headers=["*"], expose_headers=["X-Process-Time-ms"],
                    allow_origins=[o.strip() for o in os.environ.get("RAKSHAM_CORS_ORIGINS",
                                                                     "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()])
+
+
+app.add_middleware(security.SecurityMiddleware)  # API keys, HMAC signing, rate limits (env-configured)
 
 
 @app.middleware("http")
@@ -99,7 +112,69 @@ def _bad_request(fn, *args):
 @app.get("/health")
 def health():
     return {"status": "ok" if REGISTRY["services"] else "degraded", "device": REGISTRY.get("device"),
-            "loaded": sorted(REGISTRY["services"]), "errors": REGISTRY["errors"], "load_seconds": REGISTRY["load_seconds"]}
+            "loaded": sorted(REGISTRY["services"]), "errors": REGISTRY["errors"], "load_seconds": REGISTRY["load_seconds"],
+            "security": security.status(),
+            "auth": REGISTRY["services"]["auth"].info() if "auth" in REGISTRY["services"] else None}
+
+
+# ---------------------------------------------------------------------------- transaction authentication (BIOS)
+def _client_ip(request: Request) -> str | None:
+    fwd = request.headers.get("x-forwarded-for")
+    return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else None)
+
+
+@app.post("/v1/authenticate", tags=["authentication"])
+def authenticate(body: AuthRequest, request: Request):
+    """Decide one login or payment: **allow**, **challenge** (with the step-up that fits the signals: sms_otp, passkey,
+    bank_callback or cool_off) or **block**, with the risk score and the signals behind it (tree-SHAP contributions,
+    EN/HI reasons). Missing network data is taken from the request (X-Forwarded-For) and the load balancer's
+    X-Client-Geo-Location header. A challenge is resolved with POST /v1/challenge/verify."""
+    req = body.model_dump()
+    req["ts"] = body.ts.timestamp() if body.ts else None
+    net = req["network"]
+    net["ip"] = net.get("ip") or _client_ip(request)
+    if net.get("lat") is None:
+        geo = parse_geo_header(request.headers.get("x-client-geo-location"))
+        if geo:
+            net.update({k: v for k, v in geo.items() if net.get(k) is None})
+    return _bad_request(svc("auth").authenticate, req)
+
+
+@app.post("/v1/challenge/verify", tags=["authentication"])
+def challenge_verify(body: ChallengeResult):
+    """Result of the step-up for a challenged decision: passed -> allow (and, for passkey / bank call-back, the device
+    becomes trusted); failed -> block, and the account's next attempts are blocked for 30 minutes."""
+    return _bad_request(svc("auth").verify, body.decision_id, body.passed)
+
+
+@app.get("/v1/auth/scenarios", tags=["authentication demo"])
+def auth_scenarios():
+    from .auth_service import scenario_list
+    return scenario_list()
+
+
+@app.post("/v1/auth/demo/verify", tags=["authentication demo"])
+def auth_demo_verify(body: ChallengeResult):
+    """/v1/challenge/verify for the demo customer only (the public console has no API key or signing secret)."""
+    return _bad_request(svc("auth").verify_demo, body.decision_id, body.passed)
+
+
+@app.post("/v1/auth/demo/{scenario}", tags=["authentication demo"])
+def auth_demo(scenario: str, overrides: dict | None = None):
+    """Run a scenario for the demo customer (fresh 30-day history each time; real HMOG touch gestures). `overrides`
+    are merged into the request, e.g. {"device": {"is_rooted": true}, "behaviour": {"touch_profile": "remote"}}."""
+    return _bad_request(svc("auth").run_demo, scenario, overrides)
+
+
+@app.get("/v1/auth/decisions", tags=["authentication"])
+def auth_decisions(limit: int = 50):
+    """Latest decisions and challenge results (analyst feed; the full log is in the audit database)."""
+    return svc("auth").audit.recent(max(1, min(limit, 500)))
+
+
+@app.get("/v1/auth/stats", tags=["authentication"])
+def auth_stats():
+    return {**svc("auth").audit.stats(), **svc("auth").info()}
 
 
 # ---------------------------------------------------------------------------- session pipeline
@@ -269,11 +344,11 @@ def tabular_score(body: TabularRequest):
 
 
 @app.post("/v1/admin/reset", tags=["admin"])
-def reset(services: str = "campaign,session,gnn"):
+def reset(services: str = "campaign,session,gnn,auth"):
     """Clear in-memory state: payee-side ledger and cases (campaign), sessions and alert-policy history (session),
     the GNN's online transfer buffer (gnn). `services` limits it, e.g. `?services=session`."""
     names = [s.strip() for s in services.split(",") if s.strip()]
     for name in names:
-        if name in ("campaign", "session", "gnn") and name in REGISTRY["services"]:
+        if name in ("campaign", "session", "gnn", "auth") and name in REGISTRY["services"]:
             REGISTRY["services"][name].reset()
     return {"reset": names}
