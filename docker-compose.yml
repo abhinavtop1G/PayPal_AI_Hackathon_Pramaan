@@ -1,0 +1,21 @@
+# Local "cloud" stack: API + Redis (live state, shared by instances) + Postgres (audit log).
+#   docker compose up --build        # API on http://localhost:8080/docs
+services:
+  api:
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql://bios:bios@db:5432/bios
+      BIOS_API_KEYS: dev-key-change-me
+      BIOS_OPEN_PATHS: /v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats
+      RAKSHAM_CORS_ORIGINS: http://localhost:3000
+    depends_on: [redis, db]
+  redis:
+    image: redis:7.4-alpine
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bios
+      POSTGRES_PASSWORD: bios
+      POSTGRES_DB: bios
