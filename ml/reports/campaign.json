@@ -1,0 +1,452 @@
+{
+  "setup": "10,000 simulated sessions -> 344,065 transfers, 16,132 accounts; time split train < day 60 <= valid < day 75 <= test; flag 0.992, watch 0.496.",
+  "model": {
+    "test_rows": 39326,
+    "overall": {
+      "n_pos": 9800,
+      "n_neg": 29526,
+      "roc_auc": 0.8182,
+      "pr_auc": 0.7428,
+      "recall_at_1pct_fpr": 0.6419
+    },
+    "cold start (first credit to the account)": {
+      "n_pos": 30,
+      "n_neg": 356,
+      "roc_auc": 0.4585,
+      "pr_auc": 0.3241,
+      "recall_at_1pct_fpr": 0.3
+    },
+    "warm (>= 3 prior credits)": {
+      "n_pos": 9690,
+      "n_neg": 29005,
+      "roc_auc": 0.8211,
+      "pr_auc": 0.7443,
+      "recall_at_1pct_fpr": 0.6494
+    },
+    "accounts never seen in training (excl. novel)": {
+      "n_pos": 12,
+      "n_neg": 1352,
+      "roc_auc": 0.9514,
+      "pr_auc": 0.7286,
+      "recall_at_1pct_fpr": 0.75
+    },
+    "layer-2/3 mule accounts (forwarded money)": {
+      "n_pos": 3547,
+      "n_neg": 29526,
+      "roc_auc": 0.9999,
+      "pr_auc": 0.9988,
+      "recall_at_1pct_fpr": 0.9994
+    },
+    "excluding the novel campaign": {
+      "n_pos": 6185,
+      "n_neg": 29526,
+      "roc_auc": 0.9989,
+      "pr_auc": 0.9947,
+      "recall_at_1pct_fpr": 0.9769
+    },
+    "novel A: wrong-credit return scam (never trained on)": {
+      "n_pos": 267,
+      "n_neg": 29526,
+      "roc_auc": 0.9913,
+      "pr_auc": 0.7456,
+      "recall_at_1pct_fpr": 0.8989
+    },
+    "novel B: micro-fee front, merchant-like (never trained on)": {
+      "n_pos": 3348,
+      "n_neg": 29526,
+      "roc_auc": 0.4707,
+      "pr_auc": 0.1005,
+      "recall_at_1pct_fpr": 0.0027
+    },
+    "baselines": {
+      "fan-in only (distinct payers 24h)": {
+        "n_pos": 9800,
+        "n_neg": 29526,
+        "roc_auc": 0.1668,
+        "pr_auc": 0.1675,
+        "recall_at_1pct_fpr": 0.0
+      },
+      "fan-in x fast pass-through": {
+        "n_pos": 9800,
+        "n_neg": 29526,
+        "roc_auc": 0.5278,
+        "pr_auc": 0.2771,
+        "recall_at_1pct_fpr": 1.0
+      },
+      "account age only": {
+        "n_pos": 9800,
+        "n_neg": 29526,
+        "roc_auc": 0.6791,
+        "pr_auc": 0.4973,
+        "recall_at_1pct_fpr": 0.2206
+      }
+    },
+    "payment_view": {
+      "payer-side query rows": 3212,
+      "honest payee model": {
+        "n_pos": 974,
+        "n_neg": 2238,
+        "roc_auc": 0.9931,
+        "pr_auc": 0.9884,
+        "recall_at_1pct_fpr": 0.9497
+      },
+      "old simulator stand-in (drawn from the label)": {
+        "n_pos": 974,
+        "n_neg": 2238,
+        "roc_auc": 0.8642,
+        "pr_auc": 0.7973,
+        "recall_at_1pct_fpr": 0.4302
+      }
+    }
+  },
+  "benign": {
+    "merchant": {
+      "accounts": 470,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 1.0
+    },
+    "personal": {
+      "accounts": 504,
+      "accounts_ever_flagged_pct": 0.4,
+      "credits_flagged_pct": 0.384,
+      "unseen_accounts_ever_flagged_pct": 0.57
+    },
+    "busy_merchant": {
+      "accounts": 25,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "flash_merchant": {
+      "accounts": 15,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "fundraiser": {
+      "accounts": 2,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "gig_worker": {
+      "accounts": 30,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "cashback_sender": {
+      "accounts": 6,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "marketplace": {
+      "accounts": 8,
+      "accounts_ever_flagged_pct": 0.0,
+      "credits_flagged_pct": 0.0,
+      "unseen_accounts_ever_flagged_pct": 0.0
+    },
+    "friend": {
+      "accounts": 137,
+      "accounts_ever_flagged_pct": 0.73,
+      "credits_flagged_pct": 0.284,
+      "unseen_accounts_ever_flagged_pct": 10.0
+    }
+  },
+  "campaigns": {
+    "flag_threshold": 0.9918,
+    "credit_alerts": 31984,
+    "accounts_flagged": 1133,
+    "watchlist_accounts": 46,
+    "cases": 21,
+    "alerts_per_case": 1523.0,
+    "flagged_accounts_per_case": 54.0,
+    "mule_accounts_in_cases_pct": 95.1,
+    "benign_accounts_in_cases": 2,
+    "cases_with_no_mule": 2,
+    "mean_case_purity": 1.0,
+    "cases_with_mules": 19,
+    "syndicates_split_over_cases": {
+      "S05": 3,
+      "S07": 2,
+      "NOVEL_A": 2,
+      "S10": 2,
+      "S02": 2
+    },
+    "top_cases": [
+      {
+        "case": "CMP-0007",
+        "accounts": 178,
+        "victims": 1422,
+        "loss_in": 24717670,
+        "recoverable": 6906809,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0001",
+        "accounts": 149,
+        "victims": 1176,
+        "loss_in": 22354075,
+        "recoverable": 5656004,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0013",
+        "accounts": 120,
+        "victims": 1112,
+        "loss_in": 14081094,
+        "recoverable": 4512759,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0017",
+        "accounts": 84,
+        "victims": 699,
+        "loss_in": 12040774,
+        "recoverable": 3565964,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0012",
+        "accounts": 104,
+        "victims": 885,
+        "loss_in": 14913902,
+        "recoverable": 4315735,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0010",
+        "accounts": 97,
+        "victims": 892,
+        "loss_in": 10820229,
+        "recoverable": 3166530,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "money stays only minutes before moving on",
+          "this payment is large",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0002",
+        "accounts": 62,
+        "victims": 471,
+        "loss_in": 8645409,
+        "recoverable": 2379701,
+        "risk": 1.0,
+        "novel": false,
+        "reasons": [
+          "this payment is large",
+          "money stays only minutes before moving on",
+          "very new account"
+        ]
+      },
+      {
+        "case": "CMP-0099",
+        "accounts": 10,
+        "victims": 187,
+        "loss_in": 1075698,
+        "recoverable": 1518827,
+        "risk": 1.0,
+        "novel": true,
+        "reasons": [
+          "this payment is large",
+          "money is split across many accounts",
+          "unusually large typical credit"
+        ]
+      }
+    ]
+  },
+  "timeliness": {
+    "ack_delay_min": 15,
+    "complaint_baseline_median_h": 24.0,
+    "scam_credit_value_arriving_after_action_pct": 88.7,
+    "same_under_complaint_baseline_pct": 82.8,
+    "victim_payments_after_action_pct": 85.9,
+    "same_under_complaint_baseline_payments_pct": 82.1,
+    "median_hours_first_victim_credit_to_first_flag": 3.6,
+    "median_hours_first_victim_credit_to_case": 24.9,
+    "syndicates_flagged": 12,
+    "syndicates_with_case": 12,
+    "syndicates_flagged_before_first_victim": 1,
+    "syndicates_total": 12
+  },
+  "radar": {
+    "anomaly_ranking": {
+      "NOVEL_A": {
+        "snapshots": 487,
+        "anomaly_auc_vs_benign": 0.893,
+        "share_above_threshold_pct": 40.9
+      },
+      "NOVEL_B": {
+        "snapshots": 831,
+        "anomaly_auc_vs_benign": 0.983,
+        "share_above_threshold_pct": 44.3
+      }
+    },
+    "reference_snapshots": 204474,
+    "chosen_quantile": 0.995,
+    "false_cluster_tuning_on_valid": [
+      {
+        "quantile": 0.99,
+        "false_clusters_in_valid_15d": 8
+      },
+      {
+        "quantile": 0.995,
+        "false_clusters_in_valid_15d": 2
+      },
+      {
+        "quantile": 0.997,
+        "false_clusters_in_valid_15d": 2
+      },
+      {
+        "quantile": 0.999,
+        "false_clusters_in_valid_15d": 0
+      }
+    ],
+    "test_clusters": [
+      {
+        "cluster": "EMG-0001",
+        "first_tick_h": 1844.0,
+        "confirmed_h": 1848.0,
+        "accounts": 8,
+        "novel_purity": 0.0,
+        "ticks": 6,
+        "kinds": {
+          "marketplace": 8
+        }
+      },
+      {
+        "cluster": "EMG-0002",
+        "first_tick_h": 1888.0,
+        "confirmed_h": 1908.0,
+        "accounts": 12,
+        "novel_purity": 1.0,
+        "ticks": 13,
+        "kinds": {
+          "novel_scammer": 12
+        }
+      },
+      {
+        "cluster": "EMG-0004",
+        "first_tick_h": 2012.0,
+        "confirmed_h": 2028.0,
+        "accounts": 8,
+        "novel_purity": 0.0,
+        "ticks": 3,
+        "kinds": {
+          "marketplace": 8
+        }
+      },
+      {
+        "cluster": "EMG-0006",
+        "first_tick_h": 2056.0,
+        "confirmed_h": 2060.0,
+        "accounts": 6,
+        "novel_purity": 1.0,
+        "ticks": 2,
+        "kinds": {
+          "novel_scammer": 6
+        }
+      }
+    ],
+    "false_clusters_in_test": 2,
+    "variants": {
+      "NOVEL_A": {
+        "accounts": 13,
+        "first_victim_credit_h": 1884.7,
+        "flagged_by_supervised_model": 12,
+        "supervised_detect_h": 1914.1,
+        "radar_detect_h": null,
+        "victim_value_after_supervised_action_pct": 90.7,
+        "victim_value_after_radar_action_pct": null,
+        "radar_accounts_covered": 0
+      },
+      "NOVEL_B": {
+        "accounts": 13,
+        "first_victim_credit_h": 1880.0,
+        "flagged_by_supervised_model": 0,
+        "supervised_detect_h": null,
+        "radar_detect_h": 1908.0,
+        "victim_value_after_supervised_action_pct": null,
+        "victim_value_after_radar_action_pct": 89.6,
+        "radar_accounts_covered": 12
+      }
+    }
+  },
+  "operating_curve": [
+    {
+      "benign_account_fp_budget_pct": 0.5,
+      "flag_threshold": 0.998,
+      "cases": 17,
+      "cases_with_mules": 16,
+      "cases_with_no_mule": 1,
+      "mule_accounts_in_cases_pct": 94.2,
+      "median_h_first_victim_to_case": 29.7,
+      "scam_value_after_action_pct": 88.6
+    },
+    {
+      "benign_account_fp_budget_pct": 1.0,
+      "flag_threshold": 0.997,
+      "cases": 18,
+      "cases_with_mules": 17,
+      "cases_with_no_mule": 1,
+      "mule_accounts_in_cases_pct": 94.5,
+      "median_h_first_victim_to_case": 25.5,
+      "scam_value_after_action_pct": 88.6
+    },
+    {
+      "benign_account_fp_budget_pct": 2.0,
+      "flag_threshold": 0.992,
+      "cases": 21,
+      "cases_with_mules": 19,
+      "cases_with_no_mule": 2,
+      "mule_accounts_in_cases_pct": 95.1,
+      "median_h_first_victim_to_case": 24.9,
+      "scam_value_after_action_pct": 88.7
+    },
+    {
+      "benign_account_fp_budget_pct": 5.0,
+      "flag_threshold": 0.955,
+      "cases": 23,
+      "cases_with_mules": 20,
+      "cases_with_no_mule": 3,
+      "mule_accounts_in_cases_pct": 95.4,
+      "median_h_first_victim_to_case": 24.9,
+      "scam_value_after_action_pct": 88.9
+    }
+  ]
+}
