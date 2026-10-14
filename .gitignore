@@ -1,0 +1,53 @@
+# Raw + generated data (large; regenerate with the commands in README.md)
+DATA/
+data/
+# recorded API replays the frontend plays offline (small; regenerate with python -m backend.record_demo)
+!frontend/src/data/
+!frontend/public/data/
+*.parquet
+*.csv
+*.npz
+*.pkl
+
+# Model artefacts that are trained locally (small metadata .json files and the payee-risk model ARE tracked)
+checkpoints/
+*.pt
+# shipped model weights (small); everything else stays local
+!ml/models/*/artifacts/*.pt
+*.pth
+*.onnx
+*.json.ubj
+mlruns/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs / scratch
+logs/
+*.log
+catboost_info/
+
+# Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/coverage/
+*.tsbuildinfo
