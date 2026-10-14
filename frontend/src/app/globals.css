@@ -1,0 +1,228 @@
+@import "tailwindcss";
+
+/*
+  RAKSHAM design tokens — Apple HIG dark appearance.
+
+  Colours are Apple's dark-mode system colours, label and fill hierarchy. Risk semantics map onto the
+  system palette and keep one meaning each everywhere in the app:
+    safe = green · watch = yellow · elevated = orange · critical = red · info / interactive = blue
+  The four alert tiers use the same mapping: allow (green) · nudge (yellow) · cool-off (orange) · hold (red).
+*/
+@theme {
+  /* ---------- backgrounds (deep space grays) ---------- */
+  --color-bg: #000000;
+  --color-bg-elevated: #0c0c0e;
+  --color-bg-secondary: #1c1c1e;
+  --color-bg-tertiary: #2c2c2e;
+
+  /* ---------- system grays (dark) ---------- */
+  --color-gray-1: #8e8e93;
+  --color-gray-2: #636366;
+  --color-gray-3: #48484a;
+  --color-gray-4: #3a3a3c;
+  --color-gray-5: #2c2c2e;
+  --color-gray-6: #1c1c1e;
+
+  /* ---------- labels ---------- */
+  --color-label: #ffffff;
+  /* secondary/tertiary run a little brighter than UIKit's 0.6/0.3: this UI sets a lot of small caption text on
+     translucent panels, and 0.3 falls below a readable contrast there */
+  --color-label-secondary: rgb(235 235 245 / 0.68);
+  --color-label-tertiary: rgb(235 235 245 / 0.46);
+  --color-label-quaternary: rgb(235 235 245 / 0.22);
+
+  /* ---------- fills & separators ---------- */
+  --color-fill: rgb(120 120 128 / 0.36);
+  --color-fill-secondary: rgb(120 120 128 / 0.32);
+  --color-fill-tertiary: rgb(118 118 128 / 0.24);
+  --color-fill-quaternary: rgb(118 118 128 / 0.18);
+  --color-separator: rgb(84 84 88 / 0.6);
+  --color-separator-opaque: #38383a;
+
+  /* ---------- system colours (dark variants) ---------- */
+  --color-sys-red: #ff453a;
+  --color-sys-orange: #ff9f0a;
+  --color-sys-yellow: #ffd60a;
+  --color-sys-green: #30d158;
+  --color-sys-mint: #63e6e2;
+  --color-sys-teal: #40c8e0;
+  --color-sys-cyan: #64d2ff;
+  --color-sys-blue: #0a84ff;
+  --color-sys-indigo: #5e5ce6;
+  --color-sys-purple: #bf5af2;
+  --color-sys-pink: #ff375f;
+
+  /* ---------- risk semantics ---------- */
+  --color-risk-safe: var(--color-sys-green);
+  --color-risk-watch: var(--color-sys-yellow);
+  --color-risk-elevated: var(--color-sys-orange);
+  --color-risk-critical: var(--color-sys-red);
+
+  /* ---------- type ---------- */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-inter), "Kohinoor Devanagari", var(--font-deva), system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* ---------- radii (continuous-curve where supported, see .squircle) ---------- */
+  --radius-chip: 0.5rem;
+  --radius-control: 0.75rem;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+  --radius-device: 3.4rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Typography — Apple text styles. Size, weight, leading and tracking move together; tracking is
+   size-specific: negative for display sizes, near zero for body, slightly positive for captions.
+   Sizes in rem so the layout scales with the user's text-size setting.
+   --------------------------------------------------------------------------------------------- */
+@utility text-large-title { font-size: 2.125rem; line-height: 2.5625rem; font-weight: 700; letter-spacing: -0.022em; }
+@utility text-title-1     { font-size: 1.75rem;  line-height: 2.125rem;  font-weight: 700; letter-spacing: -0.021em; }
+@utility text-title-2     { font-size: 1.375rem; line-height: 1.75rem;   font-weight: 700; letter-spacing: -0.017em; }
+@utility text-title-3     { font-size: 1.25rem;  line-height: 1.5625rem; font-weight: 600; letter-spacing: -0.015em; }
+@utility text-headline    { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; letter-spacing: -0.011em; }
+@utility text-body        { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 400; letter-spacing: -0.011em; }
+@utility text-callout     { font-size: 1rem;     line-height: 1.3125rem; font-weight: 400; letter-spacing: -0.009em; }
+@utility text-subheadline { font-size: 0.9375rem; line-height: 1.25rem;  font-weight: 400; letter-spacing: -0.007em; }
+@utility text-footnote    { font-size: 0.8125rem; line-height: 1.125rem; font-weight: 400; letter-spacing: -0.002em; }
+@utility text-caption-1   { font-size: 0.75rem;  line-height: 1rem;      font-weight: 400; letter-spacing: 0.004em; }
+@utility text-caption-2   { font-size: 0.6875rem; line-height: 0.8125rem; font-weight: 500; letter-spacing: 0.006em; }
+
+/* Small all-caps section labels read better with open tracking. */
+@utility text-eyebrow { font-size: 0.6875rem; line-height: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ---------------------------------------------------------------------------------------------
+   Materials — translucent layers that bring structure without stealing focus. Heavier material
+   for structural regions, lighter for interactive surfaces; never stack light on light. A bright
+   top edge reads as light catching the material.
+   --------------------------------------------------------------------------------------------- */
+@utility material-ultrathin {
+  background: rgb(44 44 46 / 0.32);
+  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.10), 0 0 0 0.5px rgb(255 255 255 / 0.06);
+}
+@utility material-thin {
+  background: rgb(36 36 38 / 0.5);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.10), 0 0 0 0.5px rgb(255 255 255 / 0.06);
+}
+@utility material-regular {
+  background: rgb(28 28 30 / 0.66);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.09), 0 0 0 0.5px rgb(255 255 255 / 0.06),
+    0 24px 48px -24px rgb(0 0 0 / 0.6);
+}
+@utility material-thick {
+  background: rgb(22 22 24 / 0.82);
+  backdrop-filter: blur(44px) saturate(190%);
+  -webkit-backdrop-filter: blur(44px) saturate(190%);
+  box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.08), 0 0 0 0.5px rgb(255 255 255 / 0.05),
+    0 40px 80px -32px rgb(0 0 0 / 0.75);
+}
+
+/* Continuous ("squircle") corners where the browser supports corner-shape; plain radii elsewhere. */
+@utility squircle {
+  @supports (corner-shape: squircle) {
+    corner-shape: squircle;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: dark;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-label);
+    font-family: var(--font-sans);
+  }
+  /* Press feedback lives on pointer-down and is instant. */
+  button { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: rgb(10 132 255 / 0.4); }
+}
+
+/* Deep-space backdrop: two soft light pools and a faint grain-free vignette. Static, never animated. */
+.space-backdrop {
+  background:
+    radial-gradient(60rem 40rem at 18% 12%, rgb(94 92 230 / 0.10), transparent 60%),
+    radial-gradient(50rem 36rem at 85% 90%, rgb(10 132 255 / 0.07), transparent 60%),
+    linear-gradient(180deg, #050506 0%, #000 100%);
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Accessibility: reduced transparency, increased contrast. (Reduced motion is handled in the
+   motion layer via <MotionConfig reducedMotion="user"> and useReducedMotion.)
+   --------------------------------------------------------------------------------------------- */
+@media (prefers-reduced-transparency: reduce) {
+  .material-ultrathin, .material-thin, .material-regular, .material-thick {
+    background: var(--color-bg-secondary) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+@media (prefers-contrast: more) {
+  .material-ultrathin, .material-thin, .material-regular, .material-thick {
+    background: var(--color-bg-secondary) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.45) !important;
+  }
+}
+
+/* money moving along an edge of the mule-network graph (dash offset = one dash period) */
+@keyframes flow {
+  to { stroke-dashoffset: -10; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[flow"] { animation: none !important; }
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Polish: thin translucent scrollbars, a single focus ring for keyboard users, panel sheen,
+   skeleton shimmer, tabular figures where numbers update in place.
+   --------------------------------------------------------------------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.16) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.14);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover { background-color: rgb(255 255 255 / 0.26); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+:focus-visible {
+  outline: 2px solid var(--color-sys-blue);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Panels: a faint light falloff from the top edge, like light catching glass. */
+.panel-sheen {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.035), transparent 7rem);
+}
+
+/* Skeleton placeholder while data loads. */
+.skeleton {
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.04) 25%, rgb(255 255 255 / 0.09) 37%, rgb(255 255 255 / 0.04) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
