@@ -1,0 +1,394 @@
+{
+ "session_id": "demo-senior-voice_clone_relative",
+ "typology": "voice_clone_relative",
+ "persona": "senior",
+ "is_scam": true,
+ "start_time": "2026-03-15T11:00:00",
+ "user": {
+  "avg_txn_amount": 1126.52,
+  "age_group": "60+"
+ },
+ "extraction_ts_min": 3.11,
+ "timeline": [
+  {
+   "ts_min": 0.0,
+   "true_stage": "contact",
+   "input": {
+    "event": "CALL_START",
+    "ts": 0.0,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311"
+   },
+   "event_index": 0,
+   "event": "CALL_START",
+   "workflow": {
+    "p_scam_in_progress": 0.84828,
+    "stage": "contact",
+    "typology_top3": {
+     "digital_arrest": 0.6945,
+     "voice_clone_relative": 0.1363,
+     "hospital_emergency": 0.0893
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 21.22
+  },
+  {
+   "ts_min": 2.4,
+   "true_stage": "extraction",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 143.74,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311"
+   },
+   "event_index": 1,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.74711,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.7313,
+     "genuine_urgent_family": 0.2229,
+     "new_payee_service": 0.0402
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 17.49
+  },
+  {
+   "ts_min": 2.43,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 145.75,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665
+   },
+   "event_index": 2,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.94181,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.935,
+     "genuine_urgent_family": 0.0587,
+     "new_payee_service": 0.0053
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 15.23
+  },
+  {
+   "ts_min": 3.08,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 184.77,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "bio_pressure": 0.7863,
+    "bio_swipe_velocity": 1.8355,
+    "bio_tap_interval_ms": 374.7017,
+    "bio_hesitation_ms": 575.8655,
+    "bio_orientation_var": 0.0733,
+    "gestures_n": 10
+   },
+   "event_index": 3,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.97023,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9588,
+     "genuine_urgent_family": 0.0398,
+     "new_payee_service": 0.0006
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -0.9349,
+     "matches_profile": true,
+     "fused_score": 1.6415
+    }
+   },
+   "latency_ms": 18.29
+  },
+  {
+   "ts_min": 3.11,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 186.36,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 53948.0
+   },
+   "event_index": 4,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.96384,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9625,
+     "genuine_urgent_family": 0.0363,
+     "new_payee_service": 0.0005
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": true,
+    "fused_risk": 0.387487,
+    "ev_choice": "hold",
+    "suppressed_by": null,
+    "reasons": [
+     "amount is much larger than your usual payments",
+     "session follows a known scam pattern"
+    ],
+    "message_en": "This payment is on hold and your bank will call you on your registered number. Callers can clone a relative's voice. Before paying, call your relative back on the number saved in your phone.",
+    "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। ठग किसी रिश्तेदार की आवाज़ की नकल कर सकते हैं। पैसे भेजने से पहले उन्हें आपके फ़ोन में सेव किए गए नंबर पर वापस कॉल करें।",
+    "components": {
+     "gru_p": 0.9638,
+     "mule_score": 0.665,
+     "bio_dev": -0.9349,
+     "log_amt_vs_avg": 3.8689,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 42.29
+  },
+  {
+   "ts_min": 3.18,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 190.87,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 53948.0
+   },
+   "event_index": 5,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.9646,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.969,
+     "genuine_urgent_family": 0.0298,
+     "new_payee_service": 0.0004
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 34.99
+  },
+  {
+   "ts_min": 9.86,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 591.39,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "bio_pressure": 1.0714,
+    "bio_swipe_velocity": 1.4435,
+    "bio_tap_interval_ms": 433.5065,
+    "bio_hesitation_ms": 520.7407,
+    "bio_orientation_var": 0.0948,
+    "gestures_n": 10
+   },
+   "event_index": 6,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99193,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9885,
+     "genuine_urgent_family": 0.01,
+     "fake_kyc_apk": 0.0011
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.2267,
+     "matches_profile": true,
+     "fused_score": 1.9334
+    }
+   },
+   "latency_ms": 26.13
+  },
+  {
+   "ts_min": 9.9,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 594.18,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 6000.0
+   },
+   "event_index": 7,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99378,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9909,
+     "genuine_urgent_family": 0.008,
+     "fake_kyc_apk": 0.0007
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.535893,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9938,
+     "mule_score": 0.665,
+     "bio_dev": -1.2267,
+     "log_amt_vs_avg": 1.6726,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 38.02
+  },
+  {
+   "ts_min": 9.98,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 598.91,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311",
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 6000.0
+   },
+   "event_index": 8,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99279,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9906,
+     "genuine_urgent_family": 0.0083,
+     "fake_kyc_apk": 0.0006
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 23.84
+  },
+  {
+   "ts_min": 10.01,
+   "true_stage": "extraction",
+   "input": {
+    "event": "CALL_END",
+    "ts": 600.72,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 1523 0311"
+   },
+   "event_index": 9,
+   "event": "CALL_END",
+   "workflow": {
+    "p_scam_in_progress": 0.9955,
+    "stage": "extraction",
+    "typology_top3": {
+     "voice_clone_relative": 0.9938,
+     "genuine_urgent_family": 0.0049,
+     "fake_kyc_apk": 0.0008
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 24.81
+  }
+ ]
+}

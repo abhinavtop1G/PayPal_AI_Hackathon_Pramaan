@@ -1,0 +1,773 @@
+{
+ "session_id": "demo-student-legit_investing",
+ "typology": "legit_investing",
+ "persona": "student",
+ "is_scam": false,
+ "start_time": "2026-03-15T11:00:00",
+ "user": {
+  "avg_txn_amount": 402.81,
+  "age_group": "18-25"
+ },
+ "extraction_ts_min": null,
+ "timeline": [
+  {
+   "ts_min": 0.0,
+   "true_stage": "none",
+   "input": {
+    "event": "SMS_RECEIVED",
+    "ts": 0.0,
+    "sms_sender_kind": "bank_shortcode",
+    "sms_has_link": true
+   },
+   "event_index": 0,
+   "event": "SMS_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.29594,
+    "stage": "none",
+    "typology_top3": {
+     "urgent_bill": 0.3212,
+     "fake_kyc_apk": 0.3008,
+     "bank_app_update": 0.2889
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 22.03
+  },
+  {
+   "ts_min": 7.93,
+   "true_stage": "none",
+   "input": {
+    "event": "LINK_CLICK",
+    "ts": 475.86
+   },
+   "event_index": 1,
+   "event": "LINK_CLICK",
+   "workflow": {
+    "p_scam_in_progress": 0.39353,
+    "stage": "none",
+    "typology_top3": {
+     "fake_kyc_apk": 0.4415,
+     "bank_app_update": 0.2951,
+     "urgent_bill": 0.2336
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 20.98
+  },
+  {
+   "ts_min": 33.93,
+   "true_stage": "none",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 2035.63
+   },
+   "event_index": 2,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.0696,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.8634,
+     "investment_task": 0.0665,
+     "urgent_bill": 0.0308
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 20.73
+  },
+  {
+   "ts_min": 33.95,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 2036.73,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079
+   },
+   "event_index": 3,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.00305,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9851,
+     "routine": 0.0074,
+     "investment_task": 0.0037
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 21.51
+  },
+  {
+   "ts_min": 34.41,
+   "true_stage": "none",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 2064.57,
+    "bio_pressure": 0.5193,
+    "bio_swipe_velocity": 1.1401,
+    "bio_tap_interval_ms": 480.7699,
+    "bio_hesitation_ms": 974.7553,
+    "bio_orientation_var": 0.032,
+    "gestures_n": 10
+   },
+   "event_index": 4,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.00217,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9921,
+     "routine": 0.0058,
+     "investment_task": 0.0015
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": -1.4079,
+     "matches_profile": true,
+     "fused_score": 2.1146
+    }
+   },
+   "latency_ms": 26.84
+  },
+  {
+   "ts_min": 34.43,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 2065.9,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 1029.0
+   },
+   "event_index": 5,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.00085,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9966,
+     "routine": 0.0021,
+     "investment_task": 0.0009
+    }
+   },
+   "decision": {
+    "action": "allow",
+    "notify": false,
+    "fused_risk": 0.0,
+    "ev_choice": "allow",
+    "suppressed_by": null,
+    "reasons": [],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.0009,
+     "mule_score": 0.079,
+     "bio_dev": -1.4079,
+     "log_amt_vs_avg": 0.9379,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.079
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 40.8
+  },
+  {
+   "ts_min": 34.49,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 2069.58,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 1029.0
+   },
+   "event_index": 6,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.00072,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9974,
+     "routine": 0.0014,
+     "investment_task": 0.0009
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 26.42
+  },
+  {
+   "ts_min": 1467.9,
+   "true_stage": "none",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 88073.86
+   },
+   "event_index": 7,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.00043,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9985,
+     "routine": 0.0009,
+     "investment_task": 0.0004
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 33.35
+  },
+  {
+   "ts_min": 1467.91,
+   "true_stage": "none",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 88074.4,
+    "bio_pressure": 0.4798,
+    "bio_swipe_velocity": 1.0514,
+    "bio_tap_interval_ms": 499.5545,
+    "bio_hesitation_ms": 1041.5744,
+    "bio_orientation_var": 0.0374,
+    "gestures_n": 10
+   },
+   "event_index": 8,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.00033,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9982,
+     "routine": 0.0012,
+     "investment_task": 0.0005
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": 0.8942,
+     "matches_profile": false,
+     "fused_score": -0.1876
+    }
+   },
+   "latency_ms": 39.38
+  },
+  {
+   "ts_min": 1467.94,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 88076.13,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 1441.0
+   },
+   "event_index": 9,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.00018,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.999,
+     "routine": 0.0006,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": {
+    "action": "allow",
+    "notify": false,
+    "fused_risk": 1e-06,
+    "ev_choice": "allow",
+    "suppressed_by": null,
+    "reasons": [
+     "touch behaviour differs from your usual pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.0002,
+     "mule_score": 0.079,
+     "bio_dev": 0.8942,
+     "log_amt_vs_avg": 1.2746,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.079
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 51.22
+  },
+  {
+   "ts_min": 1468.06,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 88083.66,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 1441.0
+   },
+   "event_index": 10,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.00018,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9991,
+     "routine": 0.0005,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 47.32
+  },
+  {
+   "ts_min": 2251.28,
+   "true_stage": "none",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 135076.73,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 1512.0
+   },
+   "event_index": 11,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.00018,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9992,
+     "routine": 0.0004,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 46.04
+  },
+  {
+   "ts_min": 3276.4,
+   "true_stage": "none",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 196583.93
+   },
+   "event_index": 12,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.0002,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9993,
+     "routine": 0.0003,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 23.69
+  },
+  {
+   "ts_min": 3276.43,
+   "true_stage": "none",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 196585.75,
+    "bio_pressure": 0.5325,
+    "bio_swipe_velocity": 1.379,
+    "bio_tap_interval_ms": 410.8322,
+    "bio_hesitation_ms": 1035.7542,
+    "bio_orientation_var": 0.0348,
+    "gestures_n": 10
+   },
+   "event_index": 13,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.00018,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9988,
+     "routine": 0.0007,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": 0.2212,
+     "matches_profile": false,
+     "fused_score": 0.4855
+    }
+   },
+   "latency_ms": 26.16
+  },
+  {
+   "ts_min": 3276.46,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 196587.88,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 4119.0
+   },
+   "event_index": 14,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.00013,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9992,
+     "routine": 0.0004,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": {
+    "action": "allow",
+    "notify": false,
+    "fused_risk": 1e-06,
+    "ev_choice": "allow",
+    "suppressed_by": null,
+    "reasons": [
+     "touch behaviour differs from your usual pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.0001,
+     "mule_score": 0.079,
+     "bio_dev": 0.2212,
+     "log_amt_vs_avg": 2.3249,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.079
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 51.24
+  },
+  {
+   "ts_min": 3276.57,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 196594.2,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 4119.0
+   },
+   "event_index": 15,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.00015,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9991,
+     "investment_task": 0.0003,
+     "routine": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 48.83
+  },
+  {
+   "ts_min": 3601.53,
+   "true_stage": "none",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 216091.79,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 4335.0
+   },
+   "event_index": 16,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.0002,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9991,
+     "investment_task": 0.0004,
+     "routine": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 53.93
+  },
+  {
+   "ts_min": 4102.73,
+   "true_stage": "none",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 246163.82
+   },
+   "event_index": 17,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.00018,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9992,
+     "investment_task": 0.0003,
+     "routine": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 23.39
+  },
+  {
+   "ts_min": 4102.75,
+   "true_stage": "none",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 246165.28,
+    "bio_pressure": 0.5598,
+    "bio_swipe_velocity": 1.3047,
+    "bio_tap_interval_ms": 445.1335,
+    "bio_hesitation_ms": 959.5108,
+    "bio_orientation_var": 0.0319,
+    "gestures_n": 10
+   },
+   "event_index": 18,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.00016,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9991,
+     "routine": 0.0004,
+     "investment_task": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": -1.9904,
+     "matches_profile": true,
+     "fused_score": 2.697
+    }
+   },
+   "latency_ms": 33.02
+  },
+  {
+   "ts_min": 4102.78,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 246166.93,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 12092.0
+   },
+   "event_index": 19,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.00016,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9989,
+     "investment_task": 0.0004,
+     "routine": 0.0003
+    }
+   },
+   "decision": {
+    "action": "allow",
+    "notify": false,
+    "fused_risk": 0.0,
+    "ev_choice": "allow",
+    "suppressed_by": null,
+    "reasons": [],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.0002,
+     "mule_score": 0.079,
+     "bio_dev": -1.9904,
+     "log_amt_vs_avg": 3.4018,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.079
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 44.04
+  },
+  {
+   "ts_min": 4102.83,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 246169.57,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 12092.0
+   },
+   "event_index": 20,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.00017,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9985,
+     "investment_task": 0.0006,
+     "hospital_emergency": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 43.1
+  },
+  {
+   "ts_min": 4717.63,
+   "true_stage": "none",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 283057.68,
+    "payee_id": "M00013",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1468.0,
+    "payee_mule_score": 0.079,
+    "amount": 14302.0
+   },
+   "event_index": 21,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.00024,
+    "stage": "none",
+    "typology_top3": {
+     "legit_investing": 0.9985,
+     "investment_task": 0.0006,
+     "hospital_emergency": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 46.78
+  }
+ ]
+}

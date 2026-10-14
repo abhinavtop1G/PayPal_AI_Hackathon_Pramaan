@@ -1,0 +1,1018 @@
+{
+ "session_id": "demo-senior-digital_arrest",
+ "typology": "digital_arrest",
+ "persona": "senior",
+ "is_scam": true,
+ "start_time": "2026-03-15T11:00:00",
+ "user": {
+  "avg_txn_amount": 1126.52,
+  "age_group": "60+"
+ },
+ "extraction_ts_min": 65.11,
+ "timeline": [
+  {
+   "ts_min": 0.0,
+   "true_stage": "contact",
+   "input": {
+    "event": "CALL_START",
+    "ts": 0.0,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 7096525492"
+   },
+   "event_index": 0,
+   "event": "CALL_START",
+   "workflow": {
+    "p_scam_in_progress": 0.31713,
+    "stage": "none",
+    "typology_top3": {
+     "new_payee_service": 0.3496,
+     "voice_clone_relative": 0.1584,
+     "digital_arrest": 0.1486
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 18.53
+  },
+  {
+   "ts_min": 0.79,
+   "true_stage": "contact",
+   "input": {
+    "event": "CALL_END",
+    "ts": 47.38,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 7096525492"
+   },
+   "event_index": 1,
+   "event": "CALL_END",
+   "workflow": {
+    "p_scam_in_progress": 0.99506,
+    "stage": "contact",
+    "typology_top3": {
+     "digital_arrest": 0.9858,
+     "voice_clone_relative": 0.0075,
+     "support_install": 0.0017
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.76
+  },
+  {
+   "ts_min": 4.36,
+   "true_stage": "contact",
+   "input": {
+    "event": "CALL_START",
+    "ts": 261.88,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 2,
+   "event": "CALL_START",
+   "workflow": {
+    "p_scam_in_progress": 0.99698,
+    "stage": "contact",
+    "typology_top3": {
+     "digital_arrest": 0.993,
+     "voice_clone_relative": 0.0044,
+     "support_install": 0.0009
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 18.71
+  },
+  {
+   "ts_min": 6.36,
+   "true_stage": "pretext",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 381.65,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 1.09,
+    "bio_swipe_velocity": 0.8973,
+    "bio_tap_interval_ms": 665.5696,
+    "bio_hesitation_ms": 3506.7646,
+    "bio_orientation_var": 0.0822,
+    "gestures_n": 10
+   },
+   "event_index": 3,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99955,
+    "stage": "pretext",
+    "typology_top3": {
+     "digital_arrest": 0.9986,
+     "fake_kyc_apk": 0.0005,
+     "hospital_emergency": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.0446,
+     "matches_profile": true,
+     "fused_score": 1.7512
+    }
+   },
+   "latency_ms": 17.11
+  },
+  {
+   "ts_min": 18.02,
+   "true_stage": "pretext",
+   "input": {
+    "event": "APP_INSTALL",
+    "ts": 1081.02,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "app_source": "play_store"
+   },
+   "event_index": 4,
+   "event": "APP_INSTALL",
+   "workflow": {
+    "p_scam_in_progress": 0.99901,
+    "stage": "pretext",
+    "typology_top3": {
+     "digital_arrest": 0.998,
+     "fake_kyc_apk": 0.0006,
+     "hospital_emergency": 0.0004
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.53
+  },
+  {
+   "ts_min": 25.81,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 1548.67,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 5,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99974,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9992,
+     "hospital_emergency": 0.0006,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.73
+  },
+  {
+   "ts_min": 25.86,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BALANCE_CHECK",
+    "ts": 1551.66,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 6,
+   "event": "BALANCE_CHECK",
+   "workflow": {
+    "p_scam_in_progress": 0.99986,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9994,
+     "hospital_emergency": 0.0004,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 14.09
+  },
+  {
+   "ts_min": 25.87,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 1552.21,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.8158,
+    "bio_swipe_velocity": 1.1736,
+    "bio_tap_interval_ms": 800.7747,
+    "bio_hesitation_ms": 4479.0363,
+    "bio_orientation_var": 0.1013,
+    "gestures_n": 10
+   },
+   "event_index": 7,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99988,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "hospital_emergency": 0.0002,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.3461,
+     "matches_profile": true,
+     "fused_score": 2.0527
+    }
+   },
+   "latency_ms": 14.58
+  },
+  {
+   "ts_min": 53.74,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 3224.5,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 8,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99986,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "hospital_emergency": 0.0003,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 14.04
+  },
+  {
+   "ts_min": 53.76,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BALANCE_CHECK",
+    "ts": 3225.46,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 9,
+   "event": "BALANCE_CHECK",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "hospital_emergency": 0.0003,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 15.1
+  },
+  {
+   "ts_min": 53.79,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 3227.34,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.7022,
+    "bio_swipe_velocity": 0.964,
+    "bio_tap_interval_ms": 825.0694,
+    "bio_hesitation_ms": 3577.7083,
+    "bio_orientation_var": 0.1152,
+    "gestures_n": 10
+   },
+   "event_index": 10,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "hospital_emergency": 0.0002,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.1875,
+     "matches_profile": true,
+     "fused_score": 1.8941
+    }
+   },
+   "latency_ms": 15.17
+  },
+  {
+   "ts_min": 64.3,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 3857.83,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 11,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99986,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "hospital_emergency": 0.0003,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.15
+  },
+  {
+   "ts_min": 64.33,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BALANCE_CHECK",
+    "ts": 3859.78,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 12,
+   "event": "BALANCE_CHECK",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "hospital_emergency": 0.0003,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.07
+  },
+  {
+   "ts_min": 64.36,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 3861.53,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.9637,
+    "bio_swipe_velocity": 0.9655,
+    "bio_tap_interval_ms": 930.7168,
+    "bio_hesitation_ms": 5075.84,
+    "bio_orientation_var": 0.1095,
+    "gestures_n": 10
+   },
+   "event_index": 13,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.9999,
+    "stage": "isolation",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "hospital_emergency": 0.0002,
+     "investment_task": 0.0
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.4381,
+     "matches_profile": true,
+     "fused_score": 2.1447
+    }
+   },
+   "latency_ms": 14.88
+  },
+  {
+   "ts_min": 64.38,
+   "true_stage": "extraction",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 3862.51,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 14,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99988,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 13.21
+  },
+  {
+   "ts_min": 64.39,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 3863.56,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00008",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 50.0,
+    "payee_mule_score": 0.383
+   },
+   "event_index": 15,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.99992,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 12.96
+  },
+  {
+   "ts_min": 65.09,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 3905.16,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.8444,
+    "bio_swipe_velocity": 1.0192,
+    "bio_tap_interval_ms": 899.5643,
+    "bio_hesitation_ms": 4510.9708,
+    "bio_orientation_var": 0.1513,
+    "gestures_n": 10
+   },
+   "event_index": 16,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99992,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "voice_clone_relative": 0.0001,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.3817,
+     "matches_profile": true,
+     "fused_score": 2.0884
+    }
+   },
+   "latency_ms": 21.17
+  },
+  {
+   "ts_min": 65.11,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 3906.38,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00008",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 50.0,
+    "payee_mule_score": 0.383,
+    "amount": 12000.0
+   },
+   "event_index": 17,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99991,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": true,
+    "fused_risk": 0.975285,
+    "ev_choice": "hold",
+    "suppressed_by": null,
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "This payment is on hold and your bank will call you on your registered number. Police, CBI or customs never ask you to transfer money or stay on a video call. This matches a 'digital arrest' scam. Hang up and call 1930.",
+    "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। पुलिस, CBI या कस्टम कभी भी पैसे ट्रांसफ़र करने या वीडियो कॉल पर बने रहने को नहीं कहते। यह 'डिजिटल अरेस्ट' ठगी जैसा है। कॉल काटें और 1930 पर कॉल करें।",
+    "components": {
+     "gru_p": 0.9999,
+     "mule_score": 0.383,
+     "bio_dev": -1.3817,
+     "log_amt_vs_avg": 2.3658,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.383
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 33.64
+  },
+  {
+   "ts_min": 65.21,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 3912.42,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00008",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 50.0,
+    "payee_mule_score": 0.383,
+    "amount": 12000.0
+   },
+   "event_index": 18,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99991,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 21.54
+  },
+  {
+   "ts_min": 75.67,
+   "true_stage": "extraction",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 4540.37,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 19,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 20.84
+  },
+  {
+   "ts_min": 75.7,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 4541.77,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.8869,
+    "bio_swipe_velocity": 0.9873,
+    "bio_tap_interval_ms": 869.9862,
+    "bio_hesitation_ms": 4133.0307,
+    "bio_orientation_var": 0.1086,
+    "gestures_n": 10
+   },
+   "event_index": 20,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "voice_clone_relative": 0.0001,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.2166,
+     "matches_profile": true,
+     "fused_score": 1.9232
+    }
+   },
+   "latency_ms": 23.25
+  },
+  {
+   "ts_min": 75.71,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 4542.86,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00008",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 50.0,
+    "payee_mule_score": 0.383,
+    "amount": 16000.0
+   },
+   "event_index": 21,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.975703,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9999,
+     "mule_score": 0.383,
+     "bio_dev": -1.2166,
+     "log_amt_vs_avg": 2.6535,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.383
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 38.31
+  },
+  {
+   "ts_min": 75.79,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 4547.2,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00008",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 50.0,
+    "payee_mule_score": 0.383,
+    "amount": 16000.0
+   },
+   "event_index": 22,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99989,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0003,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 36.14
+  },
+  {
+   "ts_min": 92.56,
+   "true_stage": "extraction",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 5553.83,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 23,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99987,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 35.77
+  },
+  {
+   "ts_min": 92.59,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 5555.37,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00009",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 15.0,
+    "payee_mule_score": 0.104
+   },
+   "event_index": 24,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.99985,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0003,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 31.39
+  },
+  {
+   "ts_min": 92.85,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 5571.13,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "bio_pressure": 0.9788,
+    "bio_swipe_velocity": 0.8222,
+    "bio_tap_interval_ms": 758.482,
+    "bio_hesitation_ms": 4498.7084,
+    "bio_orientation_var": 0.1477,
+    "gestures_n": 10
+   },
+   "event_index": 25,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99986,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9997,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -1.8392,
+     "matches_profile": true,
+     "fused_score": 2.5458
+    }
+   },
+   "latency_ms": 16.64
+  },
+  {
+   "ts_min": 92.87,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 5572.22,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00009",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 15.0,
+    "payee_mule_score": 0.104,
+    "amount": 22926.0
+   },
+   "event_index": 26,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99985,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.975285,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9999,
+     "mule_score": 0.104,
+     "bio_dev": -1.8392,
+     "log_amt_vs_avg": 3.0131,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.104
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 27.06
+  },
+  {
+   "ts_min": 92.93,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 5575.99,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922",
+    "payee_id": "X00009",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 15.0,
+    "payee_mule_score": 0.104,
+    "amount": 22926.0
+   },
+   "event_index": 27,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99986,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9995,
+     "voice_clone_relative": 0.0003,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 22.53
+  },
+  {
+   "ts_min": 107.07,
+   "true_stage": "extraction",
+   "input": {
+    "event": "CALL_END",
+    "ts": 6424.22,
+    "caller_kind": "voip_intl",
+    "call_video": false,
+    "caller_number": "+44 20 3991 8922"
+   },
+   "event_index": 28,
+   "event": "CALL_END",
+   "workflow": {
+    "p_scam_in_progress": 0.99981,
+    "stage": "extraction",
+    "typology_top3": {
+     "digital_arrest": 0.9996,
+     "voice_clone_relative": 0.0002,
+     "investment_task": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 21.96
+  }
+ ]
+}

@@ -1,0 +1,262 @@
+{
+ "session_id": "demo-professional-genuine_urgent_family",
+ "typology": "genuine_urgent_family",
+ "persona": "professional",
+ "is_scam": false,
+ "start_time": "2026-03-15T11:00:00",
+ "user": {
+  "avg_txn_amount": 4311.5,
+  "age_group": "26-40"
+ },
+ "extraction_ts_min": null,
+ "timeline": [
+  {
+   "ts_min": 0.0,
+   "true_stage": "none",
+   "input": {
+    "event": "CALL_START",
+    "ts": 0.0,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170"
+   },
+   "event_index": 0,
+   "event": "CALL_START",
+   "workflow": {
+    "p_scam_in_progress": 0.31713,
+    "stage": "none",
+    "typology_top3": {
+     "new_payee_service": 0.3496,
+     "voice_clone_relative": 0.1584,
+     "digital_arrest": 0.1486
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 22.14
+  },
+  {
+   "ts_min": 1.23,
+   "true_stage": "none",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 73.63,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170"
+   },
+   "event_index": 1,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.10151,
+    "stage": "none",
+    "typology_top3": {
+     "new_payee_service": 0.6143,
+     "genuine_urgent_family": 0.2483,
+     "voice_clone_relative": 0.1336
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 21.96
+  },
+  {
+   "ts_min": 1.27,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 76.5,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170",
+    "payee_id": "P000195",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1671.0,
+    "payee_mule_score": 0.365
+   },
+   "event_index": 2,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.00678,
+    "stage": "none",
+    "typology_top3": {
+     "new_payee_service": 0.8252,
+     "genuine_urgent_family": 0.1638,
+     "voice_clone_relative": 0.0078
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 28.11
+  },
+  {
+   "ts_min": 1.54,
+   "true_stage": "none",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 92.39,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170",
+    "bio_pressure": 0.3982,
+    "bio_swipe_velocity": 1.6293,
+    "bio_tap_interval_ms": 313.1678,
+    "bio_hesitation_ms": 839.0464,
+    "bio_orientation_var": 0.0417,
+    "gestures_n": 10
+   },
+   "event_index": 3,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.01962,
+    "stage": "none",
+    "typology_top3": {
+     "genuine_urgent_family": 0.9773,
+     "voice_clone_relative": 0.0142,
+     "new_payee_service": 0.0053
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": {
+     "behavioural_deviation": -0.9703,
+     "matches_profile": true,
+     "fused_score": 1.6769
+    }
+   },
+   "latency_ms": 28.94
+  },
+  {
+   "ts_min": 1.59,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 95.2,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170",
+    "payee_id": "P000195",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1671.0,
+    "payee_mule_score": 0.365,
+    "amount": 70000.0
+   },
+   "event_index": 4,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.03209,
+    "stage": "none",
+    "typology_top3": {
+     "genuine_urgent_family": 0.9778,
+     "voice_clone_relative": 0.0173,
+     "new_payee_service": 0.0024
+    }
+   },
+   "decision": {
+    "action": "allow",
+    "notify": false,
+    "fused_risk": 0.000617,
+    "ev_choice": "allow",
+    "suppressed_by": null,
+    "reasons": [
+     "receiving account is linked to suspected mule activity"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.0321,
+     "mule_score": 0.365,
+     "bio_dev": -0.9703,
+     "log_amt_vs_avg": 2.7872,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 1.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.365
+   },
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 36.98
+  },
+  {
+   "ts_min": 1.66,
+   "true_stage": "none",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 99.45,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170",
+    "payee_id": "P000195",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1671.0,
+    "payee_mule_score": 0.365,
+    "amount": 70000.0
+   },
+   "event_index": 5,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.0475,
+    "stage": "none",
+    "typology_top3": {
+     "genuine_urgent_family": 0.9599,
+     "voice_clone_relative": 0.0335,
+     "new_payee_service": 0.0029
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 31.78
+  },
+  {
+   "ts_min": 3.16,
+   "true_stage": "none",
+   "input": {
+    "event": "CALL_END",
+    "ts": 189.59,
+    "caller_kind": "unknown",
+    "call_video": false,
+    "caller_number": "+91 9379294170"
+   },
+   "event_index": 6,
+   "event": "CALL_END",
+   "workflow": {
+    "p_scam_in_progress": 0.01779,
+    "stage": "none",
+    "typology_top3": {
+     "genuine_urgent_family": 0.9747,
+     "voice_clone_relative": 0.0134,
+     "new_payee_service": 0.0087
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": false,
+    "touch": null
+   },
+   "latency_ms": 32.4
+  }
+ ]
+}

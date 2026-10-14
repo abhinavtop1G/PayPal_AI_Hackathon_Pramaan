@@ -1,0 +1,926 @@
+{
+ "session_id": "demo-student-investment_task",
+ "typology": "investment_task",
+ "persona": "student",
+ "is_scam": true,
+ "start_time": "2026-03-15T11:00:00",
+ "user": {
+  "avg_txn_amount": 402.81,
+  "age_group": "18-25"
+ },
+ "extraction_ts_min": 1670.99,
+ "timeline": [
+  {
+   "ts_min": 0.0,
+   "true_stage": "contact",
+   "input": {
+    "event": "SMS_RECEIVED",
+    "ts": 0.0,
+    "sms_sender_kind": "unknown",
+    "sms_has_link": true
+   },
+   "event_index": 0,
+   "event": "SMS_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.30871,
+    "stage": "none",
+    "typology_top3": {
+     "routine": 0.2206,
+     "fake_kyc_apk": 0.1737,
+     "investment_task": 0.1641
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 26.67
+  },
+  {
+   "ts_min": 80.92,
+   "true_stage": "pretext",
+   "input": {
+    "event": "LINK_CLICK",
+    "ts": 4855.45
+   },
+   "event_index": 1,
+   "event": "LINK_CLICK",
+   "workflow": {
+    "p_scam_in_progress": 0.91378,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.8841,
+     "legit_investing": 0.0739,
+     "fake_kyc_apk": 0.0242
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 25.29
+  },
+  {
+   "ts_min": 93.85,
+   "true_stage": "pretext",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 5630.76
+   },
+   "event_index": 2,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.93309,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9329,
+     "legit_investing": 0.064,
+     "fake_kyc_apk": 0.0011
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 24.93
+  },
+  {
+   "ts_min": 93.89,
+   "true_stage": "pretext",
+   "input": {
+    "event": "PAYEE_ADD",
+    "ts": 5633.31,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665
+   },
+   "event_index": 3,
+   "event": "PAYEE_ADD",
+   "workflow": {
+    "p_scam_in_progress": 0.9963,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9958,
+     "legit_investing": 0.0024,
+     "fake_kyc_apk": 0.0011
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 23.62
+  },
+  {
+   "ts_min": 94.34,
+   "true_stage": "pretext",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 5660.54,
+    "bio_pressure": 0.7939,
+    "bio_swipe_velocity": 1.0557,
+    "bio_tap_interval_ms": 366.6389,
+    "bio_hesitation_ms": 1324.3992,
+    "bio_orientation_var": 0.0323,
+    "gestures_n": 10
+   },
+   "event_index": 4,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99674,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9971,
+     "legit_investing": 0.0015,
+     "fake_kyc_apk": 0.0008
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": 0.561,
+     "matches_profile": false,
+     "fused_score": 0.1456
+    }
+   },
+   "latency_ms": 36.78
+  },
+  {
+   "ts_min": 94.37,
+   "true_stage": "pretext",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 5662.14,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 958.0
+   },
+   "event_index": 5,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99699,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9975,
+     "legit_investing": 0.0015,
+     "fake_kyc_apk": 0.0004
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": true,
+    "fused_risk": 0.986077,
+    "ev_choice": "hold",
+    "suppressed_by": null,
+    "reasons": [
+     "session follows a known scam pattern",
+     "touch behaviour differs from your usual pattern"
+    ],
+    "message_en": "This payment is on hold and your bank will call you on your registered number. Platforms that ask for 'tax' or 'upgrade fees' before you can withdraw earnings are a common investment scam. Do not send more money.",
+    "message_hi": "यह भुगतान रोका गया है और आपका बैंक आपके रजिस्टर्ड नंबर पर कॉल करेगा। जो प्लेटफ़ॉर्म कमाई निकालने से पहले 'टैक्स' या 'अपग्रेड फ़ीस' माँगते हैं, वह आम निवेश ठगी है। और पैसे न भेजें।",
+    "components": {
+     "gru_p": 0.997,
+     "mule_score": 0.665,
+     "bio_dev": 0.561,
+     "log_amt_vs_avg": 0.8664,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 35.09
+  },
+  {
+   "ts_min": 94.44,
+   "true_stage": "pretext",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 5666.65,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 958.0
+   },
+   "event_index": 6,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99749,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9978,
+     "legit_investing": 0.0015,
+     "fake_kyc_apk": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 29.42
+  },
+  {
+   "ts_min": 129.08,
+   "true_stage": "pretext",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 7745.09,
+    "payee_id": "X00002",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 5.0,
+    "payee_mule_score": 0.313,
+    "amount": 1181.0
+   },
+   "event_index": 7,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.99831,
+    "stage": "pretext",
+    "typology_top3": {
+     "investment_task": 0.9983,
+     "legit_investing": 0.0013,
+     "fake_kyc_apk": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 36.13
+  },
+  {
+   "ts_min": 493.35,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 29600.75
+   },
+   "event_index": 8,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99899,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9989,
+     "legit_investing": 0.0007,
+     "digital_arrest": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 31.12
+  },
+  {
+   "ts_min": 493.4,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 29603.74,
+    "bio_pressure": 0.5783,
+    "bio_swipe_velocity": 1.273,
+    "bio_tap_interval_ms": 317.2997,
+    "bio_hesitation_ms": 1199.2313,
+    "bio_orientation_var": 0.0356,
+    "gestures_n": 10
+   },
+   "event_index": 9,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99935,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9992,
+     "legit_investing": 0.0004,
+     "digital_arrest": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": -1.5417,
+     "matches_profile": true,
+     "fused_score": 2.2483
+    }
+   },
+   "latency_ms": 27.35
+  },
+  {
+   "ts_min": 493.41,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 29604.7,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 1494.0
+   },
+   "event_index": 10,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99961,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0003,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.975285,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9996,
+     "mule_score": 0.665,
+     "bio_dev": -1.5417,
+     "log_amt_vs_avg": 1.3107,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 38.84
+  },
+  {
+   "ts_min": 493.5,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 29610.2,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 1494.0
+   },
+   "event_index": 11,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99972,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9996,
+     "digital_arrest": 0.0002,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 29.87
+  },
+  {
+   "ts_min": 604.94,
+   "true_stage": "isolation",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 36296.69,
+    "payee_id": "X00002",
+    "payee_is_merchant": true,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 5.0,
+    "payee_mule_score": 0.313,
+    "amount": 1879.0
+   },
+   "event_index": 12,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.99967,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0003,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 31.7
+  },
+  {
+   "ts_min": 968.09,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 58085.37
+   },
+   "event_index": 13,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99933,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9991,
+     "legit_investing": 0.0004,
+     "digital_arrest": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 28.98
+  },
+  {
+   "ts_min": 968.12,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 58087.12,
+    "bio_pressure": 0.5831,
+    "bio_swipe_velocity": 1.2421,
+    "bio_tap_interval_ms": 410.969,
+    "bio_hesitation_ms": 1210.5913,
+    "bio_orientation_var": 0.0423,
+    "gestures_n": 10
+   },
+   "event_index": 14,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.9993,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9991,
+     "legit_investing": 0.0004,
+     "digital_arrest": 0.0004
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": 0.5129,
+     "matches_profile": false,
+     "fused_score": 0.1937
+    }
+   },
+   "latency_ms": 29.93
+  },
+  {
+   "ts_min": 968.15,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 58088.79,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 3539.0
+   },
+   "event_index": 15,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99952,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9992,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.986077,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern",
+     "touch behaviour differs from your usual pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9995,
+     "mule_score": 0.665,
+     "bio_dev": 0.5129,
+     "log_amt_vs_avg": 2.1731,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 43.73
+  },
+  {
+   "ts_min": 968.21,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 58092.67,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 3539.0
+   },
+   "event_index": 16,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99969,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 52.85
+  },
+  {
+   "ts_min": 1469.41,
+   "true_stage": "isolation",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 88164.7
+   },
+   "event_index": 17,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99943,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.999,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 50.63
+  },
+  {
+   "ts_min": 1469.44,
+   "true_stage": "isolation",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 88166.52,
+    "bio_pressure": 0.6418,
+    "bio_swipe_velocity": 1.3842,
+    "bio_tap_interval_ms": 348.3118,
+    "bio_hesitation_ms": 964.1413,
+    "bio_orientation_var": 0.0396,
+    "gestures_n": 10
+   },
+   "event_index": 18,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.99927,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9991,
+     "legit_investing": 0.0004,
+     "digital_arrest": 0.0003
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": -1.3772,
+     "matches_profile": true,
+     "fused_score": 2.0839
+    }
+   },
+   "latency_ms": 29.72
+  },
+  {
+   "ts_min": 1469.45,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 88167.24,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 7339.0
+   },
+   "event_index": 19,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99947,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9992,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.975285,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9995,
+     "mule_score": 0.665,
+     "bio_dev": -1.3772,
+     "log_amt_vs_avg": 2.9025,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 43.0
+  },
+  {
+   "ts_min": 1469.49,
+   "true_stage": "isolation",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 88169.57,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 7339.0
+   },
+   "event_index": 20,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99968,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9993,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 33.56
+  },
+  {
+   "ts_min": 1557.28,
+   "true_stage": "isolation",
+   "input": {
+    "event": "CREDIT_RECEIVED",
+    "ts": 93436.52,
+    "payee_id": "X00004",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1291.0,
+    "payee_mule_score": 0.592,
+    "amount": 9103.0
+   },
+   "event_index": 21,
+   "event": "CREDIT_RECEIVED",
+   "workflow": {
+    "p_scam_in_progress": 0.9998,
+    "stage": "isolation",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0004,
+     "legit_investing": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 44.82
+  },
+  {
+   "ts_min": 1670.94,
+   "true_stage": "extraction",
+   "input": {
+    "event": "UPI_APP_OPEN",
+    "ts": 100256.31
+   },
+   "event_index": 22,
+   "event": "UPI_APP_OPEN",
+   "workflow": {
+    "p_scam_in_progress": 0.99966,
+    "stage": "extraction",
+    "typology_top3": {
+     "investment_task": 0.9995,
+     "digital_arrest": 0.0002,
+     "legit_investing": 0.0002
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 37.62
+  },
+  {
+   "ts_min": 1670.98,
+   "true_stage": "extraction",
+   "input": {
+    "event": "BIO_WINDOW",
+    "ts": 100258.56,
+    "bio_pressure": 0.6786,
+    "bio_swipe_velocity": 1.3156,
+    "bio_tap_interval_ms": 299.3825,
+    "bio_hesitation_ms": 1019.5823,
+    "bio_orientation_var": 0.0417,
+    "gestures_n": 10
+   },
+   "event_index": 23,
+   "event": "BIO_WINDOW",
+   "workflow": {
+    "p_scam_in_progress": 0.9997,
+    "stage": "extraction",
+    "typology_top3": {
+     "investment_task": 0.9995,
+     "digital_arrest": 0.0002,
+     "fake_kyc_apk": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": {
+     "behavioural_deviation": -1.4227,
+     "matches_profile": true,
+     "fused_score": 2.1294
+    }
+   },
+   "latency_ms": 27.44
+  },
+  {
+   "ts_min": 1670.99,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_ATTEMPT",
+    "ts": 100259.39,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 7000.0
+   },
+   "event_index": 24,
+   "event": "PAYMENT_ATTEMPT",
+   "workflow": {
+    "p_scam_in_progress": 0.99975,
+    "stage": "extraction",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0003,
+     "fake_kyc_apk": 0.0002
+    }
+   },
+   "decision": {
+    "action": "hold",
+    "notify": false,
+    "fused_risk": 0.975285,
+    "ev_choice": "hold",
+    "suppressed_by": "session_on_hold",
+    "reasons": [
+     "session follows a known scam pattern"
+    ],
+    "message_en": "",
+    "message_hi": "",
+    "components": {
+     "gru_p": 0.9998,
+     "mule_score": 0.665,
+     "bio_dev": -1.4227,
+     "log_amt_vs_avg": 2.8552,
+     "payee_is_new": 1.0,
+     "caller_reported_active": 0.0,
+     "unknown_call_active": 0.0,
+     "payee_known_trusted": 0.0
+    }
+   },
+   "payee": {
+    "source": "client",
+    "risk": 0.665
+   },
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 48.53
+  },
+  {
+   "ts_min": 1671.1,
+   "true_stage": "extraction",
+   "input": {
+    "event": "PAYMENT_SUCCESS",
+    "ts": 100266.12,
+    "payee_id": "X00000",
+    "payee_is_merchant": false,
+    "payee_is_new": true,
+    "payee_vpa_age_days": 1494.0,
+    "payee_mule_score": 0.665,
+    "amount": 7000.0
+   },
+   "event_index": 25,
+   "event": "PAYMENT_SUCCESS",
+   "workflow": {
+    "p_scam_in_progress": 0.99984,
+    "stage": "extraction",
+    "typology_top3": {
+     "investment_task": 0.9994,
+     "digital_arrest": 0.0003,
+     "fake_kyc_apk": 0.0001
+    }
+   },
+   "decision": null,
+   "signals": {
+    "caller_reported": null,
+    "touch": null
+   },
+   "latency_ms": 44.33
+  }
+ ]
+}
