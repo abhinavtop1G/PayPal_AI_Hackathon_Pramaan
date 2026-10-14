@@ -10,6 +10,7 @@ service calibrates from the HMOG gesture cache and saves checkpoints/serve/bio_c
   * the fused-score threshold at the valid-user EER
 Gestures are the per-gesture features of ml.models.biometrics.data.FEATURES (client-side extraction).
 """
+import os
 import pickle
 import threading
 from pathlib import Path
@@ -26,7 +27,8 @@ from ml.models.biometrics.model import GestureEncoder
 from ml.models.biometrics.windows import make_windows, prepare
 
 ART = Path("ml/models/biometrics/artifacts/hmog_bilstm.pt")
-CALIB = Path("checkpoints/serve/bio_calib.pkl")
+# calibrating needs the HMOG gesture cache once; containers ship the saved file and point BIO_CALIB at it
+CALIB = Path(os.environ.get("BIO_CALIB", "checkpoints/serve/bio_calib.pkl"))
 LENGTHS = (10, 20)
 
 
@@ -123,7 +125,15 @@ class BioScorer:
         """Batched `verify(...)["behavioural_deviation"]` for many (enrolled user, n-gesture window) pairs."""
         if not windows:
             return np.zeros(0)
-        w = np.stack([self._z(g)[-n:] for g in windows])
+        return self._deviation(user_ids, np.stack([self._z(g)[-n:] for g in windows]), n)
+
+    def deviation_arrays(self, user_ids: list[str], x: np.ndarray, batch: int = 8192) -> np.ndarray:
+        """`deviation_many` for raw gesture arrays [W, n, len(FEATURES)] (NaN = missing feature), in batches."""
+        n = x.shape[1]
+        z = np.nan_to_num(np.clip((x - self.mean) / self.std, -6, 6), nan=0.0).astype("float32")
+        return np.concatenate([self._deviation(user_ids[i:i + batch], z[i:i + batch], n) for i in range(0, len(z), batch)])
+
+    def _deviation(self, user_ids: list[str], w: np.ndarray, n: int) -> np.ndarray:
         c = self.calib[n]
         e_lstm = _unit(self._lstm(w))
         e_lda = _unit(self._lda(n, w))
