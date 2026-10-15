@@ -138,6 +138,10 @@ class AuthNetwork(BaseModel):
 class AuthBehaviour(BaseModel):
     gestures: list[dict[str, float | None]] | None = Field(
         None, description="last 10-20 touch gestures (ml.models.biometrics.data.FEATURES), verified against the user's enrolled profile")
+    keystrokes: list[float] | None = Field(
+        None, min_length=31, max_length=31,
+        description="one password / PIN attempt: 31 key timings in seconds (per key pair: hold, down-down, up-down; "
+                    "then the last key's hold; ml.models.keystroke.data.COLUMNS), verified against the typing profile")
     time_to_submit_s: float | None = Field(None, ge=0, description="seconds from opening the payment screen to submit")
     input_events: int | None = Field(None, ge=0, description="touch / key / pointer events before submit")
     unknown_call_active: bool = Field(False, description="the phone is on a call with a number not in contacts")
@@ -162,6 +166,11 @@ class AuthRequest(BaseModel):
     network: AuthNetwork = AuthNetwork()
     behaviour: AuthBehaviour = AuthBehaviour()
     transaction: AuthTransaction = AuthTransaction()
+
+
+class KeystrokeEnroll(BaseModel):
+    user_id: str
+    attempts: list[list[float]] = Field(min_length=5, description="password / PIN attempts, 31 timings each")
 
 
 class ChallengeResult(BaseModel):
