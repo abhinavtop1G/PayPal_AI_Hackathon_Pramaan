@@ -90,8 +90,8 @@ def test_scorer_round_trip():
 def test_auth_api_uses_typing():
     import os
     from fastapi.testclient import TestClient
-    os.environ["BIOS_SERVICES"] = "keystroke,auth"
-    os.environ["BIOS_AUDIT_DB"] = "checkpoints/test_audit_ks.sqlite"
+    os.environ["PRAMAAN_SERVICES"] = "keystroke,auth"
+    os.environ["PRAMAAN_AUDIT_DB"] = "checkpoints/test_audit_ks.sqlite"
     from backend.app import app
     try:
         with TestClient(app) as c:
@@ -104,4 +104,4 @@ def test_auth_api_uses_typing():
             bad = c.post("/v1/keystroke/enroll", json={"user_id": "x", "attempts": [[0.1] * 31] * 2})
             assert bad.status_code == 422
     finally:
-        os.environ.pop("BIOS_SERVICES", None)
+        os.environ.pop("PRAMAAN_SERVICES", None)

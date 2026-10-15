@@ -1,14 +1,14 @@
-# BIOS transaction-authentication API — CPU image for Google Cloud Run (or any container host).
-#   docker build -t bios-auth .
-#   docker run -p 8080:8080 -e BIOS_API_KEYS=dev-key bios-auth
+# PRAMAAN transaction-authentication API — CPU image for Google Cloud Run (or any container host).
+#   docker build -t pramaan-auth .
+#   docker run -p 8080:8080 -e PRAMAAN_API_KEYS=dev-key pramaan-auth
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
     PORT=8080 \
     RAKSHAM_DEVICE=cpu \
-    BIOS_SERVICES=biometrics,keystroke,campaign,auth \
+    PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth \
     BIO_CALIB=ml/auth/artifacts/bio_calib.pkl \
-    BIOS_AUDIT_DB=/tmp/audit.sqlite \
+    PRAMAAN_AUDIT_DB=/tmp/audit.sqlite \
     OMP_NUM_THREADS=2
 
 WORKDIR /app

@@ -1,4 +1,4 @@
-/** Shapes of the BIOS authentication API (backend/app.py, ml/auth/engine.py). */
+/** Shapes of the PRAMAAN authentication API (backend/app.py, ml/auth/engine.py). */
 export type Decision = "allow" | "challenge" | "block";
 export type ChallengeType = "sms_otp" | "passkey" | "bank_callback" | "cool_off";
 export type Family = "behaviour" | "device" | "transaction";

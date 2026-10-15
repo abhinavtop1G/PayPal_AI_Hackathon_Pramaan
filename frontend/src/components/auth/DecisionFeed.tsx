@@ -8,7 +8,7 @@ export function DecisionFeed({ rows, stats, live }: { rows: FeedRow[]; stats: Au
   return (
     <Panel eyebrow="Audit log" title="Decision feed" icon={History} tint="var(--color-sys-teal)">
       {!live ? (
-        <p className="text-footnote text-label-tertiary">Connect the console to the API (NEXT_PUBLIC_BIOS_API) to see the live audit feed.</p>
+        <p className="text-footnote text-label-tertiary">Connect the console to the API (NEXT_PUBLIC_PRAMAAN_API) to see the live audit feed.</p>
       ) : (
         <>
           {stats && (

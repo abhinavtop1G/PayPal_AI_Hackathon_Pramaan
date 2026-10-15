@@ -140,7 +140,7 @@ def latency(events: list[dict], state: AuthState, model: AuthModel, from_day: fl
 
 # ---------------------------------------------------------------------------- report
 def write_report(R: dict, path: Path = REPORTS / "auth.md"):
-    L = ["# Transaction authentication (BIOS) — allow / challenge / block on the account-takeover simulator", "",
+    L = ["# Transaction authentication (PRAMAAN) — allow / challenge / block on the account-takeover simulator", "",
          "> Simulated customers and attacks (ml/auth/sim.py); touch windows are real HMOG gestures scored by the real "
          "BiLSTM + LDA model; challenge efficacies and genuine pass rates are **assumptions** (ml/auth/policy.py). "
          "The numbers validate the service and compare designs; they are not real-world accuracy.", "",

@@ -1,12 +1,12 @@
 """API security for the cloud service: API keys, HMAC request signing with replay protection, rate limiting.
 
 All three are switched on by environment variables (in Cloud Run, from Secret Manager):
-    BIOS_API_KEYS      comma-separated keys; requests to /v1/* must send `X-API-Key`
-    BIOS_HMAC_SECRET   requests must send `X-Timestamp` (unix seconds, within 5 minutes) and
+    PRAMAAN_API_KEYS      comma-separated keys; requests to /v1/* must send `X-API-Key`
+    PRAMAAN_HMAC_SECRET   requests must send `X-Timestamp` (unix seconds, within 5 minutes) and
                        `X-Signature: sha256=<hex HMAC-SHA256(secret, "<timestamp>.<raw body>")>`;
                        a signature is accepted once (replay protection)
-    BIOS_RATE_LIMIT    sustained requests per second per key (or client IP), burst = 2x (default 50)
-    BIOS_OPEN_PATHS    comma-separated path prefixes that skip key/signature checks (the public demo console)
+    PRAMAAN_RATE_LIMIT    sustained requests per second per key (or client IP), burst = 2x (default 50)
+    PRAMAAN_OPEN_PATHS    comma-separated path prefixes that skip key/signature checks (the public demo console)
 Unset keys/secret = open development mode, reported by /health. TLS terminates at the load balancer / Cloud Run.
 Implemented as plain ASGI middleware so the body can be read for the signature and replayed to the endpoint.
 """
@@ -50,10 +50,10 @@ class TokenBucket:
 
 
 def _config() -> dict:
-    return {"keys": {k.strip() for k in os.environ.get("BIOS_API_KEYS", "").split(",") if k.strip()},
-            "secret": os.environ.get("BIOS_HMAC_SECRET") or None,
-            "rate": float(os.environ.get("BIOS_RATE_LIMIT", "50")),
-            "open_paths": tuple(p.strip() for p in os.environ.get("BIOS_OPEN_PATHS", "").split(",") if p.strip())}
+    return {"keys": {k.strip() for k in os.environ.get("PRAMAAN_API_KEYS", "").split(",") if k.strip()},
+            "secret": os.environ.get("PRAMAAN_HMAC_SECRET") or None,
+            "rate": float(os.environ.get("PRAMAAN_RATE_LIMIT", "50")),
+            "open_paths": tuple(p.strip() for p in os.environ.get("PRAMAAN_OPEN_PATHS", "").split(",") if p.strip())}
 
 
 def status() -> dict:
