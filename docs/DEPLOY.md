@@ -26,7 +26,7 @@ All data stays in `asia-south1` (RBI payment-data localisation). Model files shi
 
 ```bash
 source ~/envs/raksham/Scripts/activate
-BIOS_SERVICES=biometrics,campaign,auth uvicorn backend.app:app --port 8000     # http://127.0.0.1:8000/docs
+BIOS_SERVICES=biometrics,keystroke,campaign,auth uvicorn backend.app:app --port 8000     # http://127.0.0.1:8000/docs
 cd frontend && NEXT_PUBLIC_BIOS_API=http://127.0.0.1:8000 npm run dev          # console on http://localhost:3000
 python -m backend.bench_auth --url http://127.0.0.1:8000                       # latency -> backend/reports/auth_latency.md
 ```
@@ -57,7 +57,7 @@ Set `CORS_ORIGINS=https://<console-domain>` when deploying the API so the browse
 
 | variable | meaning |
 |---|---|
-| `BIOS_SERVICES` | services to load (image default `biometrics,campaign,auth`) |
+| `BIOS_SERVICES` | services to load (image default `biometrics,keystroke,campaign,auth`) |
 | `BIOS_API_KEYS` | comma-separated client keys; unset = open development mode |
 | `BIOS_HMAC_SECRET` | request-signing secret; unset = signatures not required |
 | `BIOS_RATE_LIMIT` | requests per second per key / IP (burst 2x) |

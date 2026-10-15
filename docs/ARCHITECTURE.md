@@ -11,11 +11,12 @@
                   │
                   ▼
  enrich ── touch: 10–20 gestures → BiLSTM + LDA verifier vs the user's enrolled profile → bio_dev
+       ├── typing: one password / PIN attempt (31 key timings) → 1D-CNN + scaled Manhattan vs profile → typing_dev
        └── payee: payee-risk model (payee-side layer) if the receiving account is known → payee_risk
                   │
                   ▼
- features (26, causal, ml/auth/features.py) ◄── live state (Redis / memory): user history, device registry,
-   behaviour 5 · device 13 · transaction 8         per-device and per-IP account fan-out, failed challenges
+ features (27, causal, ml/auth/features.py) ◄── live state (Redis / memory): user history, device registry,
+   behaviour 6 · device 13 · transaction 8         per-device and per-IP account fan-out, failed challenges
                   │
                   ▼
  monotone XGBoost → risk (prior-corrected) ─► tree-SHAP: per-signal + per-family contributions
@@ -42,6 +43,7 @@
 | policy | `ml/auth/policy.py` | built: signal-matched challenge, expected-cost decision, escalation, hard rules |
 | service | `ml/auth/engine.py`, `backend/auth_service.py` | built: decision + challenge loop + audit |
 | touch biometrics | `ml/models/biometrics` | built earlier (HMOG, EER 14.4%); calibration shipped so containers need no dataset |
+| typing biometrics | `ml/models/keystroke` | built: 1D-CNN over the 11 keystrokes of a password (CMU data), fused with scaled Manhattan; per-user EER 12.2% on unseen people across sessions (`ml/reports/keystroke_cmu.md`) |
 | payee intelligence | `ml/campaign` | built earlier; used when the receiving account is known |
 | security | `backend/security.py` | built: API keys, HMAC + replay, token-bucket rate limit |
 | audit | `backend/audit.py` | built: async writer, Postgres or SQLite, in-memory feed |
