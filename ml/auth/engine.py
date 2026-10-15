@@ -1,6 +1,7 @@
 """The authentication service object behind POST /v1/authenticate and POST /v1/challenge/verify.
 
-    request -> touch score (BiLSTM + LDA, if gestures and an enrolled profile) -> payee risk (payee intelligence, if
+    request -> touch score (BiLSTM + LDA, if gestures and an enrolled profile) -> typing score (1D-CNN, if keystrokes
+    and an enrolled profile) -> payee risk (payee intelligence, if
     the receiving account is known) -> features (request + live state) -> risk model -> policy -> decision + signals
 
 State changes: every attempt is recorded against its device and IP; an allowed payment, or one whose challenge
@@ -24,12 +25,13 @@ STRONG_CHALLENGES = {"passkey", "bank_callback"}
 
 class AuthEngine:
     def __init__(self, model: AuthModel, policy: AuthPolicy | None = None, state: AuthState | None = None,
-                 bio=None, payee=None, audit=None, reason_min: float = 0.15):
+                 bio=None, payee=None, audit=None, reason_min: float = 0.15, typing=None):
         self.model = model
         self.policy = policy or AuthPolicy()
         self.state = state or AuthState()
         self.bio = bio          # ml.models.biometrics.scorer.BioScorer (optional)
         self.payee = payee      # backend.campaign_service.CampaignService (optional)
+        self.typing = typing    # ml.models.keystroke.scorer.KeystrokeScorer (optional)
         self.audit = audit      # callable(record: dict) (optional)
         self.reason_min = reason_min
 
@@ -40,6 +42,9 @@ class AuthEngine:
         if beh.get("bio_dev") is None and gestures and self.bio is not None and req["user_id"] in self.bio.profiles:
             if len(gestures) >= 10:
                 beh["bio_dev"] = float(self.bio.verify(req["user_id"], gestures)["behavioural_deviation"])
+        keys = beh.pop("keystrokes", None)
+        if beh.get("typing_dev") is None and keys and self.typing is not None and req["user_id"] in self.typing.profiles:
+            beh["typing_dev"] = float(self.typing.verify(req["user_id"], keys)["typing_deviation"])
         tx = req.setdefault("transaction", {})
         if tx.get("payee_risk") is None and tx.get("payee_id") and self.payee is not None and (tx.get("amount") or 0) > 0:
             try:
