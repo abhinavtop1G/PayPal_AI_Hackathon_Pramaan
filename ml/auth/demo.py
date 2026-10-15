@@ -21,6 +21,7 @@ from .geo import ALL_PLACES
 from .state import AuthState, new_user
 
 PACK = Path("ml/auth/artifacts/demo_gestures.json")
+KPACK = Path("ml/auth/artifacts/demo_keystrokes.json")
 USER = "demo-asha"
 HOME, DEVICE, IP = "Ludhiana", "asha-pixel-7", "49.36.112.45"
 PAYEES = ["kirana-sharma", "milk-dairy", "electricity-pspcl", "brother-raj", "pharmacy-apollo", "mobile-recharge"]
@@ -57,9 +58,49 @@ def build_pack(path: Path = PACK, n_windows: int = 24) -> dict:
     return pack
 
 
+def build_keystroke_pack(path: Path = KPACK, n: int = 24) -> dict:
+    """Asha's typing = a held-out CMU subject: enrolment from sessions 1-4, probes from sessions 5-8; 'remote' = another
+    held-out subject; 'coerced' = her own attempts typed slower (assumption, as in ml/auth/sim.py); 'bot' = scripted."""
+    from ml.auth.sim import BOT_TIMINGS
+    from ml.models.keystroke.data import load_cmu, timings
+    df = load_cmu()
+    raw = timings(df)
+    test = json.loads(Path("ml/models/keystroke/artifacts/keystroke_cnn.meta.json").read_text())["split"]["test"]
+    own, other = test[0], test[1]
+    rng = np.random.default_rng(0)
+
+    def sel(u, early):
+        return raw[((df["user"] == u) & ((df["session"] <= 4) if early else (df["session"] >= 5))).to_numpy()]
+
+    def pick(a):
+        return a[rng.choice(len(a), n, replace=False)]
+
+    def r4(a):
+        return np.round(np.asarray(a, dtype=float), 4).tolist()
+
+    lat = np.r_[np.tile([False, True, True], 10), False]
+    coerced = np.array([np.where(lat, x * rng.uniform(1.3, 1.8), x * 1.1) for x in pick(sel(own, False))])
+    h, dd, ud = BOT_TIMINGS
+    bot = np.array([np.r_[np.tile([h, dd, ud], 10), h] * np.exp(rng.normal(0, 0.02, 31)) for _ in range(n)])
+    pack = {"subject": int(own), "other_subject": int(other), "password": ".tie5Roanl",
+            "enrolment": r4(sel(own, True)),
+            "attempts": {"normal": r4(pick(sel(own, False))), "remote": r4(pick(sel(other, False))),
+                         "coerced": r4(coerced), "bot": r4(bot)}}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(pack, separators=(",", ":")))
+    return pack
+
+
 class DemoWorld:
-    def __init__(self, path: Path = PACK):
+    def __init__(self, path: Path = PACK, kpath: Path = KPACK):
         self.pack = json.loads(path.read_text()) if path.exists() else None
+        self.kpack = json.loads(kpath.read_text()) if kpath.exists() else None
+
+    def keystrokes(self, profile: str, rng) -> list[float] | None:
+        if not self.kpack:
+            return None
+        a = self.kpack["attempts"][profile]
+        return a[int(rng.integers(len(a)))]
 
     def gestures(self, profile: str, rng) -> list[dict] | None:
         if not self.pack:
@@ -67,8 +108,8 @@ class DemoWorld:
         w = self.pack["windows"][profile]
         return w[int(rng.integers(len(w)))]
 
-    def seed(self, state: AuthState, bio=None, now: float | None = None, seed: int = 0):
-        """Reset the demo customer to 30 days of ordinary history ending 6 hours ago; enrol her touch profile."""
+    def seed(self, state: AuthState, bio=None, now: float | None = None, seed: int = 0, typer=None):
+        """Reset the demo customer to 30 days of ordinary history ending 6 hours ago; enrol her touch and typing profiles."""
         now = time.time() if now is None else now
         rng = np.random.default_rng(seed)
         state.kv.set(f"user:{USER}", new_user(now - 31 * 86400))
@@ -85,18 +126,23 @@ class DemoWorld:
             state.commit(USER, req, ts)
         if bio is not None and self.pack and USER not in bio.profiles:
             bio.enroll(USER, self.pack["enrolment"])
+        if typer is not None and self.kpack and USER not in typer.profiles:
+            typer.enroll(USER, self.kpack["enrolment"])
 
     def request(self, scenario: str, now: float | None = None) -> dict:
         if scenario not in SCENARIOS:
             raise KeyError(scenario)
         now = time.time() if now is None else now
         rng = np.random.default_rng(zlib.crc32(scenario.encode()))  # same touch window every run: repeatable demo
+        krng = np.random.default_rng(zlib.crc32(scenario.encode()) + 1)
+        typing = {"ato_new_device": "remote", "sim_swap": "remote", "remote_access": "remote", "bot": "bot",
+                  "coerced": "coerced"}.get(scenario, "normal")
         r = {"user_id": USER, "ts": now, "channel": "mobile", "event_type": "payment",
              "device": {"device_id": DEVICE, "platform": "android", "is_emulator": False, "is_rooted": False,
                         "remote_access_app": False, "screen_share_active": False, "sim_change_hours": None},
              "network": {"ip": IP, **_loc(HOME, rng)},
-             "behaviour": {"gestures": self.gestures("normal", rng), "time_to_submit_s": 16.0, "input_events": 34,
-                           "unknown_call_active": False},
+             "behaviour": {"gestures": self.gestures("normal", rng), "keystrokes": self.keystrokes(typing, krng),
+                           "time_to_submit_s": 16.0, "input_events": 34, "unknown_call_active": False},
              "transaction": {"amount": 640.0, "payee_id": "kirana-sharma", "payee_is_merchant": True}}
         d, net, beh, tx = r["device"], r["network"], r["behaviour"], r["transaction"]
         if scenario == "genuine_big_purchase":
@@ -147,6 +193,9 @@ def _loc(city: str, rng) -> dict:
 
 
 if __name__ == "__main__":
+    k = build_keystroke_pack()
+    print(f"keystroke pack: subject {k['subject']}, {len(k['enrolment'])} enrolment attempts -> {KPACK} "
+          f"({KPACK.stat().st_size / 1024:.0f} KB)")
     p = build_pack()
     print(f"demo pack: subject {p['subject']}, {len(p['enrolment'])} enrolment gestures, "
           f"{ {k: len(v) for k, v in p['windows'].items()} } windows -> {PACK} ({PACK.stat().st_size / 1024:.0f} KB)")
