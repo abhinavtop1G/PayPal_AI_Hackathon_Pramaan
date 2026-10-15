@@ -1,0 +1,101 @@
+{
+  "model": "1D-CNN keystroke encoder (CosFace), CMU DSL-StrongPassword",
+  "selected_seed": 1,
+  "valid_per_user_eer_by_seed": {
+    "0": 0.114,
+    "1": 0.1129,
+    "2": 0.1217
+  },
+  "args": {
+    "epochs": 120,
+    "batch_size": 256,
+    "lr": 0.002,
+    "ch": 64,
+    "emb": 64,
+    "dropout": 0.2,
+    "weight_decay": 0.01,
+    "speed": 0.12,
+    "jitter": 0.08,
+    "margin": 0.25,
+    "patience": 25,
+    "seed": 1,
+    "split_seed": 0,
+    "max_steps": 0
+  },
+  "split": {
+    "train": [
+      2,
+      3,
+      4,
+      5,
+      7,
+      10,
+      12,
+      15,
+      16,
+      21,
+      22,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      36,
+      38,
+      40,
+      41,
+      42,
+      43,
+      44,
+      47,
+      49,
+      51,
+      53,
+      55,
+      56
+    ],
+    "valid": [
+      11,
+      13,
+      17,
+      18,
+      46,
+      50,
+      52,
+      54
+    ],
+    "test": [
+      8,
+      19,
+      20,
+      35,
+      37,
+      39,
+      48,
+      57
+    ]
+  },
+  "calibration": {
+    "norm": {
+      "cnn": [
+        0.1362706571817398,
+        0.3338722884654999
+      ],
+      "manhattan": [
+        -60.90780258178711,
+        30.254730224609375
+      ]
+    },
+    "threshold": 0.647423505783081,
+    "valid_eer": 0.1083035714285715
+  },
+  "columns": "ml.models.keystroke.data.COLUMNS (31 timings, seconds)",
+  "enrolment": "mean embedding + scaled-Manhattan stats of past attempts (calibrated with 200 over 4 sessions)",
+  "params": 84096
+}
