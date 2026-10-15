@@ -30,7 +30,7 @@ from .engine import AuthEngine
 from .features import FAMILY, FEATURES, build
 from .model import ART, AuthModel
 from .policy import EFFICACY, GENUINE_PASS, AuthPolicy
-from .sim import ATTACKS, DAY, T0, SimConfig, attach_bio, generate, save_bio_quantiles
+from .sim import ATTACKS, DAY, T0, SimConfig, attach_bio, attach_typing, generate, save_bio_quantiles, save_typing_quantiles
 from .state import AuthState, MemoryKV
 
 REPORTS = Path("ml/reports")
@@ -85,7 +85,7 @@ def replay(events: list[dict], state: AuthState, model: AuthModel, policy: AuthP
         if r["ts"] < start:
             continue
         lab = r["label"]
-        q = {k: (dict(v) if isinstance(v, dict) else v) for k, v in r.items() if k not in ("label", "bio_subject", "bio_profile")}
+        q = {k: (dict(v) if isinstance(v, dict) else v) for k, v in r.items() if k not in ("label", "bio_subject", "bio_profile", "typing_owner", "typing_profile")}
         d = eng.authenticate(q, explain=False)
         final, ctype = d["decision"], d["challenge_type"]
         if final == "challenge":
@@ -129,7 +129,7 @@ def latency(events: list[dict], state: AuthState, model: AuthModel, from_day: fl
     sample = [r for r in events if r["ts"] >= start][:n]
     ms = []
     for r in sample:
-        q = {k: (dict(v) if isinstance(v, dict) else v) for k, v in r.items() if k not in ("label", "bio_subject", "bio_profile")}
+        q = {k: (dict(v) if isinstance(v, dict) else v) for k, v in r.items() if k not in ("label", "bio_subject", "bio_profile", "typing_owner", "typing_profile")}
         t0 = time.perf_counter()
         eng.authenticate(q, explain=True)
         ms.append(1000 * (time.perf_counter() - t0))
@@ -145,7 +145,8 @@ def write_report(R: dict, path: Path = REPORTS / "auth.md"):
          "BiLSTM + LDA model; challenge efficacies and genuine pass rates are **assumptions** (ml/auth/policy.py). "
          "The numbers validate the service and compare designs; they are not real-world accuracy.", "",
          f"Traffic: {R['data']['users']:,} customers, {R['data']['requests']:,} requests over 60 days "
-         f"({R['data']['attack_requests']:,} attack requests); touch scores: {R['data']['bio']}. "
+         f"({R['data']['attack_requests']:,} attack requests); touch scores: {R['data']['bio']}; typing scores: "
+         f"{R['data']['typing']} (CMU keystroke attempts of held-out subjects, scored by the 1D-CNN + scaled Manhattan). "
          f"Train days 0-{TRAIN_END}, valid {TRAIN_END}-{VALID_END}, test {VALID_END}-60 replayed through the service. "
          f"Assumed real-world attack prevalence: {R['model']['real_prior']:.1%} of requests "
          f"(simulator: {R['model']['fit_prior']:.2%}).", "",
@@ -205,7 +206,18 @@ def main(argv=None):
     how = attach_bio(events, bank, scorer, a.seed)
     if how == "hmog" and not a.no_save:
         save_bio_quantiles(events)
-    print(f"{len(events):,} requests, touch={how} ({time.time() - t_start:.0f}s)")
+    typer = None
+    if not a.no_hmog:
+        try:
+            from ml.models.keystroke.scorer import KeystrokeScorer
+            from ml.models.keystroke.data import PATH as KS_PATH
+            typer = KeystrokeScorer("cpu") if KS_PATH.exists() else None
+        except FileNotFoundError:
+            typer = None
+    how_t = attach_typing(events, typer, a.seed)
+    if how_t == "cmu" and not a.no_save:
+        save_typing_quantiles(events)
+    print(f"{len(events):,} requests, touch={how}, typing={how_t} ({time.time() - t_start:.0f}s)")
 
     state, tab = warm_up(events, VALID_END)
     tr, va = tab[tab.day < TRAIN_END], tab[tab.day >= TRAIN_END]
@@ -239,7 +251,7 @@ def main(argv=None):
     gain = full.booster.get_score(importance_type="gain")
     importance = sorted(((f, gain.get(f, 0.0)) for f in FEATURES), key=lambda kv: -kv[1])
     R = {"data": {"users": a.users, "requests": len(events), "attack_requests": int(sum(r["label"]["is_attack"] for r in events)),
-                  "bio": how, "seed": a.seed},
+                  "bio": how, "typing": how_t, "seed": a.seed},
          "model": {"real_prior": a.real_prior, "fit_prior": full.fit_prior, "best_iteration": full.best_iteration},
          "ranking": ranking, "designs": designs, "difficulty": difficulty, "importance": importance,
          "latency": latency(events, state, full, VALID_END), "seconds": round(time.time() - t_start)}
