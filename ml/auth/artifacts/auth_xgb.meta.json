@@ -1,6 +1,7 @@
 {
   "features": [
     "bio_dev",
+    "typing_dev",
     "fast_submit",
     "low_input",
     "unknown_call_active",
@@ -53,13 +54,15 @@
     1,
     1,
     1,
+    1,
     1
   ],
   "fit_prior": 0.006455399061032864,
   "real_prior": 0.002,
-  "best_iteration": 113,
+  "best_iteration": 134,
   "median": {
     "bio_dev": -0.694,
+    "typing_dev": -0.5594,
     "fast_submit": 0.0,
     "low_input": 0.0,
     "unknown_call_active": 0.0,
@@ -89,5 +92,5 @@
   "xgboost_version": "3.2.0",
   "version": "auth-sim-s7",
   "trained_on": "ml.auth.sim (synthetic) + HMOG touch",
-  "test_roc_auc": 0.9974
+  "test_roc_auc": 0.9964
 }
