@@ -1,4 +1,4 @@
-"""BIOS authentication video: palette, fonts and shared components.
+"""PRAMAAN authentication video: palette, fonts and shared components.
 
 Palette = the console's design tokens (frontend/src/app/globals.css, Apple dark system colours), so the video and the
 product read as one system. Decisions keep one colour each everywhere: allow = green, challenge = orange, block = red.

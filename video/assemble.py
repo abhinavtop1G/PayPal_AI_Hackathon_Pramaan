@@ -68,7 +68,7 @@ def main(flag: str = "ql"):
     for name in NAMES:
         print(f"rendering {name} ({flag}) ...", flush=True)
         clips.append(render(flag, name))
-    dst = HERE / "out" / f"bios_auth_explainer_{QUALITY_DIR[flag]}.mp4"
+    dst = HERE / "out" / f"pramaan_auth_explainer_{QUALITY_DIR[flag]}.mp4"
     total = join(clips, dst)
     print(f"joined {len(clips)} beats, {total:.1f} s -> {dst} ({dst.stat().st_size / 1e6:.1f} MB)")
 

@@ -1,4 +1,4 @@
-"""BIOS V2 · FRONTIER 04 screening video: 60 s explainer of the transaction-authentication service.
+"""PRAMAAN · FRONTIER 04 screening video: 60 s explainer of the transaction-authentication service.
 
     python assemble.py ql      # draft 480p15
     python assemble.py qh      # final 1080p60
@@ -64,7 +64,7 @@ def sim_chip(color=YELLOW):
 
 
 def beat_problem(s: Scene, cap: Caption):
-    ident = VGroup(eyebrow("BIOS V2 · FRONTIER 04", BLUE, 14),
+    ident = VGroup(eyebrow("PRAMAAN · FRONTIER 04", BLUE, 14),
                    T("Fast and secure online transaction authentication", 17, MUTED)).arrange(DOWN, aligned_edge=LEFT, buff=0.08)
     s.add(ident.to_corner(UL, buff=0.35))          # visible from the first frame
     asha = phone("Asha · Ludhiana", INK).move_to(LEFT * 4.6 + UP * 0.9)
@@ -315,7 +315,7 @@ def beat_end(s: Scene, cap: Caption):
     pills = VGroup(*[pill(k.upper(), DECISION[k], size=26, weight="BOLD") for k in ("allow", "challenge", "block")])
     pills.arrange(RIGHT, buff=0.35).move_to(UP * 1.0)
     line = T("in real time, with the signals behind every decision", 26, INK).next_to(pills, DOWN, buff=0.5)
-    track = VGroup(T("BIOS V2 · FRONTIER 04", 18, BLUE, weight="BOLD"),
+    track = VGroup(T("PRAMAAN · FRONTIER 04", 18, BLUE, weight="BOLD"),
                    T("Fast and Secure Online Transaction Authentication", 22, MUTED)).arrange(DOWN, buff=0.12)
     track.next_to(line, DOWN, buff=0.7)
     s.play(FadeIn(pills, lag_ratio=0.2), run_time=0.7)
