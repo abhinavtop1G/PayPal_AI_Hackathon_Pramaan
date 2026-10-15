@@ -5,7 +5,8 @@ Request shape (what the client SDK / bank backend sends; see backend/schemas.py 
     user_id, ts (epoch seconds), channel, event_type ('payment' | 'login')
     device:      device_id, platform, is_emulator, is_rooted, remote_access_app, screen_share_active, sim_change_hours
     network:     ip, lat, lon, city                       (lat/lon/city usually from the load balancer's geo header)
-    behaviour:   bio_dev (filled by the engine from gestures), time_to_submit_s, input_events, unknown_call_active
+    behaviour:   bio_dev (filled by the engine from gestures), typing_dev (from keystrokes), time_to_submit_s,
+                 input_events, unknown_call_active
     transaction: amount, payee_id, payee_is_merchant, payee_risk
 """
 from __future__ import annotations
@@ -21,6 +22,7 @@ from .state import DAY, AuthState, _hour, device_trusted
 # argue *for* an attacker and the explanations always point the right way.
 SPEC = [
     ("bio_dev", "behaviour", 1),            # touch gestures vs the user's enrolled profile (BiLSTM + LDA); NaN if no touch
+    ("typing_dev", "behaviour", 1),         # password / PIN typing rhythm vs the user's profile (1D-CNN + scaled Manhattan)
     ("fast_submit", "behaviour", 1),        # form submitted in < 3 s (scripted)
     ("low_input", "behaviour", 1),          # almost no input events before submit
     ("unknown_call_active", "behaviour", 1),  # on a call with an unknown number while paying (coaching)
@@ -56,6 +58,7 @@ PRIOR_LOG_AMT, PRIOR_SD = math.log1p(1000.0), 1.2
 
 REASON = {  # feature -> (English, Hindi). Hindi to be reviewed by a native speaker before user-facing use.
     "bio_dev": ("touch pattern does not match the account owner", "टच करने का तरीका खाताधारक से मेल नहीं खाता"),
+    "typing_dev": ("typing rhythm does not match the account owner", "टाइप करने की लय खाताधारक से मेल नहीं खाती"),
     "fast_submit": ("submitted faster than a person can type", "इतनी तेज़ी से भरा गया जितना कोई व्यक्ति टाइप नहीं कर सकता"),
     "low_input": ("almost no screen interaction before paying", "भुगतान से पहले लगभग कोई स्क्रीन गतिविधि नहीं"),
     "unknown_call_active": ("on a call with an unknown number while paying", "भुगतान के दौरान अनजान नंबर से कॉल चल रही है"),
@@ -103,6 +106,7 @@ def build(req: dict, state: AuthState) -> tuple[dict, dict]:
 
     # behaviour
     f["bio_dev"] = float(beh["bio_dev"]) if beh.get("bio_dev") is not None else np.nan
+    f["typing_dev"] = float(beh["typing_dev"]) if beh.get("typing_dev") is not None else np.nan
     tts = beh.get("time_to_submit_s")
     f["fast_submit"] = float(tts is not None and tts < 3.0)
     n_in = beh.get("input_events")
