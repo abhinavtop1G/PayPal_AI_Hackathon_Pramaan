@@ -6,7 +6,7 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
     PORT=8080 \
     RAKSHAM_DEVICE=cpu \
-    BIOS_SERVICES=biometrics,campaign,auth \
+    BIOS_SERVICES=biometrics,keystroke,campaign,auth \
     BIO_CALIB=ml/auth/artifacts/bio_calib.pkl \
     BIOS_AUDIT_DB=/tmp/audit.sqlite \
     OMP_NUM_THREADS=2
