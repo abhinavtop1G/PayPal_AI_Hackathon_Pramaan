@@ -1,0 +1,433 @@
+{
+  "per_seed": {
+    "0": {
+      "sessions": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.1616,
+            "per_user_eer_mean": 0.1371,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.1304,
+            "per_user_eer_mean": 0.0932,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.2155,
+            "per_user_eer_mean": 0.1987,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.201,
+            "per_user_eer_mean": 0.1842,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.2493,
+            "per_user_eer_mean": 0.2217,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2627,
+            "per_user_eer_mean": 0.2362,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.1562,
+            "per_user_eer_mean": 0.1294,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.1217,
+            "per_user_eer_mean": 0.0909,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "first10": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.2975,
+            "per_user_eer_mean": 0.2812,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2664,
+            "per_user_eer_mean": 0.2507,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.3604,
+            "per_user_eer_mean": 0.2821,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.3495,
+            "per_user_eer_mean": 0.2623,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.4219,
+            "per_user_eer_mean": 0.4073,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.4225,
+            "per_user_eer_mean": 0.402,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.296,
+            "per_user_eer_mean": 0.2492,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2743,
+            "per_user_eer_mean": 0.2226,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "km_heldout": {
+        "cnn": [
+          0.1091,
+          0.1318
+        ],
+        "manhattan": [
+          0.1007,
+          0.0469
+        ],
+        "mahalanobis": [
+          0.1228,
+          0.0354
+        ],
+        "fusion": [
+          0.0753,
+          0.0824
+        ]
+      }
+    },
+    "1": {
+      "sessions": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.162,
+            "per_user_eer_mean": 0.1227,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.127,
+            "per_user_eer_mean": 0.0857,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.2155,
+            "per_user_eer_mean": 0.1987,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.201,
+            "per_user_eer_mean": 0.1842,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.2493,
+            "per_user_eer_mean": 0.2217,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2627,
+            "per_user_eer_mean": 0.2362,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.1513,
+            "per_user_eer_mean": 0.1198,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.1215,
+            "per_user_eer_mean": 0.0772,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "first10": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.3256,
+            "per_user_eer_mean": 0.2996,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.3007,
+            "per_user_eer_mean": 0.2635,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.3604,
+            "per_user_eer_mean": 0.2821,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.3495,
+            "per_user_eer_mean": 0.2623,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.4219,
+            "per_user_eer_mean": 0.4073,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.4225,
+            "per_user_eer_mean": 0.402,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.3126,
+            "per_user_eer_mean": 0.2693,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2982,
+            "per_user_eer_mean": 0.232,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "km_heldout": {
+        "cnn": [
+          0.1267,
+          0.0953
+        ],
+        "manhattan": [
+          0.1007,
+          0.0469
+        ],
+        "mahalanobis": [
+          0.1228,
+          0.0354
+        ],
+        "fusion": [
+          0.0849,
+          0.0574
+        ]
+      }
+    },
+    "2": {
+      "sessions": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.1538,
+            "per_user_eer_mean": 0.1287,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.1191,
+            "per_user_eer_mean": 0.0905,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.2155,
+            "per_user_eer_mean": 0.1987,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.201,
+            "per_user_eer_mean": 0.1842,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.2493,
+            "per_user_eer_mean": 0.2217,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2627,
+            "per_user_eer_mean": 0.2362,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.1356,
+            "per_user_eer_mean": 0.1201,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.1039,
+            "per_user_eer_mean": 0.0801,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "first10": {
+        "cnn": {
+          "one_try": {
+            "eer": 0.3268,
+            "per_user_eer_mean": 0.2933,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.3087,
+            "per_user_eer_mean": 0.2767,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "manhattan": {
+          "one_try": {
+            "eer": 0.3604,
+            "per_user_eer_mean": 0.2821,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.3495,
+            "per_user_eer_mean": 0.2623,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "mahalanobis": {
+          "one_try": {
+            "eer": 0.4219,
+            "per_user_eer_mean": 0.4073,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.4225,
+            "per_user_eer_mean": 0.402,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        },
+        "fusion": {
+          "one_try": {
+            "eer": 0.3075,
+            "per_user_eer_mean": 0.2592,
+            "n_users": 8,
+            "n_probes": 1600
+          },
+          "three_tries": {
+            "eer": 0.2897,
+            "per_user_eer_mean": 0.2332,
+            "n_users": 8,
+            "n_probes": 544
+          }
+        }
+      },
+      "km_heldout": {
+        "cnn": [
+          0.0916,
+          0.0295
+        ],
+        "manhattan": [
+          0.1007,
+          0.0469
+        ],
+        "mahalanobis": [
+          0.1228,
+          0.0354
+        ],
+        "fusion": [
+          0.0646,
+          0.0239
+        ]
+      }
+    }
+  },
+  "km_all_users": {
+    "manhattan": [
+      0.0955,
+      0.0696
+    ],
+    "mahalanobis": [
+      0.1334,
+      0.0687
+    ]
+  },
+  "published_km": {
+    "Manhattan (scaled)": 0.096,
+    "Nearest neighbour (Mahalanobis)": 0.1,
+    "Mahalanobis": 0.11
+  },
+  "selected_seed": 1,
+  "users": {
+    "train": 35,
+    "valid": 8,
+    "test": 8
+  }
+}
