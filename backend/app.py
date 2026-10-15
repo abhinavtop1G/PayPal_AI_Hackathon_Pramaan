@@ -22,11 +22,11 @@ from ml.sim.generate import generate_demo
 from ml.auth.geo import parse_geo_header
 
 from . import security
-from .schemas import (AuthRequest, ChallengeResult, ConsentCheck, DemoLoad, Gestures, HoldRequest, LedgerTransfer,
-                      PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest, Transfer)
+from .schemas import (AuthRequest, ChallengeResult, ConsentCheck, DemoLoad, Gestures, HoldRequest, KeystrokeEnroll,
+                      LedgerTransfer, PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest, Transfer)
 
 # load order matters: `session` uses `campaign`; `auth` uses `biometrics` (touch) and `campaign` (payee intelligence)
-SERVICES = ("campaign", "session", "gnn", "biometrics", "tabular", "auth")
+SERVICES = ("campaign", "session", "gnn", "biometrics", "keystroke", "tabular", "auth")
 REGISTRY: dict = {"services": {}, "errors": {}, "load_seconds": {}}
 
 
@@ -43,9 +43,13 @@ def _load(name: str, device: str):
     if name == "biometrics":
         from .bio_service import BioService
         return BioService(device)
+    if name == "keystroke":
+        from ml.models.keystroke.scorer import KeystrokeScorer
+        return KeystrokeScorer("cpu")   # 84k-parameter CNN: CPU is plenty
     if name == "auth":
         from .auth_service import AuthService
-        return AuthService(bio=REGISTRY["services"].get("biometrics"), payee=REGISTRY["services"].get("campaign"))
+        return AuthService(bio=REGISTRY["services"].get("biometrics"), payee=REGISTRY["services"].get("campaign"),
+                           typing=REGISTRY["services"].get("keystroke"))
     from .tabular_service import TabularService
     return TabularService()  # always CPU (see tabular_service docstring)
 
@@ -329,6 +333,12 @@ def gnn_score(body: Transfer):
 @app.post("/v1/biometrics/enroll", tags=["biometrics"])
 def bio_enroll(body: Gestures):
     return _bad_request(svc("biometrics").enroll, body.user_id, body.gestures)
+
+
+@app.post("/v1/keystroke/enroll", tags=["biometrics"])
+def keystroke_enroll(body: KeystrokeEnroll):
+    """Enrol a user's typing rhythm from >= 5 password / PIN attempts (31 key timings each, see AuthBehaviour)."""
+    return _bad_request(svc("keystroke").enroll, body.user_id, body.attempts)
 
 
 @app.post("/v1/biometrics/verify", tags=["biometrics"])
