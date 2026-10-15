@@ -1,4 +1,4 @@
-// Capture 1920x1080 screenshots of the BIOS console via the Chrome DevTools Protocol (real-time waits, so API calls finish).
+// Capture 1920x1080 screenshots of the PRAMAAN console via the Chrome DevTools Protocol (real-time waits, so API calls finish).
 //   node capture.mjs            (console on http://localhost:3000, API on :8000)
 import { spawn } from "node:child_process";
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -17,7 +17,7 @@ const SHOTS = [
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const chrome = spawn(CHROME, ["--headless=new", "--disable-gpu", "--hide-scrollbars", `--remote-debugging-port=${PORT}`,
-  `--user-data-dir=${process.env.TEMP}/bios-capture-prof`, "--window-size=1920,1080", "about:blank"], { stdio: "ignore" });
+  `--user-data-dir=${process.env.TEMP}/pramaan-capture-prof`, "--window-size=1920,1080", "about:blank"], { stdio: "ignore" });
 
 let targets;
 for (let i = 0; i < 50 && !targets; i++) {

@@ -1,4 +1,7 @@
-# BIOS — fast and secure online transaction authentication
+# PRAMAAN — fast and secure online transaction authentication
+
+**PRAMAAN** — **P**arallel **R**isk-**A**daptive **M**ulti-modal **A**uthentication & **A**nomaly **N**etwork
+(प्रमाण, "proof"). Team **CaffeineEaters**: Abhinav Saini, Aditi Pundir, Mannat Kaur, Aryamann Sharma.
 
 A cloud risk-authentication service: for every login or payment it combines **behaviour**, **device information**
 and **transaction patterns**, decides **allow / challenge / block** in real time, picks the challenge that actually
@@ -51,7 +54,7 @@ service, including simulated challenge outcomes.
 
 ```
 ml/models/keystroke/  1D-CNN typing-rhythm encoder (CMU keystroke data): data, model, train, evaluate, scorer
-ml/auth/          the authentication service core (BIOS)
+ml/auth/          the authentication service core (PRAMAAN)
   geo.py            IP intelligence (hosting / anonymiser ranges), distances, load-balancer geo header
   state.py          live state: users, device registry, per-device / per-IP fan-out, pending challenges (memory | Redis)
   features.py       26 causal features: behaviour 5 · device 13 · transaction 8
@@ -66,8 +69,8 @@ frontend/         Next.js console: / (authentication) and /scam (RAKSHAM scam-se
 deploy/           cloudrun.sh (Cloud Run, Secret Manager, Memorystore, load balancer + Cloud Armor)
 Dockerfile, docker-compose.yml, requirements-serve.txt
 ml/models, ml/campaign, ml/engine, ml/sim   RAKSHAM components (touch biometrics, payee risk, scam sessions)
-docs/             ARCHITECTURE.md (BIOS), DEPLOY.md, ARCHITECTURE_RAKSHAM.md, README_RAKSHAM.md
-tests/            pytest (100 tests; tests/test_auth.py covers the BIOS service)
+docs/             ARCHITECTURE.md (PRAMAAN), DEPLOY.md, ARCHITECTURE_RAKSHAM.md, README_RAKSHAM.md
+tests/            pytest (100 tests; tests/test_auth.py covers the PRAMAAN service)
 ```
 
 ## Run it
@@ -77,13 +80,13 @@ source ~/envs/raksham/Scripts/activate
 pip install -r requirements.txt          # + torch (CUDA or CPU build)
 
 # API (touch biometrics + payee intelligence + authentication); docs at http://127.0.0.1:8000/docs
-BIOS_SERVICES=biometrics,keystroke,campaign,auth uvicorn backend.app:app --port 8000
+PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth uvicorn backend.app:app --port 8000
 
-# console on http://localhost:3000 (without NEXT_PUBLIC_BIOS_API it plays the recorded scenarios)
-cd frontend && npm ci && NEXT_PUBLIC_BIOS_API=http://127.0.0.1:8000 npm run dev
+# console on http://localhost:3000 (without NEXT_PUBLIC_PRAMAAN_API it plays the recorded scenarios)
+cd frontend && npm ci && NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev
 ```
 
-On Windows Git Bash, prefix commands that set path-like env values (e.g. `BIOS_OPEN_PATHS=/v1/...`) with
+On Windows Git Bash, prefix commands that set path-like env values (e.g. `PRAMAAN_OPEN_PATHS=/v1/...`) with
 `MSYS_NO_PATHCONV=1`, otherwise Git Bash rewrites them into Windows paths.
 
 Rebuild everything from data:

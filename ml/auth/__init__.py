@@ -1,4 +1,4 @@
-"""Transaction authentication (BIOS): allow / challenge / block an online transaction from behaviour, device and
+"""Transaction authentication (PRAMAAN): allow / challenge / block an online transaction from behaviour, device and
 transaction-pattern signals, with the signals behind every decision.
 
     geo.py        cities, distances, IP intelligence (datacenter / anonymiser ranges, gateway geo header)

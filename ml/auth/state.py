@@ -56,7 +56,7 @@ class MemoryKV:
 
 
 class RedisKV:
-    def __init__(self, url: str, prefix: str = "bios:"):
+    def __init__(self, url: str, prefix: str = "pramaan:"):
         import redis  # optional dependency
         self.r = redis.Redis.from_url(url, socket_timeout=0.5)
         self.r.ping()

@@ -117,7 +117,7 @@ class HoldRequest(BaseModel):
     reason: str = ""
 
 
-# ---------------------------------------------------------------------------- transaction authentication (BIOS)
+# ---------------------------------------------------------------------------- transaction authentication (PRAMAAN)
 class AuthDevice(BaseModel):
     device_id: str = Field(description="stable device identifier from the SDK (app install ID / FingerprintJS visitor ID)")
     platform: Literal["android", "ios", "web"] | None = None

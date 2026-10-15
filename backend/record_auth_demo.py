@@ -13,8 +13,8 @@ OUT = Path("frontend/public/data/auth_demo.json")
 
 
 def main():
-    os.environ.setdefault("BIOS_SERVICES", "biometrics,keystroke,campaign,auth")
-    os.environ.setdefault("BIOS_AUDIT_DB", "checkpoints/record_audit.sqlite")
+    os.environ.setdefault("PRAMAAN_SERVICES", "biometrics,keystroke,campaign,auth")
+    os.environ.setdefault("PRAMAAN_AUDIT_DB", "checkpoints/record_audit.sqlite")
     from fastapi.testclient import TestClient
     from backend.app import app
     with TestClient(app) as c:

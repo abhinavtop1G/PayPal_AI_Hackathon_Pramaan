@@ -2,7 +2,7 @@
 
 Writes go through a queue to a background thread, so the decision path never waits on the database:
   * Postgres (Cloud SQL) when DATABASE_URL is set (needs `psycopg`), otherwise
-  * SQLite at BIOS_AUDIT_DB (default checkpoints/audit.sqlite).
+  * SQLite at PRAMAAN_AUDIT_DB (default checkpoints/audit.sqlite).
 The last 1,000 records are also kept in memory for the analyst dashboard (`recent`, `stats`).
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ COLS = ("ts", "kind", "decision_id", "user_id", "decision", "risk_score", "chall
 class AuditLog:
     def __init__(self, url: str | None = None, sqlite_path: str | None = None):
         self.url = url if url is not None else os.environ.get("DATABASE_URL")
-        self.path = sqlite_path or os.environ.get("BIOS_AUDIT_DB", "checkpoints/audit.sqlite")
+        self.path = sqlite_path or os.environ.get("PRAMAAN_AUDIT_DB", "checkpoints/audit.sqlite")
         self.backend = "postgres" if self.url else "sqlite"
         self.mem: deque = deque(maxlen=1000)
         self.q: queue.Queue = queue.Queue(maxsize=10000)

@@ -20,7 +20,7 @@ const deva = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "BIOS — Risk-based Transaction Authentication",
+  title: "PRAMAAN — Risk-based Transaction Authentication",
   description: "Allow, challenge or block an online transaction from behaviour, device and transaction signals, and see why.",
 };
 

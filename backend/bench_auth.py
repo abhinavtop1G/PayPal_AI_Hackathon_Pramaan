@@ -1,8 +1,8 @@
 """End-to-end latency of POST /v1/authenticate against a running server (local or Cloud Run).
 
-    uvicorn backend.app:app --port 8000                                   # BIOS_SERVICES=biometrics,campaign,auth
+    uvicorn backend.app:app --port 8000                                   # PRAMAAN_SERVICES=biometrics,campaign,auth
     python -m backend.bench_auth --url http://127.0.0.1:8000 --n 300
-    BIOS_API_KEY=... BIOS_HMAC_SECRET=... python -m backend.bench_auth --url https://bios-auth-xxxx.a.run.app
+    PRAMAAN_API_KEY=... PRAMAAN_HMAC_SECRET=... python -m backend.bench_auth --url https://pramaan-auth-xxxx.a.run.app
 
 Client-side wall time per request over a keep-alive connection, including JSON, HTTP, TLS (if https) and, when the
 secrets are set, API-key + HMAC verification. Writes backend/reports/auth_latency.md.
@@ -28,7 +28,7 @@ def main():
     ap.add_argument("--url", default="http://127.0.0.1:8000")
     ap.add_argument("--n", type=int, default=300)
     a = ap.parse_args()
-    key, secret = os.environ.get("BIOS_API_KEY"), os.environ.get("BIOS_HMAC_SECRET")
+    key, secret = os.environ.get("PRAMAAN_API_KEY"), os.environ.get("PRAMAAN_HMAC_SECRET")
     pack = json.loads(PACK.read_text())
     rng = np.random.default_rng(0)
 

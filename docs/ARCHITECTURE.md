@@ -1,4 +1,4 @@
-# Architecture: risk-based transaction authentication (BIOS)
+# Architecture: risk-based transaction authentication (PRAMAAN)
 
 > Problem: *build a cloud authentication service that uses behaviour, device information and transaction patterns to
 > allow, challenge or block an online transaction, and returns a decision with the signals behind it, in real time.*

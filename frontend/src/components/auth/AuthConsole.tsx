@@ -12,7 +12,7 @@ import { ScenarioRail } from "./ScenarioRail";
 import { SignalPanel } from "./SignalPanel";
 
 /**
- * BIOS console: one request at a time through the risk-authentication service.
+ * PRAMAAN console: one request at a time through the risk-authentication service.
  *   left    scenarios on the demo customer + a custom request builder
  *   centre  the decision (allow / challenge / block, which challenge, the customer's message, the challenge loop)
  *           and what the SDK sent, with the fired signals highlighted

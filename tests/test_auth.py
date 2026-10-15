@@ -1,4 +1,4 @@
-"""Transaction authentication (BIOS): state, features, policy, engine, security and the API."""
+"""Transaction authentication (PRAMAAN): state, features, policy, engine, security and the API."""
 import json
 import math
 from pathlib import Path
@@ -184,7 +184,7 @@ def _secured_app(monkeypatch, **env):
 
 def test_api_key_and_hmac(monkeypatch):
     from backend.security import sign
-    c = _secured_app(monkeypatch, BIOS_API_KEYS="k1,k2", BIOS_HMAC_SECRET="s3cret", BIOS_RATE_LIMIT="1000")
+    c = _secured_app(monkeypatch, PRAMAAN_API_KEYS="k1,k2", PRAMAAN_HMAC_SECRET="s3cret", PRAMAAN_RATE_LIMIT="1000")
     body = json.dumps({"a": 1}).encode()
     assert c.get("/health").status_code == 200                                 # exempt
     assert c.post("/v1/echo", content=body).status_code == 401                 # no key
@@ -200,7 +200,7 @@ def test_api_key_and_hmac(monkeypatch):
 
 
 def test_rate_limit(monkeypatch):
-    c = _secured_app(monkeypatch, BIOS_RATE_LIMIT="2")
+    c = _secured_app(monkeypatch, PRAMAAN_RATE_LIMIT="2")
     codes = [c.post("/v1/echo", json={}).status_code for _ in range(10)]
     assert codes[0] == 200 and 429 in codes
 
@@ -210,12 +210,12 @@ def test_rate_limit(monkeypatch):
 def client():
     import os
     from fastapi.testclient import TestClient
-    os.environ["BIOS_SERVICES"] = "auth"
-    os.environ["BIOS_AUDIT_DB"] = "checkpoints/test_audit.sqlite"
+    os.environ["PRAMAAN_SERVICES"] = "auth"
+    os.environ["PRAMAAN_AUDIT_DB"] = "checkpoints/test_audit.sqlite"
     from backend.app import app
     with TestClient(app) as c:
         yield c
-    os.environ.pop("BIOS_SERVICES", None)
+    os.environ.pop("PRAMAAN_SERVICES", None)
 
 
 @needs_model

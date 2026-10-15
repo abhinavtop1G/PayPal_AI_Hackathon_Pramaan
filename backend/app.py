@@ -1,4 +1,4 @@
-"""BIOS transaction-authentication API (built on the RAKSHAM scam-detection services).
+"""PRAMAAN transaction-authentication API (built on the RAKSHAM scam-detection services).
 
     uvicorn backend.app:app --port 8000          # docs at http://127.0.0.1:8000/docs
 
@@ -58,7 +58,7 @@ def _load(name: str, device: str):
 async def lifespan(app: FastAPI):
     device = os.environ.get("RAKSHAM_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
     REGISTRY["device"] = device
-    wanted = [s.strip() for s in os.environ.get("BIOS_SERVICES", os.environ.get("RAKSHAM_SERVICES", ",".join(SERVICES))).split(",")
+    wanted = [s.strip() for s in os.environ.get("PRAMAAN_SERVICES", os.environ.get("RAKSHAM_SERVICES", ",".join(SERVICES))).split(",")
               if s.strip()]
     wanted = sorted(wanted, key=lambda n: SERVICES.index(n) if n in SERVICES else len(SERVICES))
     for name in wanted:
@@ -73,7 +73,7 @@ async def lifespan(app: FastAPI):
     REGISTRY["services"].clear()
 
 
-app = FastAPI(title="BIOS transaction-authentication API", version="0.2.0", lifespan=lifespan,
+app = FastAPI(title="PRAMAAN transaction-authentication API", version="0.2.0", lifespan=lifespan,
               description="Real-time allow / challenge / block decisions for online transactions from behaviour, device "
                           "and transaction-pattern signals, with the signals behind every decision. Also serves the "
                           "RAKSHAM components (session scam pipeline, payee intelligence, GNN, biometrics, IEEE-CIS).")
@@ -121,7 +121,7 @@ def health():
             "auth": REGISTRY["services"]["auth"].info() if "auth" in REGISTRY["services"] else None}
 
 
-# ---------------------------------------------------------------------------- transaction authentication (BIOS)
+# ---------------------------------------------------------------------------- transaction authentication (PRAMAAN)
 def _client_ip(request: Request) -> str | None:
     fwd = request.headers.get("x-forwarded-for")
     return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else None)
