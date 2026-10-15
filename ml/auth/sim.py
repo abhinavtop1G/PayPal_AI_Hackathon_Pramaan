@@ -98,6 +98,7 @@ def generate(cfg: SimConfig = SimConfig(), bank=None) -> list[dict]:
     """Time-ordered requests. Each carries `label` (is_attack, scenario, attack_id, difficulty) and, for touch
     windows, `bio_ref` (resolve with the HMOG bank) and `bio_profile`."""
     rng = np.random.default_rng(cfg.seed)
+    trng = np.random.default_rng(cfg.seed + 1)   # typing draws: own stream, so the rest of the simulation is unchanged
     new_id = _Ids()
     n_subjects = len(bank.subjects) if bank is not None else 15
     users = []
@@ -133,6 +134,11 @@ def generate(cfg: SimConfig = SimConfig(), bank=None) -> list[dict]:
              "bio_subject": u["subject"]}
         if channel == "mobile" and gestures:
             r["bio_profile"] = profile
+        # password / PIN entry: every login, every web payment, half of mobile payments carry one typed attempt
+        if event_type == "login" or channel == "web" or trng.random() < 0.5:
+            r["typing_owner"] = u["i"]
+            r["typing_profile"] = ("bot" if r["label"]["scenario"] == "bot" else
+                                   profile if profile in ("remote", "coerced") else "normal")
         events.append(r)
         return r
 
@@ -283,6 +289,64 @@ def attach_bio(events: list[dict], bank=None, scorer=None, seed: int = 7) -> str
     for i, v in zip(idx, dev):
         events[i]["behaviour"]["bio_dev"] = round(float(v), 4)
     return how
+
+
+TYPING_QUANTILES = Path("ml/auth/artifacts/typing_quantiles.json")
+BOT_TIMINGS = (0.06, 0.09, 0.03)   # scripted typing: constant hold / down-down / up-down (seconds)
+
+
+def attach_typing(events: list[dict], scorer=None, seed: int = 7) -> str:
+    """Fill behaviour.typing_dev for every request with a typed attempt (CMU keystroke data, held-out test subjects).
+    normal = the owner's own later-session attempt; remote = another subject's attempt; coerced = the owner's attempt
+    typed slower and more hesitantly (latencies x1.3-1.8, holds x1.1: an assumption, CMU has no coercion labels);
+    bot = scripted constant timings. Without the data / model, deviations come from the saved measured quantiles."""
+    idx = [i for i, r in enumerate(events) if r.get("typing_profile")]
+    rng = np.random.default_rng(seed + 2)
+    if scorer is not None:
+        from ml.models.keystroke.data import load_cmu, timings
+        df = load_cmu()
+        raw = timings(df)
+        subjects = scorer.meta["split"]["test"]
+        for s in subjects:
+            if str(s) not in scorer.profiles:
+                scorer.enroll(str(s), raw[((df["user"] == s) & (df["session"] <= 4)).to_numpy()])
+        probes = {s: raw[((df["user"] == s) & (df["session"] >= 5)).to_numpy()] for s in subjects}
+        owners, x = [], np.zeros((len(idx), raw.shape[1]), dtype="float32")
+        for k, i in enumerate(idx):
+            r = events[i]
+            own = subjects[r["typing_owner"] % len(subjects)]
+            prof = r["typing_profile"]
+            if prof == "bot":
+                h, dd, ud = BOT_TIMINGS
+                x[k] = np.r_[np.tile([h, dd, ud], 10), h] * np.exp(rng.normal(0, 0.02, raw.shape[1]))
+            else:
+                src = own if prof != "remote" else int(rng.choice([s for s in subjects if s != own]))
+                x[k] = probes[src][int(rng.integers(len(probes[src])))]
+                if prof == "coerced":
+                    lat = np.r_[np.tile([False, True, True], 10), False]
+                    x[k] = np.where(lat, x[k] * rng.uniform(1.3, 1.8), x[k] * 1.1)
+            owners.append(str(own))
+        dev = scorer.deviation_many(owners, x)
+        how = "cmu"
+    else:
+        q = json.loads(TYPING_QUANTILES.read_text())
+        dev = np.array([np.interp(rng.random(), np.linspace(0, 1, len(q[events[i]["typing_profile"]])),
+                                  q[events[i]["typing_profile"]]) for i in idx])
+        how = "quantiles"
+    for i, v in zip(idx, dev):
+        events[i]["behaviour"]["typing_dev"] = round(float(v), 4)
+    return how
+
+
+def save_typing_quantiles(events: list[dict], path: Path = TYPING_QUANTILES):
+    out = {}
+    for prof in ("normal", "coerced", "remote", "bot"):
+        v = np.array([r["behaviour"]["typing_dev"] for r in events if r.get("typing_profile") == prof
+                      and "typing_dev" in r["behaviour"]])
+        if len(v):
+            out[prof] = [round(float(x), 4) for x in np.quantile(v, np.linspace(0, 1, 101))]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(out))
 
 
 def save_bio_quantiles(events: list[dict], path: Path = BIO_QUANTILES):
