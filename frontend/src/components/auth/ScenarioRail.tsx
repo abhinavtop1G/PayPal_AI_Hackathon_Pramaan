@@ -81,6 +81,7 @@ function CustomBuilder({ busy, onRun, active }: { busy: boolean; onRun: (o: Over
   const [newDevice, setNewDevice] = useState(false);
   const [place, setPlace] = useState<Place>("home");
   const [touch, setTouch] = useState<"normal" | "coerced" | "remote" | "none">("normal");
+  const [typing, setTyping] = useState<"normal" | "remote" | "bot" | "none">("normal");
   const [sim, setSim] = useState<"none" | "3" | "48">("none");
   const [flags, setFlags] = useState({ emulator: false, rooted: false, remote: false, share: false, call: false, hosting: false, scripted: false });
   const toggle = (k: keyof typeof flags) => setFlags((f) => ({ ...f, [k]: !f[k] }));
@@ -95,7 +96,7 @@ function CustomBuilder({ busy, onRun, active }: { busy: boolean; onRun: (o: Over
       },
       network: { city: p.city, lat: p.lat, lon: p.lon, ip: flags.hosting ? "34.93.10.77" : p.ip },
       behaviour: {
-        touch_profile: touch, unknown_call_active: flags.call,
+        touch_profile: touch, typing_profile: typing, unknown_call_active: flags.call,
         time_to_submit_s: flags.scripted ? 0.9 : 16, input_events: flags.scripted ? 1 : 34,
       },
       transaction: { amount, payee_id: newPayee ? "new-payee-0147" : "kirana-sharma", payee_is_merchant: !newPayee },
@@ -123,6 +124,8 @@ function CustomBuilder({ busy, onRun, active }: { busy: boolean; onRun: (o: Over
           options={[{ value: "own", label: "Her phone" }, { value: "new", label: "Unknown" }]} /></Row>
         <Row label="Location"><SegmentedControl size="small" label="Location" value={place} onChange={setPlace}
           options={[{ value: "home", label: "Home" }, { value: "delhi", label: "Delhi" }, { value: "jamtara", label: "Jamtara" }]} /></Row>
+        <Row label="Typing"><SegmentedControl size="small" label="Typing" value={typing} onChange={setTyping}
+          options={[{ value: "normal", label: "Hers" }, { value: "remote", label: "Other" }, { value: "bot", label: "Script" }, { value: "none", label: "None" }]} /></Row>
         <Row label="Touch"><SegmentedControl size="small" label="Touch" value={touch} onChange={setTouch}
           options={[{ value: "normal", label: "Hers" }, { value: "coerced", label: "Stressed" }, { value: "remote", label: "Other" }, { value: "none", label: "None" }]} /></Row>
         <Row label="SIM changed"><SegmentedControl size="small" label="SIM changed" value={sim} onChange={setSim}
