@@ -17,6 +17,8 @@ export function RequestCard({ run }: { run: DemoRun | null }) {
       title: "Behaviour", icon: Fingerprint, tint: "var(--color-sys-purple)", rows: [
         ["Touch", b.gestures ? String(b.gestures) : "no touch data", on("bio_dev", 0.5)],
         ["Touch deviation", f.bio_dev == null ? "—" : f.bio_dev.toFixed(2), on("bio_dev", 0.5)],
+        ["Typing", b.keystrokes ? String(b.keystrokes) : "no typing data", on("typing_dev", 0)],
+        ["Typing deviation", f.typing_dev == null ? "—" : f.typing_dev.toFixed(2), on("typing_dev", 0)],
         ["Time to submit", b.time_to_submit_s != null ? `${b.time_to_submit_s} s` : "—", on("fast_submit")],
         ["Input events", b.input_events != null ? String(b.input_events) : "—", on("low_input")],
         ["Unknown call active", b.unknown_call_active ? "yes" : "no", on("unknown_call_active")],
