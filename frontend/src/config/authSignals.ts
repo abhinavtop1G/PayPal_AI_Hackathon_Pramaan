@@ -3,6 +3,7 @@ import type { ChallengeType, Decision, Family } from "@/types/auth";
 /** Short console labels for the model's 26 features (ml/auth/features.py SPEC). */
 export const SIGNAL_LABEL: Record<string, string> = {
   bio_dev: "Touch pattern vs owner",
+  typing_dev: "Typing rhythm vs owner",
   fast_submit: "Submitted in < 3 s",
   low_input: "Almost no input",
   unknown_call_active: "On a call with unknown number",
@@ -56,7 +57,7 @@ export function showValue(name: string, v: number | null): string {
   if (v === null || v === undefined) return "—";
   if (name === "geo_speed") return `${Math.round(Math.expm1(v)).toLocaleString("en-IN")} km/h`;
   if (name === "sim_fresh") return v > 0 ? `${Math.round((1 - v) * 168)} h ago` : "no";
-  if (["amt_z", "spend_24h_z", "bio_dev"].includes(name)) return v.toFixed(2);
+  if (["amt_z", "spend_24h_z", "bio_dev", "typing_dev"].includes(name)) return v.toFixed(2);
   if (name === "payee_risk" || name === "hour_rarity") return v.toFixed(2);
   if (["n_devices_30d", "accounts_on_device", "ip_accounts_1h", "txn_count_1h", "fails_24h"].includes(name)) return String(v);
   return v >= 0.5 ? "yes" : "no";

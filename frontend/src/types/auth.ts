@@ -52,7 +52,7 @@ export interface AuthRequestShown {
     sim_change_hours?: number | null;
   };
   network: { ip?: string; city?: string; lat?: number; lon?: number };
-  behaviour: { gestures?: string | null; time_to_submit_s?: number; input_events?: number; unknown_call_active?: boolean };
+  behaviour: { gestures?: string | null; keystrokes?: string | null; time_to_submit_s?: number; input_events?: number; unknown_call_active?: boolean };
   transaction: { amount: number; payee_id?: string | null; payee_is_merchant?: boolean; payee_risk?: number | null };
 }
 
@@ -111,7 +111,7 @@ export interface AuthStats {
 export interface Overrides {
   device?: Partial<AuthRequestShown["device"]>;
   network?: Partial<AuthRequestShown["network"]>;
-  behaviour?: { touch_profile?: "normal" | "coerced" | "remote" | "none"; unknown_call_active?: boolean; time_to_submit_s?: number; input_events?: number };
+  behaviour?: { touch_profile?: "normal" | "coerced" | "remote" | "none"; typing_profile?: "normal" | "remote" | "bot" | "none"; unknown_call_active?: boolean; time_to_submit_s?: number; input_events?: number };
   transaction?: Partial<AuthRequestShown["transaction"]>;
   channel?: "mobile" | "web";
   event_type?: "payment" | "login";
