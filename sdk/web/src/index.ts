@@ -1,6 +1,7 @@
 /** @pramaan/web-sdk: browser entry. For your server (API key + signing), import "@pramaan/web-sdk/server". */
 export { Pramaan, type PramaanOptions, type CollectOptions, type Snapshot } from "./browser/pramaan";
 export { deviceId, webDevice, automationSignals, environment, type Environment } from "./browser/device";
+export { showChallenge, type ChallengeHandlers, type ChallengeResult } from "./browser/challenge";
 export {
   GESTURE_FEATURES, GestureEncoder, REFERENCE_WIDTH_PX, windowStats,
   type Gesture, type GestureFeatures, type GestureFeatureName, type MotionSeries, type ScreenSize, type TouchPoint,
