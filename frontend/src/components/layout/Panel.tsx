@@ -22,7 +22,7 @@ export function Panel({
   children?: React.ReactNode;
 }) {
   return (
-    <section className={`material-regular panel-sheen squircle flex min-h-0 flex-col rounded-[var(--radius-panel)] p-5 ${className}`}>
+    <section className={`material-regular panel-sheen squircle flex min-h-0 min-w-0 flex-col rounded-[var(--radius-panel)] p-5 ${className}`}>
       <header className="mb-4 flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           {Icon && (

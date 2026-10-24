@@ -32,6 +32,12 @@ async function post<T>(path: string, body?: unknown, signal?: AbortSignal): Prom
   return (await r.json()) as T;
 }
 
+/** The recorded scenario runs (never calls the API: for pages that only illustrate, like the landing page). */
+export async function recordedRuns(): Promise<{ scenarios: Scenario[]; runs: Record<string, DemoRun> }> {
+  const r = await recorded();
+  return { scenarios: r.scenarios, runs: r.runs };
+}
+
 export async function listScenarios(): Promise<{ data: Scenario[]; source: Source }> {
   if (AUTH_API) {
     try {

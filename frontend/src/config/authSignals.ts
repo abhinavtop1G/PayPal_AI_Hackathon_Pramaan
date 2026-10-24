@@ -32,10 +32,56 @@ export const SIGNAL_LABEL: Record<string, string> = {
 };
 
 export const FAMILY_TINT: Record<Family, string> = {
-  behaviour: "var(--color-sys-purple)",
-  device: "var(--color-sys-cyan)",
-  transaction: "var(--color-sys-orange)",
+  behaviour: "var(--color-fam-behaviour)",
+  device: "var(--color-fam-device)",
+  transaction: "var(--color-fam-transaction)",
 };
+
+/** Which family each model feature belongs to (ml/auth/features.py FAMILY). */
+export const SIGNAL_FAMILY: Record<string, Family> = {
+  bio_dev: "behaviour", typing_dev: "behaviour", fast_submit: "behaviour", low_input: "behaviour",
+  unknown_call_active: "behaviour", screen_share_active: "behaviour",
+  device_new: "device", device_untrusted: "device", n_devices_30d: "device", accounts_on_device: "device",
+  emulator: "device", rooted: "device", remote_access_app: "device", sim_fresh: "device", ip_datacenter: "device",
+  ip_anonymiser: "device", ip_accounts_1h: "device", geo_speed: "device", new_city: "device",
+  amt_z: "transaction", payee_new: "transaction", payee_risk: "transaction", txn_count_1h: "transaction",
+  spend_24h_z: "transaction", hour_rarity: "transaction", short_history: "transaction", fails_24h: "transaction",
+};
+
+export const ATTACK_LABEL: Record<string, string> = {
+  ato_new_device: "Stolen credentials",
+  sim_swap: "SIM swap",
+  bot: "Credential stuffing (bot)",
+  remote_access: "Remote-access takeover",
+  coerced: "Coached victim",
+};
+
+export const GENUINE_KIND_LABEL: Record<string, string> = {
+  routine: "Everyday payment",
+  new_phone: "New phone",
+  travel: "Travelling",
+  big_purchase: "Big purchase",
+  web: "Web login / payment",
+  genuine: "Genuine",
+};
+
+/** Risk as a short percentage that stays readable from 0.001% to 99%. */
+export function pct(p: number): string {
+  if (!Number.isFinite(p)) return "—";
+  const v = 100 * p;
+  if (v < 0.01) return "<0.01%";
+  if (v < 1) return `${v.toFixed(2)}%`;
+  if (v < 10) return `${v.toFixed(1)}%`;
+  return `${Math.round(v)}%`;
+}
+
+/** Compact Indian-rupee amounts: ₹640, ₹18.5K, ₹4.2L, ₹1.3Cr. */
+export function inrCompact(x: number): string {
+  if (x >= 1e7) return `₹${(x / 1e7).toFixed(x >= 1e8 ? 0 : 1)}Cr`;
+  if (x >= 1e5) return `₹${(x / 1e5).toFixed(x >= 1e6 ? 0 : 1)}L`;
+  if (x >= 1e3) return `₹${(x / 1e3).toFixed(x >= 1e4 ? 0 : 1)}K`;
+  return `₹${Math.round(x)}`;
+}
 
 export const FAMILY_LABEL: Record<Family, string> = { behaviour: "Behaviour", device: "Device", transaction: "Transaction" };
 
@@ -50,6 +96,10 @@ export const CHALLENGE_LABEL: Record<ChallengeType, { title: string; why: string
   passkey: { title: "Passkey on the registered device", why: "New device or new SIM: an SMS OTP could reach the attacker, so approve on the phone we already trust." },
   bank_callback: { title: "Bank call-back", why: "Someone else may be controlling the screen, the customer may be coached on a call, or the amount is large: a person from the bank confirms on the registered number." },
   cool_off: { title: "30-minute cool-off + scam warning", why: "The real owner, on their own phone, appears to be coached on a call: an OTP would not help." },
+};
+
+export const CHALLENGE_SHORT: Record<ChallengeType, string> = {
+  sms_otp: "SMS OTP", passkey: "Passkey", bank_callback: "Bank call-back", cool_off: "Cool-off",
 };
 
 /** How a raw feature value is shown in the signal list. */

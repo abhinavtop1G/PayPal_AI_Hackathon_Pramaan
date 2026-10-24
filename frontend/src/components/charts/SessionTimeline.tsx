@@ -213,7 +213,7 @@ export function SessionTimeline() {
                 onPointerDown={(ev) => ev.stopPropagation()}
                 onClick={() => seek(i)}
                 title={`${since(e.ts_min)} · ${label}${seen ? ` · workflow risk ${pct(p)}` : ""}${d ? ` · ${ACTION_LABEL[d.action]} ${pct(d.fused_risk)}` : ""}`}
-                aria-label={`Jump to ${label} at ${since(e.ts_min)}`}
+                aria-label={`Jump to ${label} at ${since(e.ts_min)}${d ? `, ${ACTION_LABEL[d.action]}` : ""}`}
                 className="group absolute top-[4.1rem] -translate-x-1/2 transition-[scale] duration-150 hover:scale-110 active:scale-95 disabled:cursor-default"
                 style={{ left: x(i), opacity: after ? 0.35 : 1 }}
               >

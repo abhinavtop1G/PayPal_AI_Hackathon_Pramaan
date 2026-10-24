@@ -1,6 +1,6 @@
-import { AuthConsole } from "@/components/auth/AuthConsole";
+import { Landing } from "@/components/landing/Landing";
 
-/** PRAMAAN: risk-based transaction authentication console (the RAKSHAM scam-session demo lives at /scam). */
-export default function AuthPage() {
-  return <AuthConsole />;
+/** PRAMAAN front page; the console lives at /console and the RAKSHAM scam-session demo at /scam. */
+export default function Home() {
+  return <Landing />;
 }

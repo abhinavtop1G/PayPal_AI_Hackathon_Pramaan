@@ -48,8 +48,9 @@
 | security | `backend/security.py` | built: API keys, HMAC + replay, token-bucket rate limit |
 | audit | `backend/audit.py` | built: async writer, Postgres or SQLite, in-memory feed |
 | cloud | `Dockerfile`, `docker-compose.yml`, `deploy/cloudrun.sh` | written; **not yet run** (no Docker / gcloud on the dev machine) |
-| console | `frontend/` (`/`) | built: scenarios, custom builder, decision + challenge loop, SHAP signals, audit feed |
-| client SDK | — | not built: the console stands in for it; signals the SDK would send are documented in `AuthRequest` |
+| console | `frontend/` (`/`, `/console/*`) | built: product page; operations overview (a held-out test day replayed through the service); decision lab (scenarios, request builder, pipeline trace, SHAP waterfall, expected cost, customer screen, challenge loop); live capture (the web SDK on the page, typing and touch labs); audit log; model report; developer guide |
+| web SDK | `sdk/web` | built: touch gestures, typing rhythm, session timing, install ID, automation flags; signing client with retries and fail-safe fallback; golden-vector tests against the training pipeline + end-to-end tests against the API |
+| Android SDK | `sdk/android` | built: touch + 100 Hz motion, PIN-pad typing rhythm, root / emulator / remote-control app / screen recording / SIM change / unknown caller; client; sample app. Compile-checked against API 35 and JVM-tested; the Gradle build not yet run on the dev machine |
 
 ## Decisions and why
 
@@ -71,7 +72,8 @@
 
 ## Privacy and safety
 
-* Raw touch data never leaves the device as raw coordinates: the SDK sends per-gesture features; profiles are
+* Raw touch data never leaves the device as raw coordinates: the SDKs send per-gesture features and key timings
+  (never keys or digits), and collect behavioural data only with the customer's consent; profiles are
   embeddings. Identifiers are opaque; hash with a keyed HMAC before sharing across institutions.
 * Consent gate (`infra/privacy/consent.py`, DPDP purposes) is available for behavioural biometrics and telecom data.
 * Every decision is logged with its reasons, model version and latency for audit and dispute handling (RBI directions
@@ -85,3 +87,5 @@
 3. IP ranges are a demo subset; production needs a maintained IP-intelligence feed and the SDK's device attestation
    (Play Integrity / App Attest) instead of client-reported emulator / root flags.
 4. The cloud deployment files have not been run yet.
+5. No iOS SDK yet. The Android SDK is compile-checked against API 35 and its core is tested on the JVM, but its Gradle
+   build (and the sample app) has not been run on a device; CI (`.github/workflows/sdk-and-console.yml`) runs it.

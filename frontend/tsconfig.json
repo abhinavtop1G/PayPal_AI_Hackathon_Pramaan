@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@pramaan/web-sdk": ["../sdk/web/src/index.ts"]
     }
   },
   "include": [

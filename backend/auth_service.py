@@ -27,6 +27,19 @@ class AuthService:
         self.engine = AuthEngine(self.model, AuthPolicy(), self.state, bio=bio, payee=payee, audit=self.audit, typing=typing)
         self.demo = DemoWorld()
         self.demo.seed(self.state, bio, typer=typing)
+        self._warm_up()
+
+    def _warm_up(self):
+        """One unaudited decision at startup, so the first real request does not pay for lazy initialisation
+        (torch kernels, XGBoost's SHAP path); the demo customer's history is reset afterwards."""
+        audit, self.engine.audit = self.engine.audit, None
+        try:
+            self.run_demo("genuine_routine")
+        except Exception:  # warming up is best effort: never keep the service from starting
+            pass
+        finally:
+            self.engine.audit = audit
+            self.demo.seed(self.state, self.bio, typer=self.typing)
 
     def info(self) -> dict:
         return {"model_version": self.model.meta.get("version"), "features": len(self.model.features),

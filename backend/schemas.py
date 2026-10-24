@@ -173,6 +173,11 @@ class KeystrokeEnroll(BaseModel):
     attempts: list[list[float]] = Field(min_length=5, description="password / PIN attempts, 31 timings each")
 
 
+class KeystrokeVerify(BaseModel):
+    user_id: str
+    attempt: list[float] = Field(min_length=31, max_length=31, description="one password / PIN attempt, 31 timings")
+
+
 class ChallengeResult(BaseModel):
     decision_id: str
     passed: bool = Field(description="did the user complete the step-up (OTP / passkey / call-back / cool-off)?")

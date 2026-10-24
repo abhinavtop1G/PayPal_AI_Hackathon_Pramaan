@@ -39,7 +39,7 @@ await send("Emulation.setDeviceMetricsOverride", { width: 1920, height: 1080, de
 await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
 mkdirSync(OUT, { recursive: true });
 for (const [name, q] of SHOTS) {
-  await send("Page.navigate", { url: `http://localhost:3000/?${q}` });
+  await send("Page.navigate", { url: `http://localhost:3000/console/lab?${q}` });
   await sleep(4500);
   const r = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
   writeFileSync(new URL(`${name}.png`, OUT), Buffer.from(r.result.data, "base64"));

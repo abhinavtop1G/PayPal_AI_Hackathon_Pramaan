@@ -35,6 +35,10 @@ export interface AuthResponse {
   amount: number;
   model_version: string;
   latency_ms: number;
+  /** ms per stage: touch, typing, payee, features, model, policy (recordings made before this field omit it) */
+  timings_ms?: Record<string, number>;
+  /** prior-corrected log-odds before any signal; base + Σ contributions = logit(risk_score) */
+  base_logit?: number | null;
 }
 
 export interface AuthRequestShown {

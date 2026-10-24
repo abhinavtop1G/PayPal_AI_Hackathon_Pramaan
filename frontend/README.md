@@ -1,4 +1,36 @@
-# RAKSHAM demo frontend
+# PRAMAAN console
+
+Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · Motion. Every page works offline from recordings of the API's
+own output (`public/data/`) and decides live when `NEXT_PUBLIC_PRAMAAN_API` points at a running service (the sidebar
+shows which).
+
+| route | page | data |
+|---|---|---|
+| `/` | product page: animated decision card, results, signal families, step-ups, request path, SDKs | `auth_demo.json`, `model_report.json` |
+| `/console` | operations overview: a held-out test day replayed on a compressed clock (60× / 300× / 1200×, scrubbable) | `auth_traffic.json` (`python -m backend.record_auth_traffic`); live `/v1/auth/stats` |
+| `/console/lab` | decision lab; deep link `?scenario=sim_swap&verify=pass` | `/v1/auth/demo/*` or `auth_demo.json` |
+| `/console/policy` | policy tuner: ml/auth/policy.py's decision rule (`src/components/policy/simulate.ts`) re-run over the recorded day with other costs | `auth_traffic.json` (risk, candidate step-up per request), `model_report.json` (policy constants) |
+| `/console/capture` | the web SDK (`../sdk/web/src`, imported as `@pramaan/web-sdk`) on the page: typing and touch labs, device panel, request preview | live: `/v1/keystroke/*`, `/v1/biometrics/*`, `/v1/authenticate`; offline: on-device scaled-Manhattan preview vs `model_report.json` |
+| `/console/audit` | audit log of the recorded day, this session, or the live service; CSV export | `auth_traffic.json`, `/v1/auth/decisions` |
+| `/console/model` | evaluation | `model_report.json` (`python -m backend.export_console_report`) |
+| `/console/developers` | integration guide | static |
+| `/scam` | RAKSHAM scam-session layer, below | |
+
+```bash
+npm ci
+NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev    # or without it: recordings only
+npm run lint && npm run build
+```
+
+Every route passes axe-core's automated WCAG 2.1 A/AA checks (contrast, names, ARIA, keyboard-reachable scroll
+regions) and fits a 390-px phone without horizontal scrolling. `npm test` checks the policy tuner against the
+service's recorded decisions.
+
+Charts are hand-written SVG (`src/components/charts`): one axis each, hairline grids, thin marks, hover readouts, and
+a table or numbers next to every colour encoding. Signal families use a violet / aqua / orange set validated for
+colour-vision deficiency on the dark surface; decisions use the status colours and always carry an icon and label.
+
+## /scam: RAKSHAM scam-session layer
 
 Four views under one app bar:
 

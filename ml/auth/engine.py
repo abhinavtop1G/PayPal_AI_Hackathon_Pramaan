@@ -36,15 +36,19 @@ class AuthEngine:
         self.reason_min = reason_min
 
     # ------------------------------------------------------------------ enrichment
-    def _enrich(self, req: dict) -> dict:
+    def _enrich(self, req: dict, timings: dict | None = None) -> dict:
+        timings = {} if timings is None else timings
+        t = time.perf_counter()
         beh = req.setdefault("behaviour", {})
         gestures = beh.pop("gestures", None)
         if beh.get("bio_dev") is None and gestures and self.bio is not None and req["user_id"] in self.bio.profiles:
             if len(gestures) >= 10:
                 beh["bio_dev"] = float(self.bio.verify(req["user_id"], gestures)["behavioural_deviation"])
+        timings["touch"], t = 1000 * (time.perf_counter() - t), time.perf_counter()
         keys = beh.pop("keystrokes", None)
         if beh.get("typing_dev") is None and keys and self.typing is not None and req["user_id"] in self.typing.profiles:
             beh["typing_dev"] = float(self.typing.verify(req["user_id"], keys)["typing_deviation"])
+        timings["typing"], t = 1000 * (time.perf_counter() - t), time.perf_counter()
         tx = req.setdefault("transaction", {})
         if tx.get("payee_risk") is None and tx.get("payee_id") and self.payee is not None and (tx.get("amount") or 0) > 0:
             try:
@@ -54,15 +58,19 @@ class AuthEngine:
                     tx["payee_case_id"] = r.get("case_id")
             except Exception:  # payee intelligence is optional; never fail the decision because of it
                 pass
+        timings["payee"] = 1000 * (time.perf_counter() - t)
         return req
 
     # ------------------------------------------------------------------ decisions
     def authenticate(self, req: dict, explain: bool = True) -> dict:
         t0 = time.perf_counter()
-        req = self._enrich(req)
+        timings: dict[str, float] = {}
+        req = self._enrich(req, timings)
+        t = time.perf_counter()
         now, uid = float(req["ts"]), req["user_id"]
         f, ctx = build(req, self.state)
         amount = float((req.get("transaction") or {}).get("amount") or 0)
+        timings["features"], t = 1000 * (time.perf_counter() - t), time.perf_counter()
         if explain:
             p, signals, fam = self.model.explain(f)
         else:
@@ -70,7 +78,12 @@ class AuthEngine:
             m = self.model.booster.inplace_predict(x, predict_type="margin",
                                                    iteration_range=(0, self.model.best_iteration + 1))
             p, signals, fam = float(1 / (1 + np.exp(-(m[0] + self.model.shift)))), [], {}
+        timings["model"], t = 1000 * (time.perf_counter() - t), time.perf_counter()
         d = self.policy.decide(p, amount, f, ctx)
+        timings["policy"] = 1000 * (time.perf_counter() - t)
+        # log-odds before any signal (bias + prior correction): base_logit + sum of contributions = logit(risk)
+        pc = min(max(p, 1e-12), 1 - 1e-12)
+        base_logit = float(np.log(pc / (1 - pc)) - sum(s["contribution"] for s in signals)) if signals else None
         dev, net = req.get("device") or {}, req.get("network") or {}
         self.state.record_attempt(uid, dev.get("device_id"), net.get("ip"), now)
         decision_id = req.get("request_id") or uuid.uuid4().hex[:16]
@@ -90,6 +103,8 @@ class AuthEngine:
                "features": {k: (None if not np.isfinite(v) else round(float(v), 4)) for k, v in f.items()},
                "expected_cost": d["expected_cost"], "amount": amount,
                "model_version": getattr(self.model, "meta", {}).get("version", "dev"),
+               "base_logit": None if base_logit is None else round(base_logit, 4),
+               "timings_ms": {k: round(v, 3) for k, v in timings.items()},
                "latency_ms": round(1000 * (time.perf_counter() - t0), 2)}
         if self.audit is not None:
             self.audit({"kind": "decision", "ts": now, **{k: out[k] for k in ("decision_id", "user_id", "decision",

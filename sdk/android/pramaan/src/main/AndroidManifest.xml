@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 15+: know when this app's screen is being recorded or shared (normal permission, no prompt) -->
+    <uses-permission android:name="android.permission.DETECT_SCREEN_RECORDING" />
+    <!-- Optional, requested by the app if it wants the caller checked against contacts (see CallMonitor):
+         android.permission.READ_CALL_LOG, android.permission.READ_CONTACTS -->
+
+    <!-- Package visibility (Android 11+): the remote-control and root-manager apps DeviceSignals looks for -->
+    <queries>
+        <package android:name="com.anydesk.anydeskandroid" />
+        <package android:name="com.teamviewer.quicksupport.market" />
+        <package android:name="com.teamviewer.host.market" />
+        <package android:name="com.teamviewer.teamviewer.market.mobile" />
+        <package android:name="com.carriez.flutter_hbb" />
+        <package android:name="com.sand.airdroid" />
+        <package android:name="com.sand.airdroidbiz" />
+        <package android:name="com.splashtop.sos" />
+        <package android:name="com.splashtop.streamer.addon.knox" />
+        <package android:name="com.zoho.assist.agent" />
+        <package android:name="com.aomei.anyviewer" />
+        <package android:name="com.rsupport.mobizen.sec" />
+        <package android:name="com.realvnc.server" />
+        <package android:name="com.topjohnwu.magisk" />
+        <package android:name="eu.chainfire.supersu" />
+        <package android:name="com.koushikdutta.superuser" />
+        <package android:name="com.noshufou.android.su" />
+        <package android:name="com.kingroot.kinguser" />
+        <package android:name="me.weishu.kernelsu" />
+    </queries>
+</manifest>
