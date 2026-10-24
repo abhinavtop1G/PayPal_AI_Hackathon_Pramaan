@@ -103,5 +103,16 @@ def test_auth_api_uses_typing():
             assert own["features"]["typing_dev"] < min(other["features"]["typing_dev"], bot["features"]["typing_dev"])
             bad = c.post("/v1/keystroke/enroll", json={"user_id": "x", "attempts": [[0.1] * 31] * 2})
             assert bad.status_code == 422
+
+            # enrol then verify through the API (the console's typing lab and the SDKs use these)
+            rng = np.random.default_rng(5)
+            base = rng.uniform(0.05, 0.3, 31)
+            attempts = (base * np.exp(rng.normal(0, 0.05, (8, 31)))).tolist()
+            assert c.post("/v1/keystroke/enroll", json={"user_id": "lab", "attempts": attempts}).json()["enrolled"]
+            own = c.post("/v1/keystroke/verify", json={"user_id": "lab", "attempt": (base * 1.02).tolist()}).json()
+            other = c.post("/v1/keystroke/verify", json={"user_id": "lab", "attempt": (base[::-1] * 2).tolist()}).json()
+            assert own["typing_deviation"] < other["typing_deviation"] and not other["matches_profile"]
+            assert c.post("/v1/keystroke/verify", json={"user_id": "nobody", "attempt": base.tolist()}).status_code == 404
+            assert c.post("/v1/keystroke/verify", json={"user_id": "lab", "attempt": [0.1] * 30}).status_code == 422
     finally:
         os.environ.pop("PRAMAAN_SERVICES", None)

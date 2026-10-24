@@ -23,7 +23,8 @@ from ml.auth.geo import parse_geo_header
 
 from . import security
 from .schemas import (AuthRequest, ChallengeResult, ConsentCheck, DemoLoad, Gestures, HoldRequest, KeystrokeEnroll,
-                      LedgerTransfer, PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest, Transfer)
+                      KeystrokeVerify, LedgerTransfer, PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest,
+                      Transfer)
 
 # load order matters: `session` uses `campaign`; `auth` uses `biometrics` (touch) and `campaign` (payee intelligence)
 SERVICES = ("campaign", "session", "gnn", "biometrics", "keystroke", "tabular", "auth")
@@ -339,6 +340,13 @@ def bio_enroll(body: Gestures):
 def keystroke_enroll(body: KeystrokeEnroll):
     """Enrol a user's typing rhythm from >= 5 password / PIN attempts (31 key timings each, see AuthBehaviour)."""
     return _bad_request(svc("keystroke").enroll, body.user_id, body.attempts)
+
+
+@app.post("/v1/keystroke/verify", tags=["biometrics"])
+def keystroke_verify(body: KeystrokeVerify):
+    """Score one password / PIN attempt (31 key timings) against the user's enrolled typing rhythm (1D-CNN + scaled
+    Manhattan fusion): score, threshold, whether it matches, and typing_deviation (> 0 = looks like someone else)."""
+    return _bad_request(svc("keystroke").verify, body.user_id, body.attempt)
 
 
 @app.post("/v1/biometrics/verify", tags=["biometrics"])
