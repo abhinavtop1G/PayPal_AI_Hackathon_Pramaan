@@ -21,7 +21,7 @@ export function SegmentedControl<T extends string>({
   const id = useId();
   const pad = size === "small" ? "px-2.5 py-1 text-caption-1" : "px-3.5 py-1.5 text-footnote";
   return (
-    <div role="radiogroup" aria-label={label} className="flex rounded-[0.6rem] bg-fill-tertiary p-0.5">
+    <div role="radiogroup" aria-label={label} className="flex max-w-full overflow-x-auto rounded-[0.6rem] bg-fill-tertiary p-0.5 [scrollbar-width:none]">
       {options.map((o) => {
         const on = o.value === value;
         return (

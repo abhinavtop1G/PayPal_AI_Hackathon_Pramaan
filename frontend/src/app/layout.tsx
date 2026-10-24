@@ -20,8 +20,14 @@ const deva = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "PRAMAAN — Risk-based Transaction Authentication",
+  title: { default: "PRAMAAN — Risk-based Transaction Authentication", template: "%s" },
   description: "Allow, challenge or block an online transaction from behaviour, device and transaction signals, and see why.",
+  applicationName: "PRAMAAN",
+  openGraph: {
+    title: "PRAMAAN — proof it's really you, in 42 ms",
+    description: "Behaviour, device and transaction signals in one model: allow, the right step-up, or block, with the signals behind every decision.",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

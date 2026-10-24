@@ -6,7 +6,7 @@
  */
 type Tint = "blue" | "red" | "green" | "gray";
 const FILLED: Record<Tint, string> = {
-  blue: "bg-sys-blue text-white",
+  blue: "bg-accent-strong text-white",
   red: "bg-sys-red text-white",
   green: "bg-sys-green text-black",
   gray: "bg-fill text-label",
