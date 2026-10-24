@@ -49,9 +49,21 @@ WITH_ARMOR=1 DOMAIN=api.example.com bash deploy/cloudrun.sh   # + HTTPS load bal
 Read the generated key: `gcloud secrets versions access latest --secret pramaan-api-keys`.
 Benchmark the deployed service: `PRAMAAN_API_KEY=... PRAMAAN_HMAC_SECRET=... python -m backend.bench_auth --url https://<service-url>`.
 
-Frontend: `cd frontend && NEXT_PUBLIC_PRAMAAN_API=https://<service-url> npm run build` and host it on Vercel / Firebase
-Hosting, or run it without the env variable to play the recorded scenarios (`python -m backend.record_auth_demo`).
-Set `CORS_ORIGINS=https://<console-domain>` when deploying the API so the browser may call it.
+### Console
+
+Every console route is prerendered static (`npm run build` lists them), so any static host works: Vercel (root
+directory `frontend`, with "include files outside the root directory" on, because the console imports `../sdk/web/src`),
+Firebase Hosting, or `npm start`. Without `NEXT_PUBLIC_PRAMAAN_API` (set at build time) it plays the recordings in
+`frontend/public/data` and needs no API at all. With it, set `RAKSHAM_CORS_ORIGINS=https://<console-domain>` on the API
+so the browser may call it.
+
+A secured API answers the browser only on its open paths, so choose them for what the public console should do live:
+
+| console feature | paths |
+|---|---|
+| decision lab, challenge loop, overview and audit counters | `/v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats` |
+| live capture: typing and touch verdicts, "enrol me" | add `/v1/keystroke,/v1/biometrics` (demo deployments only: these let anyone enrol profiles) |
+| live capture "Decide it", the developers playground | `/v1/authenticate`: only in open development mode; in production the browser never calls it directly |
 
 ## Configuration
 
