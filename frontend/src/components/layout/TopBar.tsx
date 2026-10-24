@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw, ShieldCheck } from "lucide-react";
 import { IconButton } from "@/components/common/Button";
@@ -22,12 +23,15 @@ export function TopBar() {
   const { appView, setAppView, source, custom } = useDemo();
   return (
     <header className="material-thick relative z-30 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-separator/50 px-4 py-2.5 sm:px-6">
-      <div className="flex items-center gap-2.5">
+      <Link href="/console" className="flex items-center gap-2.5 rounded-xl" title="Back to the PRAMAAN console">
         <span className="squircle flex size-8 items-center justify-center rounded-[0.6rem] bg-gradient-to-br from-sys-blue to-sys-indigo shadow-[0_4px_14px_rgb(10_132_255/0.35)]">
           <ShieldCheck className="size-4.5 text-white" aria-hidden />
         </span>
         <span className="hidden text-headline tracking-[0.02em] min-[1500px]:inline">RAKSHAM</span>
-      </div>
+        <span className="hidden items-center gap-1 rounded-full bg-fill-tertiary px-2 py-0.5 text-caption-1 text-label-secondary sm:flex">
+          <ChevronLeft className="size-3" aria-hidden /> PRAMAAN console
+        </span>
+      </Link>
 
       <SegmentedControl label="View" value={appView} onChange={setAppView} options={VIEWS} />
 
@@ -68,7 +72,7 @@ function PersonaSwitch() {
         value: p.id as PersonaId,
         label: (
           <span className="flex items-center gap-1.5" title={`${p.name} · ${p.about}`}>
-            <span className="flex size-4 items-center justify-center rounded-full bg-sys-indigo/30 text-[0.5rem] font-bold text-sys-indigo">
+            <span className="flex size-4 items-center justify-center rounded-full bg-sys-indigo/60 text-[0.5rem] font-bold text-white">
               {p.initials}
             </span>
             <span className="hidden min-[1500px]:inline">{p.first}</span>

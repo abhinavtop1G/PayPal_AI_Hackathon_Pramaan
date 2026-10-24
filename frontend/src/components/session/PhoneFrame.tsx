@@ -74,7 +74,7 @@ function StatusBar({ time, tone }: { time: string; tone: "light" | "dark" }) {
 
 function Battery({ level }: { level: number }) {
   return (
-    <span aria-label={`Battery ${Math.round(level * 100)}%`} className="relative flex h-[0.8rem] w-[1.6rem] items-center">
+    <span role="img" aria-label={`Battery ${Math.round(level * 100)}%`} className="relative flex h-[0.8rem] w-[1.6rem] items-center">
       <span className="absolute inset-y-0 left-0 right-[0.15rem] rounded-[0.25rem] border border-current opacity-40" />
       <span
         className="absolute bottom-[0.13rem] left-[0.13rem] top-[0.13rem] rounded-[0.14rem] bg-current"

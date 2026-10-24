@@ -48,10 +48,10 @@ export function AppShell() {
           )}
           {appView === "builder" && (
             <main className="grid h-full min-h-0 grid-cols-1 lg:grid-cols-[minmax(24rem,2fr)_3fr]">
-              <section aria-label="Session builder" className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:border-separator/50">
+              <section aria-label="Session builder" tabIndex={0} className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto lg:border-r lg:border-separator/50">
                 <SessionBuilder />
               </section>
-              <section aria-label="Analyst console" className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto">
+              <section aria-label="Analyst console" tabIndex={0} className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto">
                 <ConsoleShell />
               </section>
             </main>
@@ -69,7 +69,7 @@ function SessionView() {
         <section aria-label="Customer device" className="relative min-h-0 overflow-hidden px-4 py-4 sm:px-6 lg:border-r lg:border-separator/50">
           <DevicePane />
         </section>
-        <section aria-label="Analyst console" className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto">
+        <section aria-label="Analyst console" tabIndex={0} className="min-h-0 p-4 sm:p-6 lg:overflow-y-auto">
           <ConsoleShell />
         </section>
       </main>
