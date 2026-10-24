@@ -229,6 +229,11 @@ def test_api_authenticate_and_verify(client):
     out = r.json()
     assert out["decision"] in ("allow", "challenge", "block") and 0 <= out["risk_score"] <= 1
     assert out["features"]["geo_speed"] is None  # first sighting: no previous location
+    # decision trace: per-stage time, and the base log-odds the signal contributions add up from
+    assert set(out["timings_ms"]) == {"touch", "typing", "payee", "features", "model", "policy"}
+    assert sum(out["timings_ms"].values()) <= out["latency_ms"] + 1e-6
+    logit = out["base_logit"] + sum(s["contribution"] for s in out["signals"])
+    assert abs(1 / (1 + math.exp(-logit)) - out["risk_score"]) < 1e-3
     assert client.post("/v1/authenticate", json={"user_id": "x"}).status_code == 422  # device is required
     assert client.post("/v1/challenge/verify", json={"decision_id": "missing", "passed": True}).status_code == 404
 
