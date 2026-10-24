@@ -9,39 +9,73 @@ import com.pramaan.sdk.core.Signing
 import com.pramaan.sdk.net.Fallback
 import com.pramaan.sdk.net.PramaanClient
 import com.pramaan.sdk.net.PramaanException
-import com.sun.net.httpserver.HttpServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-import java.net.InetSocketAddress
+import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.IOException
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.Socket
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.concurrent.thread
 
-/** The client against a local HTTP server: headers, signing, retries, fallbacks. */
+/**
+ * The client against a local HTTP server: headers, signing, retries, fallbacks. The server is a bare socket because
+ * Android unit tests compile against android.jar, which has no com.sun.net.httpserver.
+ */
 class ClientTest {
     private data class Seen(val path: String, val headers: Map<String, String>, val body: String)
 
     private val seen = CopyOnWriteArrayList<Seen>()
     private val replies = ArrayDeque<Pair<Int, String>>()
-    private val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0).apply {
-        createContext("/") { ex ->
-            val body = ex.requestBody.readBytes().toString(Charsets.UTF_8)
-            seen += Seen(ex.requestURI.path, ex.requestHeaders.entries.associate { it.key.lowercase() to it.value.first() }, body)
-            val (status, text) = synchronized(replies) { replies.removeFirstOrNull() } ?: (200 to OK)
-            if (status == 429) ex.responseHeaders.add("Retry-After", "2")
-            val bytes = text.toByteArray()
-            ex.sendResponseHeaders(status, bytes.size.toLong())
-            ex.responseBody.use { it.write(bytes) }
+    private val server = ServerSocket(0, 50, InetAddress.getByName("127.0.0.1"))
+    private val worker = thread(isDaemon = true, name = "client-test-server") {
+        while (!server.isClosed) {
+            val socket = try { server.accept() } catch (e: IOException) { break }
+            runCatching { socket.use(::exchange) }
         }
-        start()
     }
-    private val base = "http://127.0.0.1:${server.address.port}"
+    private val base = "http://127.0.0.1:${server.localPort}"
     private val req = AuthRequest("u1", AuthDevice("d1"), transaction = AuthTransaction(amount = 500.0, payeeId = "p1"))
     private val noSleep: (Long) -> Unit = {}
 
+    /** One request and reply per connection (Connection: close), which is all HttpURLConnection needs. */
+    private fun exchange(socket: Socket) {
+        val input = DataInputStream(socket.getInputStream().buffered())
+        fun line(): String {
+            val b = ByteArrayOutputStream()
+            while (true) {
+                val c = input.read()
+                if (c == -1 || c == '\n'.code) break
+                if (c != '\r'.code) b.write(c)
+            }
+            return String(b.toByteArray(), Charsets.UTF_8)
+        }
+        val path = line().split(" ")[1].substringBefore('?')
+        val headers = generateSequence(::line).takeWhile { it.isNotEmpty() }
+            .associate { it.substringBefore(':').trim().lowercase() to it.substringAfter(':').trim() }
+        val body = ByteArray(headers["content-length"]?.toInt() ?: 0).also(input::readFully)
+        seen += Seen(path, headers, String(body, Charsets.UTF_8))
+
+        val (status, text) = synchronized(replies) { replies.removeFirstOrNull() } ?: (200 to OK)
+        val bytes = text.toByteArray()
+        val head = buildString {
+            append("HTTP/1.1 $status Status\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n")
+            if (status == 429) append("Retry-After: 2\r\n")
+            append("\r\n")
+        }
+        socket.getOutputStream().apply { write(head.toByteArray()); write(bytes); flush() }
+    }
+
     @After
-    fun stop() = server.stop(0)
+    fun stop() {
+        server.close()
+        worker.join(1000)
+    }
 
     @Test
     fun sendsKeyAndSignatureOverTheExactBody() {
@@ -84,7 +118,7 @@ class ClientTest {
 
     @Test
     fun fallsBackToAnOtpWhenTheServiceIsDown() {
-        server.stop(0)
+        server.close()
         val r = PramaanClient(base, retries = 0, timeoutMs = 500, sleeper = noSleep).authenticate(req.withRequestId("abc"))
         assertEquals(Decision.CHALLENGE, r.decision)
         assertEquals("sms_otp", r.challengeType)
