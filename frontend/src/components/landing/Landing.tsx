@@ -15,6 +15,19 @@ import { CodeBlock } from "@/components/ui/CodeBlock";
 import { FAMILY_TINT } from "@/config/authSignals";
 import { HeroDecisions } from "./HeroDecisions";
 
+const ALL_SIGNALS = "risk engine (all signals)";
+const OTP_ALWAYS = "SMS OTP on every payment";
+
+/** A report percentage for a headline: 82.78 -> "82.8%", 100 -> "100%". */
+const pc = (v: number) => `${Number(v.toFixed(1))}%`;
+
+/** p95 of POST /v1/authenticate over HTTP without touch data, as measured by backend/bench_auth.py. */
+function useHttpP95(): number | null {
+  const { data } = useReport();
+  const p95 = data?.http_latency[0]?.p95;
+  return p95 === undefined ? null : Math.round(p95);
+}
+
 const fade = { initial: { opacity: 0, y: 16 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.5 } };
 
 /** The public front page: what PRAMAAN is, the evidence, how it decides, and the way into the console. */
@@ -65,6 +78,7 @@ function Nav() {
 }
 
 function Hero() {
+  const p95 = useHttpP95();
   return (
     <section className="mx-auto grid max-w-[78rem] items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:pt-24">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -72,7 +86,7 @@ function Hero() {
           प्रमाण · “proof” · risk-based transaction authentication
         </p>
         <h1 className="mt-5 text-[3.25rem] font-bold leading-[1.02] tracking-[-0.035em] sm:text-[4.25rem]">
-          Proof it&apos;s really you, <span className="text-brand">in 42 ms.</span>
+          Proof it&apos;s really you, <span className="text-brand">{p95 === null ? "in milliseconds." : `in ${p95} ms.`}</span>
         </h1>
         <p className="mt-5 max-w-[34rem] text-[1.15rem] leading-relaxed text-label-secondary">
           For every login and payment, PRAMAAN reads behaviour, device and transaction signals together, then allows it,
@@ -99,15 +113,24 @@ function Hero() {
 }
 
 function Proof() {
-  const items: [string, string, string][] = [
-    ["82.8%", "of attack requests stopped", "SMS OTP on every payment: 24.2%"],
-    ["1.8%", "of genuine requests challenged", "SMS OTP on every payment: 100%"],
-    ["0.996", "ROC-AUC on held-out days", "best single family: 0.95"],
-    ["100%", "of SIM swaps stopped", "an SMS OTP stops none: it goes to the attacker"],
-  ];
+  const { data } = useReport();
+  let items: [string, string, string][] = [];
+  if (data) {
+    const { designs, ranking } = data.auth;
+    const all = designs[ALL_SIGNALS];
+    const otp = designs[OTP_ALWAYS];
+    const bestSingle = Math.max(...Object.entries(ranking).filter(([k]) => k !== ALL_SIGNALS).map(([, r]) => r.roc_auc));
+    items = [
+      [pc(all.attacks_stopped_pct), "of attack requests stopped", `SMS OTP on every payment: ${pc(otp.attacks_stopped_pct)}`],
+      [pc(all.genuine_challenged_pct), "of genuine requests challenged", `SMS OTP on every payment: ${pc(otp.genuine_challenged_pct)}`],
+      [ranking[ALL_SIGNALS].roc_auc.toFixed(3), "ROC-AUC on held-out days", `best single family: ${bestSingle.toFixed(2)}`],
+      [pc(all.per_scenario.sim_swap), "of SIM swaps stopped", `SMS OTP on every payment: ${pc(otp.per_scenario.sim_swap)}, the code goes to the attacker`],
+    ];
+  }
   return (
     <section id="results" className="border-y border-white/[0.06] bg-white/[0.015]">
       <div className="mx-auto grid max-w-[78rem] grid-cols-2 gap-px px-5 lg:grid-cols-4">
+        {!data && [0, 1, 2, 3].map((i) => <div key={i} className="px-2 py-9 sm:px-6"><div className="skeleton h-28 rounded-2xl" /></div>)}
         {items.map(([v, l, c], i) => (
           <motion.div key={l} {...fade} transition={{ duration: 0.5, delay: 0.06 * i }} className="px-2 py-9 sm:px-6">
             <p className="text-[2.6rem] font-bold tracking-[-0.03em]">{v}</p>
@@ -189,6 +212,7 @@ function StepUps() {
 }
 
 function Pipeline() {
+  const p95 = useHttpP95();
   const steps: [LucideIcon, string, string][] = [
     [Smartphone, "SDK", "signals on the device"], [Lock, "Gateway", "key · HMAC · replay · rate"], [Fingerprint, "Touch + typing", "BiLSTM · 1D-CNN"],
     [Landmark, "Payee intel", "mule-network risk"], [Binary, "27 features", "live state, causal"], [BrainCircuit, "Monotone XGBoost", "exact tree-SHAP"],
@@ -197,7 +221,7 @@ function Pipeline() {
   return (
     <section className="border-y border-white/[0.06] bg-white/[0.015] py-20">
       <div className="mx-auto max-w-[78rem] px-5">
-        <SectionHead eyebrow="Request path" title="One request, about 40 ms"
+        <SectionHead eyebrow="Request path" title={p95 === null ? "One request, in milliseconds" : `One request, about ${p95} ms`}
           body="Each stage reports its own time; the decision lab shows the trace for every request, with the SHAP waterfall behind the score." />
         <ol className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
           {steps.map(([Icon, t, d], i) => (
@@ -217,6 +241,9 @@ function Pipeline() {
 
 function Compare() {
   const { data } = useReport();
+  const auth = data?.auth;
+  const all = auth?.designs[ALL_SIGNALS];
+  const otp = auth?.designs[OTP_ALWAYS];
   const order: [string, string][] = [
     ["SMS OTP on every payment", "SMS OTP on every payment"], ["rules engine + SMS OTP", "Rules engine + SMS OTP"],
     ["device signals only", "Device signals only"], ["behaviour signals only", "Behaviour signals only"],
@@ -224,8 +251,13 @@ function Compare() {
   ];
   return (
     <section className="mx-auto grid max-w-[78rem] gap-10 px-5 py-24 lg:grid-cols-2">
-      <SectionHead eyebrow="Evaluation" title="Stops 3.4× more attacks than OTP-always, with 55× less friction"
-        body="3,000 simulated customers, 273k requests over 60 days; trained on days 0–35, tested on days 45–60 through the real service, challenge outcomes simulated. Every design runs on the same replay." />
+      <SectionHead eyebrow="Evaluation"
+        title={all && otp
+          ? `Stops ${(all.attacks_stopped_pct / otp.attacks_stopped_pct).toFixed(1)}× more attacks than OTP-always, with ${Math.round(otp.genuine_challenged_pct / all.genuine_challenged_pct)}× less friction`
+          : "Against an SMS OTP on every payment"}
+        body={auth
+          ? `${auth.data.users.toLocaleString("en-US")} simulated customers, ${Math.round(auth.data.requests / 1000)}k requests over ${auth.split.days} days; trained on days 0–${auth.split.train_end}, tested on days ${auth.split.valid_end}–${auth.split.days} through the real service, challenge outcomes simulated. Every design runs on the same replay.`
+          : "Every design runs on the same replay."} />
       <motion.div {...fade} className="material-regular squircle rounded-[var(--radius-panel)] p-6">
         <p className="mb-4 text-footnote text-label-secondary">Attack requests finally stopped · genuine requests challenged</p>
         {data ? (

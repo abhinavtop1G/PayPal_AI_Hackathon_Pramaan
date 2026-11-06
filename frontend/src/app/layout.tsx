@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: "Allow, challenge or block an online transaction from behaviour, device and transaction signals, and see why.",
   applicationName: "PRAMAAN",
   openGraph: {
-    title: "PRAMAAN — proof it's really you, in 42 ms",
+    title: "PRAMAAN — proof it's really you, in milliseconds",
     description: "Behaviour, device and transaction signals in one model: allow, the right step-up, or block, with the signals behind every decision.",
     type: "website",
   },

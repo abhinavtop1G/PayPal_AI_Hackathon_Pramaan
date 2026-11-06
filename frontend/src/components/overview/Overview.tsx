@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BadgeIndianRupee, Clock3, FastForward, Pause, Play, ShieldCheck, Swords, UsersRound } from "lucide-react";
-import { useTraffic } from "@/api/console";
+import { useReport, useTraffic } from "@/api/console";
 import { BarList } from "@/components/charts/BarList";
 import { Columns } from "@/components/charts/Columns";
 import { RiskHistogram } from "@/components/charts/RiskHistogram";
@@ -39,6 +39,8 @@ export function Overview() {
 }
 
 function Dashboard({ rows, date, model, about }: { rows: TrafficRow[]; date: string; model: string; about: string }) {
+  const { data: report } = useReport();
+  const otpStopped = report?.auth.designs["SMS OTP on every payment"]?.attacks_stopped_pct;
   const r = useReplay(START, 300);
   const [stream, setStream] = useState<"all" | "interrupted">("all");
   const { toggle, seek, clock } = r;
@@ -66,7 +68,7 @@ function Dashboard({ rows, date, model, about }: { rows: TrafficRow[]; date: str
           <p className="text-eyebrow text-label-tertiary">Operations overview</p>
           <h1 className="mt-1 text-large-title">A day of payments, decided</h1>
           <p className="mt-1 max-w-[52rem] text-subheadline text-label-secondary">
-            Every request from one held-out test day ({date}) of 3,000 simulated customers, replayed through the trained
+            Every request from one held-out test day ({date}) of {report ? `${report.auth.data.users.toLocaleString("en-IN")} ` : ""}simulated customers, replayed through the trained
             service ({model}) with simulated challenge outcomes. The model never saw this day.
           </p>
         </div>
@@ -98,7 +100,7 @@ function Dashboard({ rows, date, model, about }: { rows: TrafficRow[]; date: str
           detail={`${s.genuineInterrupted} of ${s.genuine.toLocaleString("en-IN")} · ${s.genuineBlocked} finally blocked`} />
         <StatTile icon={Swords} label="Attack requests stopped" accent="var(--color-sys-red)"
           value={s.attacks ? `${s.stopped}/${s.attacks}` : "—"}
-          detail={s.attacks ? `${Math.round((100 * s.stopped) / s.attacks)}% stopped (SMS OTP on every payment: 24%)` : "no attacks yet today"} />
+          detail={s.attacks ? `${Math.round((100 * s.stopped) / s.attacks)}% stopped${otpStopped === undefined ? "" : ` (SMS OTP on every payment: ${Math.round(otpStopped)}%)`}` : "no attacks yet today"} />
         <StatTile icon={BadgeIndianRupee} label="Attack money stopped" accent="var(--color-sys-orange)"
           value={<AnimatedNumber value={s.moneyStopped} format={(v) => inrCompact(v)} />}
           detail={s.moneyAttempted ? `of ${inr(s.moneyAttempted)} attempted` : "—"} />
