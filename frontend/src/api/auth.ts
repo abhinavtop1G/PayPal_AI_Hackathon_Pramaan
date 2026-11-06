@@ -1,12 +1,12 @@
 import type { AuthStats, ChallengeOutcome, DemoRun, FeedRow, Overrides, Scenario } from "@/types/auth";
 
 /**
- * PRAMAAN authentication API. With NEXT_PUBLIC_PRAMAAN_API (or NEXT_PUBLIC_RAKSHAM_API) set, the console calls the running
+ * PRAMAAN authentication API. With NEXT_PUBLIC_PRAMAAN_API set, the console calls the running
  * service; otherwise, or when a call fails, scenarios play from /data/auth_demo.json, recorded from the same endpoints
  * by `python -m backend.record_auth_demo`. The console only uses the open demo paths (PRAMAAN_OPEN_PATHS), so no API key
  * or signing secret ever ships to the browser.
  */
-export const AUTH_API = (process.env.NEXT_PUBLIC_PRAMAAN_API ?? process.env.NEXT_PUBLIC_RAKSHAM_API)?.replace(/\/$/, "");
+export const AUTH_API = process.env.NEXT_PUBLIC_PRAMAAN_API?.replace(/\/$/, "");
 export type Source = "live" | "recorded";
 
 interface Recording {

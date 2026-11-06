@@ -57,7 +57,7 @@ Every number on screen comes from `POST /v1/demo/{typology}`, the same session p
   - `src/data/`: the 8 scenarios for each of the 3 customers.
   - `public/data/fleet.json`: the bank wall (12 h of held-out sessions run through the session service with one shared alert policy).
   - `public/data/campaign.json`: the mule network (cases and money-flow graphs after 60 days of the synthetic ledger).
-- **Live.** Start the API (`uvicorn backend.app:app --port 8000`) and run `NEXT_PUBLIC_RAKSHAM_API=http://127.0.0.1:8000 npm run dev`. The app bar shows "Live API" when the live call succeeds; if it fails, the page falls back to the recording.
+- **Live.** Run `python run.py` from the repo root, which starts the API and this console together. The app bar shows "Live API" when the live call succeeds; if it fails, the page falls back to the recording.
   - Before each replay the page calls `/v1/admin/reset?services=session`, because all demo sessions share one simulated user per customer. Use a demo server only.
   - The mule network loads the payee-side ledger on first use (about 10 s) and falls back to the recording if the API has no cases.
   - **Try it** needs the live API; the bank wall always plays its recording.

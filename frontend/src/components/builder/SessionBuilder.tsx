@@ -168,7 +168,7 @@ export function SessionBuilder() {
         <div className="flex flex-col gap-3 text-subheadline text-label-secondary">
           <p>The builder scores every event live, so it needs the backend running{API ? ` at ${API}` : ""}.</p>
           <pre className="rounded-[0.8rem] bg-black/40 p-3 font-mono text-footnote text-label">
-            {`uvicorn backend.app:app --port 8000\nNEXT_PUBLIC_RAKSHAM_API=http://127.0.0.1:8000 npm run dev`}
+            {`python run.py`}
           </pre>
         </div>
       </Panel>

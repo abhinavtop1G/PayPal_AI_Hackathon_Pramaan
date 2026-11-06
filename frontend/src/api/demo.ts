@@ -4,10 +4,10 @@ import { RECORDED } from "@/data";
 import type { CampaignData, CaseGraph, DemoInput, DemoReplay, Fleet } from "@/types/demo";
 
 /**
- * Data access. With NEXT_PUBLIC_RAKSHAM_API set (e.g. http://127.0.0.1:8000) the page asks the running backend;
+ * Data access. With NEXT_PUBLIC_PRAMAAN_API set (e.g. http://127.0.0.1:8000) the page asks the running backend;
  * otherwise, or if a call fails, it uses recordings made from the same endpoints by `python -m backend.record_demo`.
  */
-export const API = process.env.NEXT_PUBLIC_RAKSHAM_API?.replace(/\/$/, "");
+export const API = process.env.NEXT_PUBLIC_PRAMAAN_API?.replace(/\/$/, "");
 
 export { RECORDED };
 export type Source = "live" | "recorded";
