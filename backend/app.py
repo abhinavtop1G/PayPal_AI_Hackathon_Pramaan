@@ -256,10 +256,14 @@ def demo_touch(profile: str = "normal", n: int = 10):
     """Demo/builder helper: a real HMOG touch window for the builder's demo customer (held-out subject).
     profile: normal (own hands) | coerced (own hands, modelled stress) | remote (someone else's hands)."""
     s = svc("session")
-    if s.bio_bank is None:
-        raise HTTPException(503, "HMOG gesture cache not available")
     if profile not in ("normal", "coerced", "rushed", "remote"):
         raise HTTPException(422, "profile must be normal, coerced, rushed or remote")
+    if s.bio_bank is None:  # no HMOG cache (it needs the dataset): use the real gestures shipped with the repo
+        windows = (s.gesture_pack or {"windows": {}})["windows"].get(profile)
+        if not windows:
+            raise HTTPException(503, f"no gestures available for profile '{profile}' without the HMOG cache")
+        return {"subject": s.gesture_pack["subject"], "profile": profile,
+                "gestures": windows[time.time_ns() % len(windows)][:max(10, min(n, 20))]}
     from ml.sim.hmog_bank import seeded_rng
     subject = s.bio_bank.subjects[0]
     ref = s.bio_bank.window_ref(subject, profile, 1.0, seeded_rng("builder", profile, time.time_ns()))

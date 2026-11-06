@@ -4,9 +4,11 @@ Every event returns the GRU's live view (P(scam in progress), stage, likely typo
 events additionally return the engine decision (action, reasons, EN/HI message). The payee score
 used by fusion is `payee_mule_score` from the event — the slot the GNN's account score fills.
 """
+import json
 import os
 import threading
 import time
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -38,6 +40,7 @@ def _load_bio(device: str):
         return None, None
 
 FUSION_DIR = os.environ.get("RAKSHAM_FUSION_DIR", "ml/engine/artifacts")
+GESTURE_PACK = Path("ml/auth/artifacts/demo_gestures.json")  # real HMOG gestures of one subject, shipped with the repo
 DEFAULT_BIO = {"pressure": 0.52, "swipe_velocity": 1.0, "tap_interval_ms": 480.0, "hesitation_ms": 1800.0,
                "orientation_var": 0.05}  # population-typical baselines when a profile has none
 CONTEXT_COLS = ["call_active", "caller_kind", "call_video", "call_elapsed_s", "caller_number", "caller_reported",
@@ -57,6 +60,7 @@ class SessionService:
         self.telecom = Telecom(reported_numbers(N_SYNDICATES))
         self.reputation = ReputationClient(self.telecom, background=True)
         self.bio, self.bio_bank = _load_bio(device)
+        self.gesture_pack = json.loads(GESTURE_PACK.read_text()) if GESTURE_PACK.exists() else None
         self.gru = load_gru(device)
         self.fusion = FusionModel.load(FUSION_DIR)
         self.policy = AlertPolicy()
@@ -85,7 +89,7 @@ class SessionService:
         if self.bio is not None and subj is not None and not pd.isna(subj):
             bio_key = f"hmog:{int(subj)}"
             if bio_key not in self.bio.profiles:
-                self.bio.enroll(bio_key, self.bio_bank.enrolment(int(subj)))
+                self.bio.enroll(bio_key, self._enrolment(int(subj)))
         elif self.bio is not None and user["user_id"] in self.bio.profiles:
             bio_key = user["user_id"]
         uid = user["user_id"]
@@ -125,6 +129,14 @@ class SessionService:
         out["signals"] = {"caller_reported": row.get("caller_reported"), "touch": bio_signal}
         out["latency_ms"] = round(1000 * (time.perf_counter() - t0), 2)
         return out
+
+    def _enrolment(self, subject: int) -> list[dict]:
+        """A demo subject's enrolment gestures: from the HMOG cache, or the pack shipped with the repo without it."""
+        if self.bio_bank is not None:
+            return self.bio_bank.enrolment(subject)
+        if self.gesture_pack is None or self.gesture_pack["subject"] != subject:
+            raise ValueError(f"no enrolment gestures for HMOG subject {subject}")
+        return self.gesture_pack["enrolment"]
 
     def _touch(self, s: dict, ev: dict) -> dict | None:
         """Real biometrics on a BIO_WINDOW that carries gestures, if the customer has a touch profile and consented."""
