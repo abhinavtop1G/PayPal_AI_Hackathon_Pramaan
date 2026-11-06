@@ -24,8 +24,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 FRONTEND = ROOT / "frontend"
-SERVICES = "biometrics,keystroke,campaign,session,auth"  # everything the console calls
-REQUIRED = ("torch", "xgboost", "sklearn", "pandas", "fastapi", "uvicorn")
+SERVICES = "biometrics,keystroke,campaign,session,auth,paypal"  # everything the console calls
+REQUIRED = ("torch", "xgboost", "sklearn", "pandas", "fastapi", "uvicorn", "httpx")
 API_START_TIMEOUT_S = 240
 
 
@@ -44,6 +44,32 @@ def check_port_free(port: int) -> None:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if s.connect_ex(("127.0.0.1", port)) == 0:
             fail(f"Port {port} is already in use. Stop whatever is on it, or pick another with --api-port / --web-port.")
+
+
+def read_dotenv(path: Path) -> dict[str, str]:
+    """KEY=value lines from .env (the PayPal sandbox credentials). Real environment variables win over it."""
+    if not path.exists():
+        return {}
+    out = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            out[key.strip()] = value.strip().strip("'\"")
+    return out
+
+
+def report_paypal(api_url: str) -> None:
+    messages = {"connected": "PayPal sandbox: connected.",
+                "not_configured": "PayPal sandbox: no credentials in .env, so the checkout page shows decisions but no PayPal button. "
+                                  "See \"Connect PayPal\" in README.md.",
+                "bad_credentials": "PayPal sandbox: PayPal rejected the credentials in .env. Check PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.",
+                "unreachable": "PayPal sandbox: could not reach PayPal. Check your internet connection."}
+    try:
+        with urllib.request.urlopen(f"{api_url}/v1/paypal/config", timeout=30) as r:
+            print(messages.get(json.load(r).get("status"), "PayPal sandbox: unknown status."), flush=True)
+    except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError):
+        print("PayPal sandbox: could not read its status from the API.", flush=True)
 
 
 def spawn(cmd: list[str], env: dict[str, str], cwd: Path) -> subprocess.Popen:
@@ -91,7 +117,7 @@ def main() -> None:
             fail("npm was not found. Install Node.js 20 or newer, or use --api-only.")
 
     api_url = f"http://127.0.0.1:{args.api_port}"
-    api_env = {**os.environ, "PRAMAAN_SERVICES": SERVICES, "BIO_CALIB": "ml/auth/artifacts/bio_calib.pkl",
+    api_env = {**read_dotenv(ROOT / ".env"), **os.environ, "PRAMAAN_SERVICES": SERVICES, "BIO_CALIB": "ml/auth/artifacts/bio_calib.pkl",
                "RAKSHAM_CORS_ORIGINS": f"http://localhost:{args.web_port},http://127.0.0.1:{args.web_port}"}
     procs: list[subprocess.Popen] = []
     try:
@@ -103,6 +129,7 @@ def main() -> None:
         for name, error in health.get("errors", {}).items():
             print(f"  WARNING: service '{name}' did not load: {error}", flush=True)
         print(f"API docs: {api_url}/docs", flush=True)
+        report_paypal(api_url)
 
         if npm is not None:
             if not (FRONTEND / "node_modules").exists():
