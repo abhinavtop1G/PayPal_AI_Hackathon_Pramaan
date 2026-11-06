@@ -22,12 +22,14 @@ from ml.sim.generate import generate_demo
 from ml.auth.geo import parse_geo_header
 
 from . import security
+from .paypal_service import GateClosed, NotConfigured, OrderMismatch, PayPalCheckout, PayPalError, client_from_env
 from .schemas import (AuthRequest, ChallengeResult, ConsentCheck, DemoLoad, Gestures, HoldRequest, KeystrokeEnroll,
-                      KeystrokeVerify, LedgerTransfer, PayeeQuery, PSIDemo, SessionEvent, SessionStart, TabularRequest,
-                      Transfer)
+                      KeystrokeVerify, LedgerTransfer, PayeeQuery, PayPalCapture, PayPalVerify, PSIDemo, SessionEvent,
+                      SessionStart, TabularRequest, Transfer)
 
-# load order matters: `session` uses `campaign`; `auth` uses `biometrics` (touch) and `campaign` (payee intelligence)
-SERVICES = ("campaign", "session", "gnn", "biometrics", "keystroke", "tabular", "auth")
+# load order matters: `session` uses `campaign`; `auth` uses `biometrics` (touch) and `campaign` (payee intelligence);
+# `paypal` gates payments on `auth`
+SERVICES = ("campaign", "session", "gnn", "biometrics", "keystroke", "tabular", "auth", "paypal")
 REGISTRY: dict = {"services": {}, "errors": {}, "load_seconds": {}}
 
 
@@ -51,6 +53,8 @@ def _load(name: str, device: str):
         from .auth_service import AuthService
         return AuthService(bio=REGISTRY["services"].get("biometrics"), payee=REGISTRY["services"].get("campaign"),
                            typing=REGISTRY["services"].get("keystroke"))
+    if name == "paypal":
+        return PayPalCheckout(REGISTRY["services"].get("auth"), client_from_env())
     from .tabular_service import TabularService
     return TabularService()  # always CPU (see tabular_service docstring)
 
@@ -119,7 +123,8 @@ def health():
     return {"status": "ok" if REGISTRY["services"] else "degraded", "device": REGISTRY.get("device"),
             "loaded": sorted(REGISTRY["services"]), "errors": REGISTRY["errors"], "load_seconds": REGISTRY["load_seconds"],
             "security": security.status(),
-            "auth": REGISTRY["services"]["auth"].info() if "auth" in REGISTRY["services"] else None}
+            "auth": REGISTRY["services"]["auth"].info() if "auth" in REGISTRY["services"] else None,
+            "paypal": REGISTRY["services"]["paypal"].info() if "paypal" in REGISTRY["services"] else None}
 
 
 # ---------------------------------------------------------------------------- transaction authentication (PRAMAAN)
@@ -180,6 +185,62 @@ def auth_decisions(limit: int = 50):
 @app.get("/v1/auth/stats", tags=["authentication"])
 def auth_stats():
     return {**svc("auth").audit.stats(), **svc("auth").info()}
+
+
+# ---------------------------------------------------------------------------- PayPal checkout, gated by the decision
+def _paypal(fn, *args):
+    """PayPal's own decline reason reaches the page (it decides whether to offer a retry); errors never carry a secret."""
+    try:
+        return fn(*args)
+    except GateClosed as e:
+        raise HTTPException(403, {"message": str(e), "issue": "GATE_CLOSED"}) from e
+    except NotConfigured as e:
+        raise HTTPException(503, {"message": str(e), "issue": "NOT_CONFIGURED"}) from e
+    except OrderMismatch as e:
+        raise HTTPException(409, {"message": str(e), "issue": "ORDER_MISMATCH"}) from e
+    except PayPalError as e:
+        code = 422 if e.status == 422 else 503 if e.issue == "UNREACHABLE" else 502
+        raise HTTPException(code, {"message": str(e), "issue": e.issue, "debug_id": e.debug_id}) from e
+    except KeyError as e:
+        raise HTTPException(404, {"message": f"not found: {e}", "issue": "NOT_FOUND"}) from e
+    except ValueError as e:
+        raise HTTPException(422, {"message": str(e), "issue": "INVALID"}) from e
+
+
+@app.get("/v1/paypal/config", tags=["paypal"])
+def paypal_config():
+    """Whether the sandbox is connected, the public client id the browser SDK needs, and the scenarios that have a payment."""
+    return svc("paypal").config()
+
+
+@app.post("/v1/paypal/checkout/{scenario}", tags=["paypal"])
+def paypal_start(scenario: str):
+    """PRAMAAN decides the demo customer's payment. Nothing has reached PayPal yet; `order_preview` is what would be sent."""
+    return _paypal(svc("paypal").start, scenario)
+
+
+@app.post("/v1/paypal/checkout/{checkout_id}/verify", tags=["paypal"])
+def paypal_verify(checkout_id: str, body: PayPalVerify):
+    """Result of the step-up: passed opens the gate to PayPal, failed closes it for good."""
+    return _paypal(svc("paypal").verify, checkout_id, body.passed)
+
+
+@app.post("/v1/paypal/checkout/{checkout_id}/order", tags=["paypal"])
+def paypal_order(checkout_id: str):
+    """Create the PayPal order (POST /v2/checkout/orders). 403 if the decision does not allow it: PayPal is not called."""
+    return _paypal(svc("paypal").create_order, checkout_id)
+
+
+@app.post("/v1/paypal/checkout/{checkout_id}/capture", tags=["paypal"])
+def paypal_capture(checkout_id: str, body: PayPalCapture):
+    """Capture after the buyer approves. The order is re-read from PayPal and checked against the decision first."""
+    return _paypal(svc("paypal").capture, checkout_id, body.order_id)
+
+
+@app.post("/v1/paypal/checkout/{checkout_id}/refund", tags=["paypal"])
+def paypal_refund(checkout_id: str):
+    """Refund a captured payment in full (POST /v2/payments/captures/{id}/refund), for fraud reported afterwards."""
+    return _paypal(svc("paypal").refund, checkout_id)
 
 
 # ---------------------------------------------------------------------------- session pipeline

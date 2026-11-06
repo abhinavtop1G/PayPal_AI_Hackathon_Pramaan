@@ -8,7 +8,9 @@ services:
       REDIS_URL: redis://redis:6379/0
       DATABASE_URL: postgresql://pramaan:pramaan@db:5432/pramaan
       PRAMAAN_API_KEYS: dev-key-change-me
-      PRAMAAN_OPEN_PATHS: /v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats
+      PRAMAAN_OPEN_PATHS: /v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats,/v1/paypal
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID:-}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET:-}
       RAKSHAM_CORS_ORIGINS: http://localhost:3000
     depends_on: [redis, db]
   redis:

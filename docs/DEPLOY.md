@@ -67,7 +67,9 @@ A secured API answers the browser only on its open paths, so choose them for wha
 
 | variable | meaning |
 |---|---|
-| `PRAMAAN_SERVICES` | services to load (image default `biometrics,keystroke,campaign,auth`) |
+| `PRAMAAN_SERVICES` | services to load (image default `biometrics,keystroke,campaign,auth,paypal`) |
+| `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | PayPal sandbox credentials for the checkout (keep the secret in Secret Manager); requests only ever go to PayPal's sandbox |
+| `PAYPAL_INR_PER_USD` | demo rate for charging the model's INR amounts in USD (default 85) |
 | `PRAMAAN_API_KEYS` | comma-separated client keys; unset = open development mode |
 | `PRAMAAN_HMAC_SECRET` | request-signing secret; unset = signatures not required |
 | `PRAMAAN_RATE_LIMIT` | requests per second per key / IP (burst 2x) |

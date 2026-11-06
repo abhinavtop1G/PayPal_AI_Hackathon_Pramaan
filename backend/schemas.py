@@ -181,3 +181,11 @@ class KeystrokeVerify(BaseModel):
 class ChallengeResult(BaseModel):
     decision_id: str
     passed: bool = Field(description="did the user complete the step-up (OTP / passkey / call-back / cool-off)?")
+
+
+class PayPalVerify(BaseModel):
+    passed: bool = Field(description="did the customer complete the step-up?")
+
+
+class PayPalCapture(BaseModel):
+    order_id: str = Field(pattern=r"^[A-Z0-9]{1,36}$", description="the PayPal order the buyer approved")

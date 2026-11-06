@@ -42,8 +42,8 @@ done
 # 4. Optional: Memorystore Redis (shared live state) -------------------------------------------------------------
 EXTRA_FLAGS=()
 # '@' separates variables (gcloud's ^@^ delimiter syntax) because the values themselves contain commas
-ENV_VARS="PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth@RAKSHAM_DEVICE=cpu@PRAMAAN_RATE_LIMIT=100"
-ENV_VARS+="@PRAMAAN_OPEN_PATHS=/v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats"
+ENV_VARS="PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth,paypal@RAKSHAM_DEVICE=cpu@PRAMAAN_RATE_LIMIT=100"
+ENV_VARS+="@PRAMAAN_OPEN_PATHS=/v1/auth/demo,/v1/auth/scenarios,/v1/auth/decisions,/v1/auth/stats,/v1/paypal"
 ENV_VARS+="@RAKSHAM_CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}"
 if [[ "${WITH_REDIS:-0}" == "1" ]]; then
   gcloud services enable redis.googleapis.com vpcaccess.googleapis.com
