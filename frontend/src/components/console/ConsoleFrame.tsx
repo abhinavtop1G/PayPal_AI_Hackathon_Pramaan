@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import {
-  Activity, BookOpen, Fingerprint, FlaskConical, Gauge, Home, Scale, ScrollText, ShieldHalf, type LucideIcon,
+  Activity, BookOpen, CreditCard, Fingerprint, FlaskConical, Gauge, Home, Scale, ScrollText, ShieldHalf, type LucideIcon,
 } from "lucide-react";
 import { Toaster } from "@/components/common/Toaster";
 import { spring } from "@/config/motion";
@@ -14,6 +14,7 @@ import { Wordmark } from "./Brand";
 
 const NAV: { href: string; label: string; icon: LucideIcon; hint: string }[] = [
   { href: "/console", label: "Overview", icon: Gauge, hint: "A day of traffic, decided" },
+  { href: "/console/checkout", label: "PayPal checkout", icon: CreditCard, hint: "Fraud stops before PayPal" },
   { href: "/console/lab", label: "Decision lab", icon: FlaskConical, hint: "One request, end to end" },
   { href: "/console/policy", label: "Policy tuner", icon: Scale, hint: "Friction against fraud" },
   { href: "/console/capture", label: "Live capture", icon: Fingerprint, hint: "The web SDK on this page" },

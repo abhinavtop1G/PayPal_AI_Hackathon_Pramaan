@@ -91,11 +91,14 @@ function Hero() {
         <p className="mt-5 max-w-[34rem] text-[1.15rem] leading-relaxed text-label-secondary">
           For every login and payment, PRAMAAN reads behaviour, device and transaction signals together, then allows it,
           blocks it, or picks the one step-up that actually stops the likely attack. Every decision comes with the signals
-          behind it, in English and Hindi.
+          behind it, in English and Hindi. In front of PayPal checkout, it decides before an order exists.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/console/lab?autoplay" className="flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5e5ce6] to-[#3f8cf0] px-5 py-3 text-subheadline font-semibold text-white shadow-[0_10px_30px_rgb(94_92_230/0.45)] transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            Watch it decide <ArrowRight className="size-4" aria-hidden />
+          <Link href="/console/checkout" className="flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5e5ce6] to-[#3f8cf0] px-5 py-3 text-subheadline font-semibold text-white shadow-[0_10px_30px_rgb(94_92_230/0.45)] transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            Try the PayPal checkout <ArrowRight className="size-4" aria-hidden />
+          </Link>
+          <Link href="/console/lab?autoplay" className="flex items-center gap-2 rounded-full bg-white/[0.08] px-5 py-3 text-subheadline font-semibold ring-1 ring-white/10 transition-colors hover:bg-white/[0.12]">
+            Watch it decide
           </Link>
           <Link href="/console/capture" className="flex items-center gap-2 rounded-full bg-white/[0.08] px-5 py-3 text-subheadline font-semibold ring-1 ring-white/10 transition-colors hover:bg-white/[0.12]">
             <Fingerprint className="size-4" aria-hidden /> Try the SDK on yourself
@@ -309,6 +312,7 @@ val request = Pramaan.get().collect(userId,
 
 function Cta() {
   const links: [string, string, string][] = [
+    ["/console/checkout", "PayPal checkout", "Blocked payments never reach PayPal; clean ones capture in the sandbox"],
     ["/console", "Operations overview", "A held-out day of traffic, decided on a compressed clock"],
     ["/console/lab", "Decision lab", "Nine attacks and look-alikes, end to end, with SHAP and the customer's screen"],
     ["/console/capture", "Live capture", "Your own typing and swipes through the web SDK"],
@@ -319,7 +323,7 @@ function Cta() {
       <div className="squircle relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1c1a4a] via-[#0d1830] to-[#062033] p-8 ring-1 ring-white/10 sm:p-12">
         <div aria-hidden className="absolute -right-20 -top-20 size-80 rounded-full bg-[#64d2ff]/20 blur-3xl" />
         <h2 className="relative text-[2rem] font-bold tracking-[-0.02em]">See it decide.</h2>
-        <div className="relative mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {links.map(([href, t, d]) => (
             <Link key={href} href={href} className="group rounded-[1.2rem] bg-white/[0.06] p-5 ring-1 ring-white/10 transition-colors hover:bg-white/[0.1]">
               <p className="flex items-center justify-between text-headline">{t}<ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden /></p>
