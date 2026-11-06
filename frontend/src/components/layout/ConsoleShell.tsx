@@ -90,6 +90,7 @@ function StatusStrip() {
   const d = view.lastDecision?.decision ?? null;
   const cf = counterfactual(replay);
   const atRisk = view.decisions.reduce((s, e) => s + (e.input.amount ?? 0), 0);
+  const built = replay.typology === "builder"; // a session built by hand has no ground truth: don't call it genuine
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-5">
       <Tile label="Workflow risk" icon={Activity} accent={cur ? riskColor(p) : undefined}>
@@ -116,7 +117,7 @@ function StatusStrip() {
         accent={done ? (cf.held ? (replay.is_scam ? "var(--color-sys-green)" : "var(--color-sys-yellow)") : "var(--color-sys-green)") : undefined}
         label={
           cf.held && done
-            ? replay.is_scam ? "Money protected" : "Genuine payment held"
+            ? replay.is_scam ? "Money protected" : built ? "Payment held" : "Genuine payment held"
             : done && !cf.held ? "Paid without friction" : "Payments so far"
         }
       >
@@ -126,7 +127,7 @@ function StatusStrip() {
               {rupees(cf.amount)}
             </span>
           ) : cf.held && done ? (
-            <span className="text-sys-yellow" title="A false alarm: the engine held a genuine payment (see the policy panel for why)">
+            <span className="text-sys-yellow" title={built ? "The engine held this payment (see the policy panel for why)" : "A false alarm: the engine held a genuine payment (see the policy panel for why)"}>
               {rupees(view.lastDecision?.input.amount ?? 0)}
             </span>
           ) : (
