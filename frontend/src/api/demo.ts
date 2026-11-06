@@ -33,20 +33,14 @@ export async function loadFleet(signal?: AbortSignal): Promise<Fleet> {
   return (await r.json()) as Fleet;
 }
 
-/** Payee-side cases and their money-flow graphs: live when the API is up, else the recording. */
+/**
+ * Payee-side cases and their money-flow graphs: live when the API has a ledger loaded, else the recording. Loading one
+ * (POST /v1/campaign/demo/load) takes minutes on a CPU, so opening the page doesn't start it.
+ */
 export async function loadCampaign(signal?: AbortSignal): Promise<{ data: CampaignData; source: Source }> {
   if (API) {
     try {
-      let cases = await fetch(`${API}/v1/campaign/cases?top=12`, { signal }).then((r) => r.json());
-      if (!cases.cases?.length) {
-        await fetch(`${API}/v1/campaign/demo/load`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ until_day: 60, n_sessions: 3000, ambient_scale: 0.4 }),
-          signal,
-        });
-        cases = await fetch(`${API}/v1/campaign/cases?top=12`, { signal }).then((r) => r.json());
-      }
+      const cases = await fetch(`${API}/v1/campaign/cases?top=12`, { signal }).then((r) => r.json());
       if (!cases.cases?.length) throw new Error("no live cases");
       const graphs: Record<string, CaseGraph> = {};
       await Promise.all(

@@ -137,8 +137,13 @@ Nothing on screen is made up, but not everything is computed on the spot, so her
 |---|---|
 | Decision lab, landing-page decision card, scenario table | **Live** from the API; falls back to a recording of the API's output, labelled as such |
 | Live capture, API playground, the audit log's live view, Live service strip | **Live** from the API |
-| `/scam` phone demo, mule network, session builder | **Live** from the API; the phone demo and mule network fall back to recordings, the builder needs the API |
+| `/scam` phone demo, session builder | **Live** from the API; the phone demo falls back to recordings, the builder needs the API |
+| `/scam` mule network | **Recording**, until you load a ledger with `POST /v1/campaign/demo/load` (takes minutes on a CPU) |
 | Overview, policy tuner, the audit log's recorded day, `/scam` bank wall | **Recording** of one held-out day run through the trained service: regenerating it takes the full simulator |
+
+Without the HMOG dataset, the `/scam` phone demo's simulated sessions run without per-window touch scoring, so a few decisions can
+differ slightly from the recordings. The session builder and the main authentication service score touch normally, using real
+HMOG gestures shipped in `ml/auth/artifacts/`.
 | Headline figures, Model page | **Evaluation reports** in this repo (`model_report.json`, built from `ml/reports/` and `backend/reports/`) |
 
 ---

@@ -59,7 +59,7 @@ Every number on screen comes from `POST /v1/demo/{typology}`, the same session p
   - `public/data/campaign.json`: the mule network (cases and money-flow graphs after 60 days of the synthetic ledger).
 - **Live.** Run `python run.py` from the repo root, which starts the API and this console together. The app bar shows "Live API" when the live call succeeds; if it fails, the page falls back to the recording.
   - Before each replay the page calls `/v1/admin/reset?services=session`, because all demo sessions share one simulated user per customer. Use a demo server only.
-  - The mule network loads the payee-side ledger on first use (about 10 s) and falls back to the recording if the API has no cases.
+  - The mule network plays its recording until the API has a ledger loaded (`POST /v1/campaign/demo/load`, which takes minutes on a CPU).
   - **Try it** needs the live API; the bank wall always plays its recording.
   - The backend allows `localhost:3000` (CORS); set `RAKSHAM_CORS_ORIGINS` to change it.
 
