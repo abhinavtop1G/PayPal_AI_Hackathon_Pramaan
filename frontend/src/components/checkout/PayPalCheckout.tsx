@@ -37,15 +37,6 @@ export function PayPalCheckout() {
   const [problem, setProblem] = useState<string | null>(null);
   const latest = useRef(0); // only the most recent pick may update the page
 
-  useEffect(() => {
-    if (source !== "live") return;
-    let on = true;
-    paypalConfig().then((c) => on && setConfig(c), (e: Error) => on && setProblem(e.message));
-    return () => {
-      on = false;
-    };
-  }, [source]);
-
   const pick = useCallback(async (id: string) => {
     const mine = ++latest.current;
     setSelected(id);
@@ -66,6 +57,21 @@ export function PayPalCheckout() {
       if (mine === latest.current) setBusy(false);
     }
   }, [logRun]);
+
+  useEffect(() => {
+    if (source !== "live") return;
+    let on = true;
+    paypalConfig().then((c) => {
+      if (!on) return;
+      setConfig(c);
+      // deep link for demos: /console/checkout?scenario=sim_swap
+      const id = new URLSearchParams(window.location.search).get("scenario");
+      if (id && c.scenarios.some((s) => s.id === id)) void pick(id);
+    }, (e: Error) => on && setProblem(e.message));
+    return () => {
+      on = false;
+    };
+  }, [source, pick]);
 
   const verify = async (passed: boolean) => {
     if (!checkout) return;
@@ -95,15 +101,6 @@ export function PayPalCheckout() {
       setBusy(false);
     }
   };
-
-  // deep link for demos: /console/checkout?scenario=sim_swap
-  const opened = useRef(false);
-  useEffect(() => {
-    if (!config || opened.current) return;
-    opened.current = true;
-    const id = new URLSearchParams(window.location.search).get("scenario");
-    if (id && config.scenarios.some((s) => s.id === id)) void pick(id);
-  }, [config, pick]);
 
   if (checking) {
     return <Loader2 className="size-6 animate-spin text-label-tertiary" aria-label="Connecting to the API" />;
