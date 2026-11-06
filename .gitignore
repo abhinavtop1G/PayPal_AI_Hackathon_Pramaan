@@ -61,5 +61,3 @@ sdk/android/local.properties
 # PRAMAAN: shipped serving artefacts (small) — the touch-score calibration lets containers run without the HMOG dataset
 !ml/auth/artifacts/bio_calib.pkl
 
-# Manim render cache (regenerate with video/assemble*.py)
-video/media/
