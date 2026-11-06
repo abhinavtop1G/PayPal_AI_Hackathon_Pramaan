@@ -120,7 +120,8 @@ test day on a compressed clock. The **Live service** strip above the charts show
 
 **6. The scam-session layer: [`/scam`](http://localhost:3000/scam).** The earlier RAKSHAM work this builds on: a phone demo of
 scam sessions (a fake police "digital arrest" call, for example), the bank's view of a day of sessions, the mule network, and
-a builder for scoring a session event by event.
+a builder for scoring a session event by event. The workflow model has only seen simulated sessions, so a session you build by
+hand can score very differently from a similar simulated one.
 
 **Or call the API directly** (in Windows PowerShell, type `curl.exe`):
 

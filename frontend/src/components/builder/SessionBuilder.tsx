@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Loader2, Play, RotateCcw, Terminal, Wrench } from "lucide-react";
-import { API, apiHealthy, demoNumbers, demoTouch, sendEvent, startSession } from "@/api/demo";
+import { API, apiHealthy, demoNumbers, demoTouch, RECORDED, sendEvent, startSession } from "@/api/demo";
 import { Button } from "@/components/common/Button";
 import { SegmentedControl } from "@/components/common/SegmentedControl";
 import { Panel } from "@/components/layout/Panel";
@@ -43,24 +43,21 @@ const OTHER_HANDS = { bio_pressure: 0.5, bio_swipe_velocity: 2.2, bio_tap_interv
 
 type Step = Omit<DemoInput, "ts"> & { gap?: number; touch?: "normal" | "coerced" | "remote"; number?: "reported" | "clean" };
 
+/**
+ * A digital-arrest session from the simulator, up to its first payment attempt, with real gestures on each touch window.
+ * The workflow model has only seen simulated sessions, so a shorter hand-written version of this pattern scores low.
+ */
+function simulatedArrestSteps(): Step[] {
+  const timeline = RECORDED.senior.digital_arrest.timeline;
+  const end = timeline.findIndex((row) => row.input.event === "PAYMENT_ATTEMPT");
+  return timeline.slice(0, end + 1).map((row, i) => {
+    const gap = i < end ? timeline[i + 1].ts_min - row.ts_min : 1;
+    return { ...row.input, gap, ...(row.input.event === "BIO_WINDOW" ? { touch: "coerced" as const } : {}) }; // send() sets ts
+  });
+}
+
 const PRESETS: Record<string, { label: string; steps: Step[] }> = {
-  arrest: {
-    label: "Digital-arrest pattern",
-    steps: [
-      { event: "CALL_START", caller_kind: "unknown", call_video: false, gap: 1 },
-      { event: "CALL_END", gap: 3 },
-      { event: "CALL_START", caller_kind: "voip_intl", call_video: true, number: "reported", gap: 14 },
-      { event: "APP_INSTALL", app_source: "play_store", gap: 8 },
-      { event: "UPI_APP_OPEN", gap: 0.1 },
-      { event: "BALANCE_CHECK", gap: 25 },
-      { event: "UPI_APP_OPEN", gap: 0.1 },
-      { event: "BALANCE_CHECK", gap: 10 },
-      { event: "UPI_APP_OPEN", gap: 0.1 },
-      { event: "PAYEE_ADD", ...PAYEES.mule, gap: 0.5 },
-      { event: "BIO_WINDOW", ...STRESSED, gap: 0.1 },
-      { event: "PAYMENT_ATTEMPT", ...PAYEES.mule, amount: 12000, gap: 1 },
-    ],
-  },
+  arrest: { label: "Digital-arrest pattern", steps: simulatedArrestSteps() },
   family: {
     label: "Genuine family emergency",
     steps: [
