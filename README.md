@@ -235,13 +235,13 @@ tests/            backend test suite
 
 ```bash
 .venv/bin/python -m pip install pytest httpx
-.venv/bin/python -m pytest tests -q                         # 107 passed, 16 skipped (these need the training datasets or a GPU)
+.venv/bin/python -m pytest tests -q                         # 110 passed, 16 skipped (these need the training datasets or a GPU)
 cd frontend && npm test                                     # 4 tests: the policy tuner against the recorded decisions
 cd sdk/web && npm ci && npm test                            # 31 tests; 7 more with: PRAMAAN_API=http://127.0.0.1:8000 npm run test:live
 cd sdk/android && gradle :pramaan:testDebugUnitTest         # 13 tests (needs Gradle and the Android SDK)
 ```
 
-The backend suite trains small models and takes several minutes on a laptop CPU.
+The backend suite trains small models and takes about 15 minutes on a laptop CPU.
 
 ## Rebuild from data (optional)
 
