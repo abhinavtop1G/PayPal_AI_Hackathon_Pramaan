@@ -25,9 +25,7 @@ All data stays in `asia-south1` (RBI payment-data localisation). Model files shi
 ## 1. Run locally without Docker
 
 ```bash
-source ~/envs/raksham/Scripts/activate
-PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth uvicorn backend.app:app --port 8000     # http://127.0.0.1:8000/docs
-cd frontend && NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev          # console on http://localhost:3000
+python run.py                                                  # API on http://127.0.0.1:8000/docs, console on http://localhost:3000
 python -m backend.bench_auth --url http://127.0.0.1:8000                       # latency -> backend/reports/auth_latency.md
 ```
 

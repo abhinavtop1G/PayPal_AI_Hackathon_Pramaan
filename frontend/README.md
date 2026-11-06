@@ -18,7 +18,7 @@ shows which).
 
 ```bash
 npm ci
-NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev    # or without it: recordings only
+NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev    # or without it: recordings only (`python run.py` from the repo root sets this for you)
 npm run lint && npm run build
 ```
 
@@ -53,7 +53,7 @@ npm run dev                # http://localhost:3000
 
 Every number on screen comes from `POST /v1/demo/{typology}`, the same session pipeline the backend serves. The phone and console replay that response one event at a time.
 
-- **Offline (default).** The page plays recordings, regenerated from the repo root with `python -m backend.record_demo`:
+- **Offline (when no API is configured or reachable).** The page plays recordings, regenerated from the repo root with `python -m backend.record_demo`:
   - `src/data/`: the 8 scenarios for each of the 3 customers.
   - `public/data/fleet.json`: the bank wall (12 h of held-out sessions run through the session service with one shared alert policy).
   - `public/data/campaign.json`: the mule network (cases and money-flow graphs after 60 days of the synthetic ledger).

@@ -35,8 +35,8 @@ integration with a real bank or PSP.
 ## Setup (Windows)
 
 ```bash
-python -m venv ~/envs/raksham          # keep the venv outside OneDrive
-source ~/envs/raksham/Scripts/activate
+python -m venv .venv
+source .venv/bin/activate              # Windows: .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt        # needs xgboost>=2.1 (older xgboost cannot load XGBClassifier models under scikit-learn 1.6)
 # GPU torch (later): pip install torch --index-url https://download.pytorch.org/whl/cu124
