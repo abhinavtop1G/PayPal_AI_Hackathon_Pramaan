@@ -53,6 +53,8 @@ python3.11 -m venv .venv
 .venv/bin/python run.py
 ```
 
+The two install commands are slow and print little: they took about 12 minutes on our test laptop, so give them time.
+
 `run.py` starts the API, installs the console's dependencies on the first run, then starts the console. When it prints
 `Open http://localhost:3000`, open that address. **Ctrl+C** stops everything.
 
