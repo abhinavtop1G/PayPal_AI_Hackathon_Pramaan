@@ -61,7 +61,7 @@ export function HeroDecisions() {
                 <p className="mt-1 line-clamp-2 text-footnote text-label-secondary">{run.story}</p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {facts(run).map(([k, v, fam]) => (
-                    <span key={k} className="flex items-center gap-1.5 rounded-full bg-fill-tertiary px-2.5 py-1 text-caption-1">
+                    <span key={`${k}:${v}`} className="flex items-center gap-1.5 rounded-full bg-fill-tertiary px-2.5 py-1 text-caption-1">
                       <span className="size-1.5 rounded-full" style={{ background: FAMILY_TINT[fam] }} aria-hidden />
                       <span className="text-label-tertiary">{k}</span> {v}
                     </span>
