@@ -174,7 +174,9 @@ service, including simulated challenge outcomes.
   model's risk.
 - **Latency** over HTTP on a laptop CPU, with API-key and HMAC checks on: **p95 50 ms** without touch data, **p95 66 ms** with
   10 touch gestures verified by the BiLSTM. Neither row sends a typing attempt, which adds a few ms for the CNN. Reproduce
-  with `python -m backend.bench_auth`; expect different numbers on a different machine or under load.
+  with `python -m backend.bench_auth`. Expect higher numbers on screen in the console: its demo calls also rebuild the demo
+  customer's history and send touch and typing data, and they share the machine with a Next.js dev server and your browser
+  (about 50 ms when idle, up to about 200 ms under load, on the same laptop).
 
 ---
 
