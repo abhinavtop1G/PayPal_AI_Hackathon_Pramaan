@@ -8,6 +8,7 @@ shows which).
 |---|---|---|
 | `/` | product page: animated decision card, results, signal families, step-ups, request path, SDKs | `auth_demo.json`, `model_report.json` |
 | `/console` | operations overview: a held-out test day replayed on a compressed clock (60× / 300× / 1200×, scrubbable) | `auth_traffic.json` (`python -m backend.record_auth_traffic`); live `/v1/auth/stats` |
+| `/console/checkout` | PayPal checkout behind PRAMAAN: decision, step-up, then a real sandbox order, capture and refund | live only: `/v1/paypal/*` |
 | `/console/lab` | decision lab; deep link `?scenario=sim_swap&verify=pass` | `/v1/auth/demo/*` or `auth_demo.json` |
 | `/console/policy` | policy tuner: ml/auth/policy.py's decision rule (`src/components/policy/simulate.ts`) re-run over the recorded day with other costs | `auth_traffic.json` (risk, candidate step-up per request), `model_report.json` (policy constants) |
 | `/console/capture` | the web SDK (`../sdk/web/src`, imported as `@pramaan/web-sdk`) on the page: typing and touch labs, device panel, request preview | live: `/v1/keystroke/*`, `/v1/biometrics/*`, `/v1/authenticate`; offline: on-device scaled-Manhattan preview vs `model_report.json` |

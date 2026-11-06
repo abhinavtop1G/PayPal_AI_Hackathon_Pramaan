@@ -89,3 +89,27 @@
 4. The cloud deployment files have not been run yet.
 5. No iOS SDK yet. The Android SDK is compile-checked against API 35 and its core is tested on the JVM, but its Gradle
    build (and the sample app) has not been run on a device; CI (`.github/workflows/sdk-and-console.yml`) runs it.
+
+## PayPal checkout
+
+`backend/paypal_service.py` puts the decision in front of PayPal's sandbox. The browser only ever holds the public client id.
+
+```
+ browser                     this API                                   PayPal sandbox
+ pick a payment  ───────►  decide (AuthEngine)
+                           allow     -> gate open
+                           challenge -> gate step_up (no order yet)
+                           block     -> gate blocked (never reaches PayPal)
+ step-up result  ───────►  pass opens the gate, fail closes it for good
+ PayPal button   ───────►  gate open? POST /v2/checkout/orders  ───────►  order, custom_id = decision id
+ buyer approves  ◄───────────────────────────────────────────────────────  popup
+ onApprove       ───────►  GET the order: ours, same amount, APPROVED? ──►
+                           POST .../capture                     ───────►  capture
+ refund          ───────►  POST /v2/payments/captures/{id}/refund ─────►  refund
+```
+
+- The gate is checked on the server at every step, so a modified browser gets a 403 and PayPal is not called.
+- Capture trusts PayPal's copy of the order over anything the browser sends.
+- `PayPal-Request-Id` makes retries safe. Each capture attempt gets a new id, so a retry after a declined funding source really runs.
+- The base URL is the sandbox, with no setting to change it, so this code can't move real money.
+- Checkouts live in the same store as the rest of the live state (memory or Redis) and expire after an hour.

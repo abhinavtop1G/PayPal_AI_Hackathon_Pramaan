@@ -12,6 +12,25 @@ POST /v1/authenticate      ->  { decision, risk_score, challenge_type, reasons (
 POST /v1/challenge/verify  ->  passed: allow (+ trust the device) · failed: block, lock 30 min
 ```
 
+## PayPal + AI
+
+PRAMAAN puts AI risk models in front of a PayPal checkout, so a fraudulent payment is stopped before PayPal ever sees it, and a
+genuine customer isn't made to prove themselves on every purchase.
+
+| PRAMAAN's decision | What happens at PayPal |
+|---|---|
+| **allow** | An order is created for the amount PRAMAAN decided on. The buyer approves it with the PayPal button, then the server re-reads the order from PayPal, checks it matches the decision, and captures it |
+| **challenge** | No order yet. The step-up that fits the likely attack runs first: if it passes an order is created, and if it fails the payment is blocked for good |
+| **block** | No order and no call to PayPal at all, whatever the browser asks for |
+
+- **PayPal:** sandbox OAuth2, Orders v2 (create, get, capture), Payments v2 (refund) and the JavaScript SDK button. The gate is
+  enforced on the server, in [`backend/paypal_service.py`](backend/paypal_service.py).
+- **AI:** the project's own models, trained and evaluated in this repository, score each payment: a monotone XGBoost with exact
+  SHAP explanations, a touch-biometrics BiLSTM and a typing 1D-CNN.
+- **Traceable:** each PayPal order's `custom_id` is the PRAMAAN decision id, so a transaction leads back to the signals behind it.
+- **Currency:** the risk model works in rupees, and PayPal's supported currencies don't include INR, so the checkout charges USD
+  at a demo rate (`PAYPAL_INR_PER_USD`, default 85).
+
 > **What the numbers mean.** Attack and genuine behaviours are **simulated**. Touch windows and typing attempts are
 > **real** data (HMOG, CMU) scored by the real models. Challenge efficacies are **assumptions**. The results validate
 > the service and compare designs; they are not real-world fraud rates.
@@ -69,6 +88,21 @@ The sidebar should say **Live API**. The first visit to each page takes a few se
 **Just want to look around, with no Python?** `cd frontend && npm ci && npm run dev` runs the console on its own. It plays
 recordings of the API's output and labels them **Recorded**.
 
+### Connect PayPal
+
+The PayPal button needs sandbox credentials, which are free and only ever move test money. **Judges:** if the submission's testing
+instructions include credentials, use those.
+
+1. Log in at [developer.paypal.com](https://developer.paypal.com/) with any PayPal account, or sign up.
+2. Open [Apps & Credentials (sandbox)](https://developer.paypal.com/dashboard/applications/sandbox), open the default application
+   (or create one), and copy its **Client ID** and **Secret**.
+3. Copy `.env.example` to `.env` in the repository root and fill in both values. Git ignores `.env`.
+4. Restart `run.py`. It should print `PayPal sandbox: connected.`
+5. To pay, log in to PayPal's popup with a sandbox **Personal** account from
+   [Sandbox Accounts](https://developer.paypal.com/dashboard/accounts) (View/Edit account shows its email and password).
+
+Without credentials the checkout still makes every decision and shows the exact order it would send, but has no PayPal button.
+
 ### If something goes wrong
 
 | What you see | What to do |
@@ -79,6 +113,8 @@ recordings of the API's output and labels them **Recorded**.
 | `py` is not recognised (Windows) | Use the full path to your Python 3.11, or `python -m venv .venv` if `python --version` says 3.11 |
 | pip can't find a pinned version | Check you are on Python 3.11: the versions are pinned to the ones the models were saved with |
 | Sidebar says **Recorded** | The console can't reach the API. Check the API is still running in the terminal and that `/health` answers |
+| `PayPal rejected the credentials` | Check the Client ID and Secret in `.env`, that they are the **sandbox** ones, and restart |
+| PayPal's button doesn't load | Check your connection, and that an ad blocker isn't blocking paypal.com |
 
 ---
 
@@ -86,7 +122,21 @@ recordings of the API's output and labels them **Recorded**.
 
 A five-minute tour, in the order that makes the most sense.
 
-**1. Watch it decide: [`/console/lab`](http://localhost:3000/console/lab).** Pick a scenario from the top row. You get the
+**1. Stop fraud before PayPal: [`/console/checkout`](http://localhost:3000/console/checkout).** Pick who is paying. PRAMAAN decides
+first, and only then does PayPal come into it. On a paid order, the receipt offers a refund for fraud reported later.
+
+| who is paying | amount | PRAMAAN | PayPal |
+|---|---|---|---|
+| everyday payment | $7.53 | allow | PayPal button, then capture |
+| travelling | $10.59 | allow | PayPal button, then capture |
+| new phone + new SIM | $17.65 | challenge: passkey | PayPal button only if the step-up passes |
+| big purchase | $217.65 | challenge: SMS OTP | PayPal button only if the step-up passes |
+| coached victim | $1,117.65 | challenge: bank call-back | PayPal button only if the step-up passes |
+| remote-access takeover | $352.94 | block | no order, no call to PayPal |
+| stolen credentials | $529.41 | block | no order, no call to PayPal |
+| SIM swap | $705.88 | block | no order, no call to PayPal |
+
+**2. Watch it decide: [`/console/lab`](http://localhost:3000/console/lab).** Pick a scenario from the top row. You get the
 risk score, the decision, the reasons in English or Hindi, the time each pipeline stage took, the SHAP waterfall behind
 the score, what the customer sees on their phone, and the exact request and response. This is what you should see:
 
@@ -105,22 +155,22 @@ the score, what the customer sees on their phone, and the exact request and resp
 - On a **challenge**, press **Customer passes the challenge** or **Challenge fails** to run the rest of the loop.
 - Open **Build your own request** to change any signal the SDK would send and watch the decision move.
 
-**2. Try it on yourself: [`/console/capture`](http://localhost:3000/console/capture).** The real web SDK runs on this page.
+**3. Try it on yourself: [`/console/capture`](http://localhost:3000/console/capture).** The real web SDK runs on this page.
 Type the password `.tie5Roanl` and press Enter to see your typing rhythm against the demo customer's real profile, or enrol
 your own in 5 attempts. Swipe on the pad to see the 21 features computed per gesture.
 
-**3. Tune the policy: [`/console/policy`](http://localhost:3000/console/policy).** Change what a step-up costs a customer or
+**4. Tune the policy: [`/console/policy`](http://localhost:3000/console/policy).** Change what a step-up costs a customer or
 when blocking is allowed. A whole recorded day is re-decided in your browser, using the service's own decision rule.
 
-**4. See a day of traffic: [`/console`](http://localhost:3000/console).** Press play to replay 4,653 requests from a held-out
+**5. See a day of traffic: [`/console`](http://localhost:3000/console).** Press play to replay 4,653 requests from a held-out
 test day on a compressed clock. The **Live service** strip above the charts shows the running API's own counters.
 
-**5. Check the evidence.**
+**6. Check the evidence.**
 [`/console/audit`](http://localhost:3000/console/audit) lists every decision, with filters, a detail drawer and CSV export.
 [`/console/model`](http://localhost:3000/console/model) compares every design on the same replay.
 [`/console/developers`](http://localhost:3000/console/developers) has SDK quickstarts and a playground for sending requests.
 
-**6. The scam-session layer: [`/scam`](http://localhost:3000/scam).** The earlier RAKSHAM work this builds on: a phone demo of
+**7. The scam-session layer: [`/scam`](http://localhost:3000/scam).** The earlier RAKSHAM work this builds on: a phone demo of
 scam sessions (a fake police "digital arrest" call, for example), the bank's view of a day of sessions, the mule network, and
 a builder for scoring a session event by event. The workflow model has only seen simulated sessions, so a session you build by
 hand can score very differently from a similar simulated one.
@@ -138,6 +188,7 @@ Nothing on screen is made up, but not everything is computed on the spot, so her
 
 | on screen | source |
 |---|---|
+| PayPal checkout | **Live**: decisions from the API, orders in PayPal's sandbox. There is no recording |
 | Decision lab, landing-page decision card, scenario table | **Live** from the API; falls back to a recording of the API's output, labelled as such |
 | Live capture, API playground, the audit log's live view, Live service strip | **Live** from the API |
 | `/scam` phone demo, session builder | **Live** from the API; the phone demo falls back to recordings, the builder needs the API |
@@ -196,6 +247,9 @@ Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Deployment: [`docs/DEPL
 |---|---|
 | `POST /v1/authenticate` | decide a login / payment: decision, risk, challenge type, EN/HI reasons, all signal contributions, the base log-odds they add up from, per-stage timings |
 | `POST /v1/challenge/verify` | result of the step-up → final allow / block; passkey or call-back makes the device trusted |
+| `POST /v1/paypal/checkout/{scenario}` | decide a payment before PayPal sees it (demo customer): the gate is `open`, `step_up` or `blocked` |
+| `POST /v1/paypal/checkout/{id}/verify` · `/order` · `/capture` · `/refund` | step-up result · create the order (403 and no PayPal call if the decision doesn't allow it) · check the order against the decision and capture · refund |
+| `GET /v1/paypal/config` | sandbox connection status, the public client id, and the scenarios that have a payment |
 | `POST /v1/biometrics/enroll` · `/verify` | enrol a user's touch profile (≥ 20 gestures) · score 10-20 gestures against it |
 | `POST /v1/keystroke/enroll` · `/verify` | enrol a user's typing rhythm (≥ 5 password / PIN attempts, 31 key timings each) · score one attempt |
 | `GET /v1/auth/decisions` · `/v1/auth/stats` | audit feed and counters (decisions, challenge mix, p50/p95 latency) |
@@ -218,8 +272,8 @@ the same raw input must give the features the models were trained on, to 1e-9.
 
 ```
 run.py            starts the API and console together
-backend/          FastAPI: app.py, auth_service.py, security.py, audit.py; scripts that write the console's data
-frontend/         Next.js console: / (product), /console/* , /scam
+backend/          FastAPI: app.py, auth_service.py, paypal_service.py, security.py, audit.py; scripts that write the console's data
+frontend/         Next.js console: / (product), /console/* (including the PayPal checkout), /scam
 ml/auth/          the authentication core: features, simulator, model, policy, engine, evaluation
 ml/models/        touch biometrics (BiLSTM), typing (1D-CNN), workflow GRU, GNN, tabular, each with shipped weights
 ml/campaign, ml/engine, ml/sim    the earlier RAKSHAM components: payee risk, scam sessions, simulator
@@ -237,13 +291,14 @@ tests/            backend test suite
 
 ```bash
 .venv/bin/python -m pip install pytest httpx
-.venv/bin/python -m pytest tests -q                         # 110 passed, 16 skipped (these need the training datasets or a GPU)
+.venv/bin/python -m pytest tests -q                         # 138 passed, 16 skipped (these need the training datasets or a GPU)
 cd frontend && npm test                                     # 4 tests: the policy tuner against the recorded decisions
 cd sdk/web && npm ci && npm test                            # 31 tests; 7 more with: PRAMAAN_API=http://127.0.0.1:8000 npm run test:live
 cd sdk/android && gradle :pramaan:testDebugUnitTest         # 13 tests (needs Gradle and the Android SDK)
 ```
 
-The backend suite trains small models and takes about 15 minutes on a laptop CPU.
+The backend suite trains small models and takes 6 to 15 minutes on a laptop CPU. Its PayPal tests use a local fake of PayPal's API,
+so they need no credentials or network.
 
 ## Rebuild from data (optional)
 
@@ -270,7 +325,7 @@ yet**; the service has only been run locally.
 
 ## Project history
 
-PRAMAAN is built on RAKSHAM, the team's earlier scam-detection work, which contributed the touch-biometrics model, the
+PRAMAAN is built on the RAKSHAM scam-detection work (IIT Delhi), which contributed the touch-biometrics model, the
 payee-risk model and the API skeleton. Its write-ups are in [`docs/README_RAKSHAM.md`](docs/README_RAKSHAM.md) and
 [`docs/ARCHITECTURE_RAKSHAM.md`](docs/ARCHITECTURE_RAKSHAM.md).
 
@@ -279,6 +334,7 @@ earlier code, then adds the PRAMAAN service, console and SDKs, up to `f001f93` o
 
 Commits after `f001f93` were made for this submission:
 
+- **the PayPal integration**: the risk-gated checkout, using PayPal's sandbox Orders and Payments APIs and JavaScript SDK
 - `run.py`, a single command that starts the API and console
 - headline figures now read from the evaluation reports instead of being typed into the pages, which fixed stale numbers on
   the `/scam` policy panel
