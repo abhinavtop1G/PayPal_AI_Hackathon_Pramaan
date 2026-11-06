@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { recordedRuns } from "@/api/auth";
+import { scenarioRuns, type Source } from "@/api/auth";
 import { RiskGauge } from "@/components/charts/RiskGauge";
 import { DecisionBadge } from "@/components/ui/DecisionBadge";
 import { CHALLENGE_LABEL, FAMILY_TINT, inr } from "@/config/authSignals";
@@ -11,16 +11,21 @@ import type { DemoRun } from "@/types/auth";
 
 const ORDER = ["genuine_routine", "sim_swap", "genuine_new_phone", "remote_access", "genuine_big_purchase", "coerced", "bot", "genuine_travel", "ato_new_device"];
 
-/** The hero card: the recorded scenarios (the API's own output) one after another, each as the request's key facts
- *  and the decision. */
+/** The hero card: the scenarios one after another, decided live when the API answers and otherwise recorded from it,
+ *  each as the request's key facts and the decision. */
 export function HeroDecisions() {
   const [runs, setRuns] = useState<DemoRun[]>([]);
+  const [source, setSource] = useState<Source | null>(null);
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     let on = true;
-    recordedRuns().then(({ runs: rec }) => on && setRuns(ORDER.map((id) => rec[id]).filter((r): r is DemoRun => !!r)));
+    scenarioRuns().then(({ runs: rec, source: s }) => {
+      if (!on) return;
+      setRuns(ORDER.map((id) => rec[id]).filter((r): r is DemoRun => !!r));
+      setSource(s);
+    });
     return () => {
       on = false;
     };
@@ -40,6 +45,7 @@ export function HeroDecisions() {
         <div className="flex items-center justify-between gap-3">
           <p className="flex items-center gap-2 text-caption-1 text-label-secondary">
             <span className="pulse-ring size-2 rounded-full bg-sys-green text-sys-green" aria-hidden /> POST /v1/authenticate
+            {source && <span className="text-label-tertiary">· {source === "live" ? "live" : "recorded"}</span>}
           </p>
           <p className="font-mono text-caption-1 text-label-tertiary">{run ? `${run.response.latency_ms.toFixed(0)} ms` : "…"}</p>
         </div>

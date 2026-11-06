@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { recordedRuns } from "@/api/auth";
+import { scenarioRuns } from "@/api/auth";
 import { DecisionBadge } from "@/components/ui/DecisionBadge";
 import { CHALLENGE_SHORT, FAMILY_TINT, inr, pct } from "@/config/authSignals";
 import type { DemoRun } from "@/types/auth";
@@ -9,16 +9,16 @@ import type { DemoRun } from "@/types/auth";
 const ORDER = ["genuine_routine", "genuine_travel", "genuine_new_phone", "genuine_big_purchase", "ato_new_device", "sim_swap", "bot",
   "remote_access", "coerced"];
 
-/** Every scenario's recorded decision side by side: look-alikes next to the attacks they resemble. */
+/** Every scenario's decision side by side: look-alikes next to the attacks they resemble. */
 export function ScenarioMatrix({ selected, onPick }: { selected: string | null; onPick: (id: string) => void }) {
   const [runs, setRuns] = useState<DemoRun[]>([]);
   useEffect(() => {
-    recordedRuns().then(({ runs: r }) => setRuns(ORDER.map((id) => r[id]).filter(Boolean)));
+    scenarioRuns().then(({ runs: r }) => setRuns(ORDER.map((id) => r[id]).filter(Boolean)));
   }, []);
   return (
     <div className="relative overflow-x-auto">
       <table className="w-full min-w-[52rem] text-footnote">
-        <caption className="sr-only">Recorded decision for every scenario</caption>
+        <caption className="sr-only">Decision for every scenario</caption>
         <thead>
           <tr className="text-left text-caption-1 text-label-tertiary">
             {["scenario", "amount", "risk", "decision", "strongest reason", "latency"].map((h) => <th key={h} scope="col" className="pb-2 pr-3 font-medium">{h}</th>)}

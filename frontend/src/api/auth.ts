@@ -32,10 +32,23 @@ async function post<T>(path: string, body?: unknown, signal?: AbortSignal): Prom
   return (await r.json()) as T;
 }
 
-/** The recorded scenario runs (never calls the API: for pages that only illustrate, like the landing page). */
-export async function recordedRuns(): Promise<{ scenarios: Scenario[]; runs: Record<string, DemoRun> }> {
-  const r = await recorded();
-  return { scenarios: r.scenarios, runs: r.runs };
+let allRuns: Promise<{ runs: Record<string, DemoRun>; source: Source }> | null = null;
+
+/** Every scenario's decision, once per page load: from the running service when it answers, else the recording. */
+export function scenarioRuns(): Promise<{ runs: Record<string, DemoRun>; source: Source }> {
+  allRuns ??= (async () => {
+    if (AUTH_API) {
+      try {
+        const r = await fetch(`${AUTH_API}/v1/auth/scenarios`);
+        if (!r.ok) throw new Error(`/v1/auth/scenarios: ${r.status}`);
+        const runs: Record<string, DemoRun> = {};
+        for (const s of (await r.json()) as Scenario[]) runs[s.id] = await post<DemoRun>(`/v1/auth/demo/${s.id}`, {});
+        return { runs, source: "live" as const };
+      } catch {}
+    }
+    return { runs: (await recorded()).runs, source: "recorded" as const };
+  })();
+  return allRuns;
 }
 
 export async function listScenarios(): Promise<{ data: Scenario[]; source: Source }> {

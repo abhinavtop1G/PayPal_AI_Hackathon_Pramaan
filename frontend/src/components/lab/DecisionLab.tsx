@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Activity, ChevronDown, KeyRound, Languages, LayoutList, Loader2, Pause, Play, Scale, SlidersHorizontal, Smartphone, Waypoints } from "lucide-react";
 import { listScenarios, runScenario, verifyChallenge, type Source } from "@/api/auth";
+import { useReport } from "@/api/console";
 import { RiskGauge } from "@/components/charts/RiskGauge";
 import { Waterfall } from "@/components/charts/Waterfall";
 import { Button } from "@/components/common/Button";
@@ -219,7 +220,7 @@ export function DecisionLab() {
         </Panel>
       )}
 
-      <Panel eyebrow="At a glance · recorded" title="All nine scenarios" icon={LayoutList} tint="var(--color-sys-teal)">
+      <Panel eyebrow={`At a glance · ${source === "live" ? "live" : "recorded"}`} title="All nine scenarios" icon={LayoutList} tint="var(--color-sys-teal)">
         <ScenarioMatrix selected={selected} onPick={go} />
         <p className="mt-3 text-caption-1 text-label-tertiary">
           Keyboard: <Kbd>1</Kbd>–<Kbd>9</Kbd> scenario · <Kbd>P</Kbd> pass / <Kbd>F</Kbd> fail the challenge · <Kbd>A</Kbd> autoplay ·
@@ -308,6 +309,7 @@ function Verdict({ run, outcome, busy, lang, onVerify }: {
 }
 
 function FamilySplit({ response }: { response: AuthResponse }) {
+  const auc = useReport().data?.auth.ranking;
   const fam = response.family_contribution;
   const scale = Math.max(1, ...Object.values(fam).map(Math.abs));
   return (
@@ -327,7 +329,7 @@ function FamilySplit({ response }: { response: AuthResponse }) {
           </div>
         );
       })}
-      <p className="text-caption-2 text-label-tertiary">Summed SHAP contributions (log-odds). Right of centre raises risk, left lowers it. One model over all three families: no family alone comes close (ROC-AUC 0.88 / 0.76 / 0.95 vs 0.996).</p>
+      <p className="text-caption-2 text-label-tertiary">Summed SHAP contributions (log-odds). Right of centre raises risk, left lowers it. One model over all three families{auc && `: no family alone comes close (ROC-AUC ${["behaviour signals only", "device signals only", "transaction signals only"].map((k) => auc[k].roc_auc.toFixed(2)).join(" / ")} vs ${auc["risk engine (all signals)"].roc_auc.toFixed(3)})`}.</p>
     </div>
   );
 }
