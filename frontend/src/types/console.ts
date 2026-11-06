@@ -88,6 +88,8 @@ export interface ModelReport {
     model: { real_prior: number; fit_prior: number; best_iteration: number };
     ranking: Record<string, { roc_auc: number; pr_auc: number }>;
     difficulty: Record<string, { n: number; stopped: number }>;
+    /** the evaluation's time split: train on days 0..train_end, test on days valid_end..days */
+    split: { train_end: number; valid_end: number; days: number };
     importance: [string, number][];
     latency: { n: number; p50_ms: number; p95_ms: number; p99_ms: number; note: string };
     designs: Record<string, DesignResult>;
@@ -109,4 +111,6 @@ export interface ModelReport {
     distances: Record<"normal" | "coerced" | "remote" | "bot", number[]>;
   };
   policy: PolicyConstants;
+  /** the scam-session policy vs one fixed threshold, on the 10k-session test replay (ml/reports/engine.json) */
+  scam_fleet: Record<"engine" | "threshold", { notifications_per_1k: number; holds_per_1k: number; scams_stopped_pct: number }>;
 }

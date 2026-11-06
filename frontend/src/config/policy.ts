@@ -70,16 +70,6 @@ export const SESSION_LABEL: Record<string, string> = {
   builder: "Your session",
 };
 
-/**
- * Fleet results from ml/reports/engine.md (10k-session test replay, real-world prior 0.5% of payment attempts).
- * "Threshold" = the fused score with a single hold threshold; "Engine" = EV tiers + anti-fatigue rules.
- */
-export const FLEET = {
-  notificationsPer1k: { engine: 2.8, threshold: 8.3 },
-  holdsPer1k: { engine: 0.8, threshold: 8.3 },
-  scamsStoppedPct: { engine: 89.31, threshold: 89.63 },
-};
-
 /** Risk → semantic colour (safe / watch / elevated / critical). */
 export function riskColor(p: number) {
   if (p < 0.2) return "var(--color-risk-safe)";

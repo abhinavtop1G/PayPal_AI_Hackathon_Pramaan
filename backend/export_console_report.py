@@ -13,7 +13,9 @@ from pathlib import Path
 
 import numpy as np
 
+from ml.auth.evaluate import TRAIN_END, VALID_END
 from ml.auth.policy import EFFICACY, GENUINE_PASS, AuthPolicy
+from ml.auth.sim import SimConfig
 from ml.models.keystroke.protocol import profile_manhattan
 
 OUT = Path("frontend/public/data/model_report.json")
@@ -69,6 +71,15 @@ def policy() -> dict:
             "simulated_efficacy": EFFICACY, "genuine_pass": GENUINE_PASS}
 
 
+def scam_fleet(engine: dict) -> dict:
+    """The scam-session policy against one fixed threshold on the 10k-session test replay, for the /scam policy panel."""
+    def row(name: str) -> dict:
+        p = engine["policies"][name]
+        return {"notifications_per_1k": p["benign_interruptions_per_1k_sessions"], "holds_per_1k": p["benign_holds_per_1k_sessions"],
+                "scams_stopped_pct": p["scams_expected_stopped_in_time_pct"]}
+    return {"engine": row("Engine (full)"), "threshold": row("Fused threshold -> hold")}
+
+
 def main():
     auth = _load("auth.json")
     ks = _load("keystroke_cmu.json")
@@ -79,6 +90,7 @@ def main():
     report = {
         "auth": {
             "data": auth["data"], "model": auth["model"], "ranking": auth["ranking"], "difficulty": auth["difficulty"],
+            "split": {"train_end": TRAIN_END, "valid_end": VALID_END, "days": SimConfig().days},
             "importance": [[f, round(g, 2)] for f, g in auth["importance"]], "latency": auth["latency"],
             "designs": {name: {**{k: d[k] for k in keep if k in d},
                                "per_scenario": {s: v["final_blocked"] for s, v in d["per_scenario"].items()},
@@ -94,6 +106,7 @@ def main():
                   for split in ("valid", "test")},
         "typing_demo": typing_demo(),
         "policy": policy(),
+        "scam_fleet": scam_fleet(_load("engine.json")),
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(report, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

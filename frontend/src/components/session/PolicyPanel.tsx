@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { Scale } from "lucide-react";
+import { useReport } from "@/api/console";
 import { AnimatedNumber } from "@/components/common/AnimatedNumber";
-import { ACTION_COLOR, ACTION_LABEL, ev, FLEET, TIERS } from "@/config/policy";
+import { ACTION_COLOR, ACTION_LABEL, ev, TIERS } from "@/config/policy";
 import { spring } from "@/config/motion";
 import { useDemo } from "@/context/DemoContext";
 import { pct, rupees } from "@/utils/format";
@@ -15,6 +16,8 @@ import { pct, rupees } from "@/utils/format";
  */
 export function PolicyPanel() {
   const { view } = useDemo();
+  const { data: report } = useReport();
+  const fleet = report?.scam_fleet;
   const pay = view.lastDecision;
   const d = pay?.decision ?? null;
   const amount = pay?.input.amount ?? 0;
@@ -70,11 +73,13 @@ export function PolicyPanel() {
 
       <div className="mt-auto pt-4">
         <p className="text-eyebrow text-label-tertiary">Fleet · 10k-session test replay</p>
-        <div className="mt-2 grid grid-cols-3 gap-2">
-          <Fleet label="alerts / 1k genuine" engine={FLEET.notificationsPer1k.engine} base={FLEET.notificationsPer1k.threshold} fmt={(v) => v.toFixed(1)} better="lower" />
-          <Fleet label="holds / 1k genuine" engine={FLEET.holdsPer1k.engine} base={FLEET.holdsPer1k.threshold} fmt={(v) => v.toFixed(1)} better="lower" />
-          <Fleet label="scams stopped" engine={FLEET.scamsStoppedPct.engine} base={FLEET.scamsStoppedPct.threshold} fmt={(v) => `${v.toFixed(1)}%`} better="higher" />
-        </div>
+        {fleet ? (
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            <Fleet label="alerts / 1k genuine" engine={fleet.engine.notifications_per_1k} base={fleet.threshold.notifications_per_1k} fmt={(v) => v.toFixed(1)} better="lower" />
+            <Fleet label="holds / 1k genuine" engine={fleet.engine.holds_per_1k} base={fleet.threshold.holds_per_1k} fmt={(v) => v.toFixed(1)} better="lower" />
+            <Fleet label="scams stopped" engine={fleet.engine.scams_stopped_pct} base={fleet.threshold.scams_stopped_pct} fmt={(v) => `${v.toFixed(1)}%`} better="higher" />
+          </div>
+        ) : <div className="skeleton mt-2 h-16 rounded-xl" />}
         <p className="mt-2 text-caption-2 text-label-tertiary">Engine vs. one fixed hold threshold on the same fused score.</p>
       </div>
     </div>
