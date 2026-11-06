@@ -73,6 +73,7 @@ recordings of the API's output and labels them **Recorded**.
 |---|---|
 | `Port 8000 is already in use` (or 3000) | Stop whatever is using it, or run `python run.py --api-port 8001 --web-port 3001` |
 | `Missing Python packages` | Run the script with the `.venv` Python, as in the commands above |
+| `OSError: No such file or directory` under `torch\include` while installing (Windows) | The folder path is too long for Windows' 260-character limit. Clone somewhere shorter, such as `C:\pramaan` |
 | `py` is not recognised (Windows) | Use the full path to your Python 3.11, or `python -m venv .venv` if `python --version` says 3.11 |
 | pip can't find a pinned version | Check you are on Python 3.11: the versions are pinned to the ones the models were saved with |
 | Sidebar says **Recorded** | The console can't reach the API. Check the API is still running in the terminal and that `/health` answers |
