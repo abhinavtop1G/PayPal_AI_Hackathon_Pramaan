@@ -1,26 +1,151 @@
-# PRAMAAN — fast and secure online transaction authentication
+# PRAMAAN: fast, explainable authentication for online payments
 
-**PRAMAAN** — **P**arallel **R**isk-**A**daptive **M**ulti-modal **A**uthentication & **A**nomaly **N**etwork
-(प्रमाण, "proof"). Team **CaffeineEaters**: Abhinav Saini, Aditi Pundir, Mannat Kaur, Aryamann Sharma.
+**PRAMAAN** (प्रमाण, "proof") stands for **P**arallel **R**isk-**A**daptive **M**ulti-modal **A**uthentication &
+**A**nomaly **N**etwork. Team **CaffeineEaters**: Abhinav Saini, Aditi Pundir, Mannat Kaur, Aryamann Sharma.
 
-A cloud risk-authentication service: for every login or payment it combines **behaviour**, **device information**
-and **transaction patterns**, decides **allow / challenge / block** in real time, picks the challenge that actually
-stops the likely attack, and returns **the signals behind the decision**.
+For every login or payment, PRAMAAN combines **behaviour**, **device information** and **transaction patterns**,
+decides **allow / challenge / block** in real time, picks the step-up that actually stops the likely attack, and returns
+**the signals behind the decision**.
 
 ```
-POST /v1/authenticate  →  { decision, risk_score, challenge_type, reasons (EN/HI), signals (tree-SHAP), latency_ms }
-POST /v1/challenge/verify  →  passed: allow (+ trust the device) · failed: block, lock 30 min
+POST /v1/authenticate      ->  { decision, risk_score, challenge_type, reasons (EN/HI), signals (tree-SHAP), latency_ms }
+POST /v1/challenge/verify  ->  passed: allow (+ trust the device) · failed: block, lock 30 min
 ```
 
-Built on the RAKSHAM scam-detection work (IIT Delhi): its touch-biometrics model, payee-risk model and API skeleton
-are reused; the scam-session demo is kept at `/scam` in the console and documented in `docs/README_RAKSHAM.md`.
+> **What the numbers mean.** Attack and genuine behaviours are **simulated**. Touch windows and typing attempts are
+> **real** data (HMOG, CMU) scored by the real models. Challenge efficacies are **assumptions**. The results validate
+> the service and compare designs; they are not real-world fraud rates.
 
-> Attack and genuine behaviours are **simulated**; touch windows are **real** HMOG gestures scored by the real model;
-> challenge efficacies are **assumptions**. The numbers validate the service and compare designs, not real-world accuracy.
+| | |
+|---|---|
+| ![Product page](docs/screenshots/landing.png) | ![Operations overview](docs/screenshots/overview.png) |
+| ![Decision lab](docs/screenshots/decision-lab.png) | ![Live capture](docs/screenshots/live-capture.png) |
+| ![Policy tuner](docs/screenshots/policy-tuner.png) | ![Model report](docs/screenshots/model.png) |
 
-## Results (`ml/reports/auth.md`, `backend/reports/auth_latency.md`)
+---
 
-3,000 simulated customers, 273k requests over 60 days; trained on days 0–35, test days 45–60 replayed through the
+## Run it
+
+No API keys, GPU, Docker, database or dataset downloads are needed: the trained models ship in this repository.
+
+**You need:** [Python 3.11](https://www.python.org/downloads/), [Node.js 20+](https://nodejs.org/) and a few GB of disk
+space for the dependencies.
+
+**Windows (PowerShell)**
+
+```powershell
+git clone https://github.com/abhinavtop1G/PayPal_AI_Hackathon_Pramaan.git
+cd PayPal_AI_Hackathon_Pramaan
+py -3.11 -m venv .venv
+.venv\Scripts\python -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+.venv\Scripts\python -m pip install -r requirements-serve.txt
+.venv\Scripts\python run.py
+```
+
+**macOS / Linux**
+
+```bash
+git clone https://github.com/abhinavtop1G/PayPal_AI_Hackathon_Pramaan.git
+cd PayPal_AI_Hackathon_Pramaan
+python3.11 -m venv .venv
+.venv/bin/python -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+.venv/bin/python -m pip install -r requirements-serve.txt
+.venv/bin/python run.py
+```
+
+`run.py` starts the API, installs the console's dependencies on the first run, then starts the console. When it prints
+`Open http://localhost:3000`, open that address. **Ctrl+C** stops everything.
+
+| | |
+|---|---|
+| Console | <http://localhost:3000> |
+| API docs (Swagger, try any endpoint in the browser) | <http://127.0.0.1:8000/docs> |
+| API only, without the console | `python run.py --api-only` |
+
+The sidebar should say **Live API**. The first visit to each page takes a few seconds while Next.js compiles it.
+
+**Just want to look around, with no Python?** `cd frontend && npm ci && npm run dev` runs the console on its own. It plays
+recordings of the API's output and labels them **Recorded**.
+
+### If something goes wrong
+
+| What you see | What to do |
+|---|---|
+| `Port 8000 is already in use` (or 3000) | Stop whatever is using it, or run `python run.py --api-port 8001 --web-port 3001` |
+| `Missing Python packages` | Run the script with the `.venv` Python, as in the commands above |
+| `py` is not recognised (Windows) | Use the full path to your Python 3.11, or `python -m venv .venv` if `python --version` says 3.11 |
+| pip can't find a pinned version | Check you are on Python 3.11: the versions are pinned to the ones the models were saved with |
+| Sidebar says **Recorded** | The console can't reach the API. Check the API is still running in the terminal and that `/health` answers |
+
+---
+
+## Use it
+
+A five-minute tour, in the order that makes the most sense.
+
+**1. Watch it decide: [`/console/lab`](http://localhost:3000/console/lab).** Pick a scenario from the top row. You get the
+risk score, the decision, the reasons in English or Hindi, the time each pipeline stage took, the SHAP waterfall behind
+the score, what the customer sees on their phone, and the exact request and response. This is what you should see:
+
+| scenario | decision | step-up | risk |
+|---|---|---|---|
+| everyday payment | allow | | <0.01% |
+| big purchase | challenge | SMS OTP | 0.11% |
+| new phone + new SIM | challenge | passkey | 0.12% |
+| travelling | allow | | <0.01% |
+| stolen credentials | block | | 99.2% |
+| SIM swap | block | | 94.4% |
+| credential stuffing | block | | 92.8% |
+| remote-access takeover | block | | 95.9% |
+| coached victim | challenge | bank call-back | 3.9% |
+
+- On a **challenge**, press **Customer passes the challenge** or **Challenge fails** to run the rest of the loop.
+- Open **Build your own request** to change any signal the SDK would send and watch the decision move.
+
+**2. Try it on yourself: [`/console/capture`](http://localhost:3000/console/capture).** The real web SDK runs on this page.
+Type the password `.tie5Roanl` and press Enter to see your typing rhythm against the demo customer's real profile, or enrol
+your own in 5 attempts. Swipe on the pad to see the 21 features computed per gesture.
+
+**3. Tune the policy: [`/console/policy`](http://localhost:3000/console/policy).** Change what a step-up costs a customer or
+when blocking is allowed. A whole recorded day is re-decided in your browser, using the service's own decision rule.
+
+**4. See a day of traffic: [`/console`](http://localhost:3000/console).** Press play to replay 4,653 requests from a held-out
+test day on a compressed clock. The **Live service** strip above the charts shows the running API's own counters.
+
+**5. Check the evidence.**
+[`/console/audit`](http://localhost:3000/console/audit) lists every decision, with filters, a detail drawer and CSV export.
+[`/console/model`](http://localhost:3000/console/model) compares every design on the same replay.
+[`/console/developers`](http://localhost:3000/console/developers) has SDK quickstarts and a playground for sending requests.
+
+**6. The scam-session layer: [`/scam`](http://localhost:3000/scam).** The earlier RAKSHAM work this builds on: a phone demo of
+scam sessions (a fake police "digital arrest" call, for example), the bank's view of a day of sessions, the mule network, and
+a builder for scoring a session event by event.
+
+**Or call the API directly** (in Windows PowerShell, type `curl.exe`):
+
+```bash
+curl -s http://127.0.0.1:8000/health
+curl -s -X POST http://127.0.0.1:8000/v1/auth/demo/sim_swap -H "Content-Type: application/json" -d "{}"
+```
+
+### What is live and what is recorded
+
+Nothing on screen is made up, but not everything is computed on the spot, so here is exactly which is which.
+
+| on screen | source |
+|---|---|
+| Decision lab, landing-page decision card, scenario table | **Live** from the API; falls back to a recording of the API's output, labelled as such |
+| Live capture, API playground, the audit log's live view, Live service strip | **Live** from the API |
+| `/scam` phone demo, mule network, session builder | **Live** from the API; the phone demo and mule network fall back to recordings, the builder needs the API |
+| Overview, policy tuner, the audit log's recorded day, `/scam` bank wall | **Recording** of one held-out day run through the trained service: regenerating it takes the full simulator |
+| Headline figures, Model page | **Evaluation reports** in this repo (`model_report.json`, built from `ml/reports/` and `backend/reports/`) |
+
+---
+
+## Results
+
+Sources: [`ml/reports/auth.md`](ml/reports/auth.md), [`backend/reports/auth_latency.md`](backend/reports/auth_latency.md).
+3,000 simulated customers, 273k requests over 60 days; trained on days 0-35, tested on days 45-60 replayed through the
 service, including simulated challenge outcomes.
 
 | design | genuine requests challenged | genuine finally blocked | attack requests stopped | attack money stopped |
@@ -32,129 +157,29 @@ service, including simulated challenge outcomes.
 | SMS OTP on every payment | 100% | 3.0% | 24.2% | 24.0% |
 | rules engine + SMS OTP | 3.7% | 0.12% | 30.2% | 31.1% |
 
-* Test ROC-AUC 0.996 (all signals) vs 0.88 / 0.76 / 0.95 for one family alone. Adding typing rhythm lifted the
-  behaviour family from ROC-AUC 0.80 to 0.88 and from 62.8% to 71.9% of attacks stopped with half the challenges; on
-  the full engine it is neutral in ranking (0.996 vs 0.997) and moves the operating point to fewer genuine challenges
-  (1.8% vs 2.0%) and slightly fewer attack requests stopped (82.8% vs 85.8%), mostly coached victims, whose own typing
-  looks normal.
-* Per attack (finally stopped): stolen credentials 100%, SIM swap 100%, bots 100%, remote-access takeover 90%,
-  **coached victim 46%** (the real owner on their own phone is the hardest case). Hard-difficulty attacks: 68%.
-* Typing rhythm (`ml/reports/keystroke_cmu.md`): a 1D-CNN keystroke encoder trained on the CMU DSL-StrongPassword
-  data (51 people typing `.tie5Roanl`). On people it never saw, enrolled on 4 earlier sessions and tested on 4 later
-  ones: per-user EER 13.0% (scaled Manhattan 19.9%; fused 12.2%, 8.5% over 3 tries). Our scaled Manhattan reproduces
-  the published 9.6% on the paper's own protocol. In the service it is the `typing_dev` behaviour signal for password /
-  PIN entry, on web as well as mobile.
-* Device binding: the first payment from a device never seen on the account is always stepped up (passkey on the
-  registered phone when one exists or the SIM just changed), however low the model's risk.
-* Latency over HTTP on a laptop **CPU** with API-key + HMAC checks: **p95 42 ms** (no touch data),
-  **p95 69 ms** with 10 touch gestures verified by the BiLSTM. In-process decision (features + model + SHAP + policy): p95 18 ms. (HTTP figures measured before the typing
-  signal; the 84k-parameter typing CNN adds a CPU forward pass per attempt.)
+- **Ranking:** test ROC-AUC 0.996 with all signals, against 0.88 / 0.76 / 0.95 for one family alone.
+- **Per attack (finally stopped):** stolen credentials 100%, SIM swap 100%, bots 100%, remote-access takeover 90%,
+  **coached victim 46%**. The real owner on their own phone is the hardest case. Hard-difficulty attacks: 68%.
+- **Typing rhythm** ([`ml/reports/keystroke_cmu.md`](ml/reports/keystroke_cmu.md)): a 1D-CNN keystroke encoder trained on the
+  CMU DSL-StrongPassword data. On people it never saw, enrolled on 4 earlier sessions and tested on 4 later ones: per-user
+  EER 13.0% (scaled Manhattan 19.9%; fused 12.3%).
+- **Device binding:** the first payment from a device never seen on the account is always stepped up, however low the
+  model's risk.
+- **Latency** over HTTP on a laptop CPU, with API-key and HMAC checks on: **p95 50 ms** without touch data, **p95 66 ms** with
+  10 touch gestures verified by the BiLSTM. Neither row sends a typing attempt, which adds a few ms for the CNN. Reproduce
+  with `python -m backend.bench_auth`; expect different numbers on a different machine or under load.
 
-## Console
+---
 
-`frontend/` (Next.js 16, React 19, Tailwind 4). It plays recordings of the API's own output by default and
-decides live when `NEXT_PUBLIC_PRAMAAN_API` points at a running service.
+## How it works
 
-| | |
-|---|---|
-| ![Product page](docs/screenshots/landing.jpg) | ![Operations overview](docs/screenshots/overview.jpg) |
-| ![Decision lab](docs/screenshots/decision-lab.jpg) | ![Live capture](docs/screenshots/live-capture.jpg) |
-| ![Policy tuner](docs/screenshots/policy-tuner.jpg) | ![Model report](docs/screenshots/model.jpg) |
+Each request runs through: SDK signals → gateway (API key, HMAC signature, replay check, rate limit) → touch BiLSTM and
+typing 1D-CNN → payee intelligence → 27 causal features (behaviour 6, device 13, transaction 8) → monotone XGBoost with exact
+tree-SHAP → an expected-cost policy → allow, one of four step-ups (SMS OTP, passkey, bank call-back, cool-off), or block.
 
-| page | what it shows |
-|---|---|
-| `/` | the product: an animated decision card cycling through the recorded scenarios, results vs SMS OTP, the three signal families, matched step-ups, the request path, the SDKs |
-| `/console` | **Operations overview**: one held-out test day (4,653 requests, 61 attacks) replayed through the trained service on a compressed clock: KPIs, attacks by type and outcome on a 24-hour lane, traffic and interruptions per hour, risk distribution of customers vs attackers, challenge mix, signals behind interruptions, a live decision stream; plus the running service's own counters when connected |
-| `/console/lab` | **Decision lab**: nine scenarios (genuine look-alikes next to attacks) or a request built by hand; risk gauge, per-stage pipeline trace (`timings_ms`), exact SHAP waterfall, family split, the policy's expected cost of each action, the customer's phone (OTP / passkey / call-back / cool-off / blocked, EN/HI), the challenge loop, request / response JSON and generated integration code |
-| `/console/policy` | **Policy tuner**: change what a step-up costs a customer, when blocking is allowed, the value behind a login and the device-binding rule; the held-out day is re-decided in the browser with the service's own decision rule (it reproduces all 4,653 recorded decisions at the service's setting) and shows the friction / protection trade-off curve, expected attacks and money stopped, and the step-up mix |
-| `/console/capture` | **Live capture**: the web SDK running on the page. Type `.tie5Roanl` and see your rhythm against the demo customer's real CMU profile (or enrol your own in 5 attempts), with the service's verdict when live; swipe on a pad and see the 21 features per gesture; the device signals and the exact request the SDK would send |
-| `/console/audit` | **Audit log**: every decision of the recorded day, this session, or the live service, with filters, search, a detail drawer and CSV export |
-| `/console/model` | **Model**: every design on the same replay (friction vs protection), per-attack heatmap, difficulty, ranking, feature importance, typing and touch EER, latency, caveats |
-| `/console/developers` | **Developers**: integration flow, quickstarts (web, Node, Android, Python, cURL), what each SDK can see, endpoints, security, privacy, how the SDKs are verified |
-| `/scam` | the RAKSHAM scam-session layer (unchanged) |
+Details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Deployment: [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
-## Client SDKs
-
-`sdk/` (see `sdk/README.md`): a **web SDK** (`@pramaan/web-sdk`, TypeScript) and an **Android SDK**
-(`com.pramaan.sdk`, Kotlin), both without dependencies. They collect touch gestures (21 features each, never
-coordinates), typing rhythm (31 timings, never keys), session timing and device signals on the customer's device; the
-Android SDK adds root, emulator, remote-control apps, screen recording, SIM change and an unknown caller on the line.
-Their clients sign requests, retry safely and fall back to an SMS OTP when the service is down; the web SDK also has
-drop-in step-up screens (OTP, passkey, call-back, cool-off with a scam warning, in English or Hindi).
-
-Both SDKs are tested against **golden vectors from the training pipeline's own code** (`sdk/spec/make_golden.py`):
-the same raw touch frames, sensor samples and key events must give the features the models were trained on, to 1e-9.
-Web: 31 unit tests + 7 end-to-end tests against a running API (including signed requests through a secured gateway).
-Android: 13 JVM tests (golden vectors, client, live API); library and sample compile against Android API 35.
-
-## Layout
-
-```
-sdk/web/              browser SDK + signing client (TypeScript): collectors, gesture / keystroke math, PramaanClient
-sdk/android/          Android SDK (Kotlin): Pramaan entry point, capture, device signals, PIN pad, client; sample app
-sdk/spec/             golden vectors from the training pipeline (make_golden.py -> golden.json)
-ml/models/keystroke/  1D-CNN typing-rhythm encoder (CMU keystroke data): data, model, train, evaluate, scorer
-ml/auth/          the authentication service core (PRAMAAN)
-  geo.py            IP intelligence (hosting / anonymiser ranges), distances, load-balancer geo header
-  state.py          live state: users, device registry, per-device / per-IP fan-out, pending challenges (memory | Redis)
-  features.py       26 causal features: behaviour 5 · device 13 · transaction 8
-  sim.py            account-takeover simulator (genuine look-alikes + 5 attacks, difficulty knob, real HMOG touch)
-  model.py          monotone XGBoost, prior correction, tree-SHAP
-  policy.py         challenge choice (sms_otp | passkey | bank_callback | cool_off) + expected-cost decision
-  engine.py         decision + challenge loop
-  evaluate.py       training + replay evaluation -> ml/reports/auth.md
-  demo.py           demo customer and scenarios; packed real gestures for containers
-backend/          FastAPI: app.py, auth_service.py, security.py (keys, HMAC, replay, rate limit), audit.py;
-                  record_auth_demo.py / record_auth_traffic.py / export_console_report.py write the console's data
-frontend/         Next.js: / (product), /console/* (overview, lab, capture, audit, model, developers), /scam (RAKSHAM)
-deploy/           cloudrun.sh (Cloud Run, Secret Manager, Memorystore, load balancer + Cloud Armor)
-Dockerfile, docker-compose.yml, requirements-serve.txt
-ml/models, ml/campaign, ml/engine, ml/sim   RAKSHAM components (touch biometrics, payee risk, scam sessions)
-docs/             ARCHITECTURE.md (PRAMAAN), DEPLOY.md, ARCHITECTURE_RAKSHAM.md, README_RAKSHAM.md
-tests/            pytest (100 tests; tests/test_auth.py covers the PRAMAAN service)
-```
-
-## Run it
-
-```bash
-source ~/envs/raksham/Scripts/activate
-pip install -r requirements.txt          # + torch (CUDA or CPU build)
-
-# API (touch biometrics + payee intelligence + authentication); docs at http://127.0.0.1:8000/docs
-PRAMAAN_SERVICES=biometrics,keystroke,campaign,auth BIO_CALIB=ml/auth/artifacts/bio_calib.pkl \
-  uvicorn backend.app:app --port 8000
-
-# console on http://localhost:3000 (without NEXT_PUBLIC_PRAMAAN_API it plays the recordings)
-cd frontend && npm ci && NEXT_PUBLIC_PRAMAAN_API=http://127.0.0.1:8000 npm run dev
-
-# SDKs
-cd sdk/web && npm ci && npm test && PRAMAAN_API=http://127.0.0.1:8000 npm run test:live
-cd sdk/android && gradle :pramaan:testDebugUnitTest :sample:assembleDebug
-```
-
-On Windows Git Bash, prefix commands that set path-like env values (e.g. `PRAMAAN_OPEN_PATHS=/v1/...`) with
-`MSYS_NO_PATHCONV=1`, otherwise Git Bash rewrites them into Windows paths.
-
-Rebuild everything from data:
-
-```bash
-python -m ml.models.biometrics.data      # HMOG gesture cache from DATA/hmog_dataset.zip (once)
-python -m ml.models.keystroke.train --seed 0   # 1D-CNN typing encoder (seeds 0-2, ~2 min each, CUDA optional)
-python -m ml.models.keystroke.evaluate   # held-out users vs baselines -> ml/reports/keystroke_cmu.md + artefact
-python -m ml.auth.evaluate               # simulate, train, evaluate (~12 min) -> ml/reports/auth.md + model
-python -m ml.auth.demo                   # packed demo gestures
-BIO_CALIB=ml/auth/artifacts/bio_calib.pkl python -m backend.record_auth_demo   # -> frontend/public/data/auth_demo.json
-python -m backend.record_auth_traffic    # one held-out test day through the service -> frontend/public/data/auth_traffic.json
-python -m backend.export_console_report  # evaluation reports for the console -> frontend/public/data/model_report.json
-python sdk/spec/make_golden.py           # SDK golden vectors from the training pipeline -> sdk/spec/golden.json
-python -m backend.bench_auth --url http://127.0.0.1:8000     # HTTP latency -> backend/reports/auth_latency.md
-pytest tests -q
-```
-
-Cloud deployment: `docs/DEPLOY.md` (Docker / Cloud Run in Mumbai, asia-south1). The Dockerfile and deploy script
-have not been run on this machine yet (no Docker or gcloud installed).
-
-## API
+### API
 
 | endpoint | what it does |
 |---|---|
@@ -166,5 +191,92 @@ have not been run on this machine yet (no Docker or gcloud installed).
 | `GET /v1/auth/scenarios` · `POST /v1/auth/demo/{scenario}` · `POST /v1/auth/demo/verify` | demo customer (open paths for the public console) |
 | `GET /health` | loaded services, security mode, model version, state / audit backends |
 
-Security (env-configured, see `docs/DEPLOY.md`): `X-API-Key`; `X-Timestamp` + `X-Signature` = HMAC-SHA256 of
-`"<timestamp>.<body>"` with 5-minute window and replay rejection; per-key token-bucket rate limit; TLS at the load balancer.
+`run.py` starts the API in open development mode. To turn security on, set the environment variables in
+[`docs/DEPLOY.md`](docs/DEPLOY.md): `X-API-Key`; `X-Timestamp` + `X-Signature` = HMAC-SHA256 of `"<timestamp>.<body>"` with a
+5-minute window and replay rejection; per-key token-bucket rate limit.
+
+### Client SDKs
+
+[`sdk/`](sdk/README.md) holds a **web SDK** (`@pramaan/web-sdk`, TypeScript) and an **Android SDK** (`com.pramaan.sdk`, Kotlin),
+both without dependencies. They collect touch gestures (21 features each, never coordinates), typing rhythm (31 timings,
+never keys), session timing and device signals on the customer's device. Their clients sign requests, retry safely and fall
+back to an SMS OTP when the service is down. Both are tested against **golden vectors from the training pipeline's own code**:
+the same raw input must give the features the models were trained on, to 1e-9.
+
+### Repository layout
+
+```
+run.py            starts the API and console together
+backend/          FastAPI: app.py, auth_service.py, security.py, audit.py; scripts that write the console's data
+frontend/         Next.js console: / (product), /console/* , /scam
+ml/auth/          the authentication core: features, simulator, model, policy, engine, evaluation
+ml/models/        touch biometrics (BiLSTM), typing (1D-CNN), workflow GRU, GNN, tabular, each with shipped weights
+ml/campaign, ml/engine, ml/sim    the earlier RAKSHAM components: payee risk, scam sessions, simulator
+ml/reports/       the evaluation reports every published number comes from
+infra/privacy/    consent, private set intersection, reputation
+sdk/              web and Android SDKs, golden vectors
+deploy/, Dockerfile, docker-compose.yml    cloud deployment
+docs/             architecture, deployment, the RAKSHAM write-ups
+tests/            backend test suite
+```
+
+---
+
+## Tests
+
+```bash
+.venv/bin/python -m pip install pytest httpx
+.venv/bin/python -m pytest tests -q                         # 107 passed, 16 skipped (these need the training datasets or a GPU)
+cd frontend && npm test                                     # 4 tests: the policy tuner against the recorded decisions
+cd sdk/web && npm ci && npm test                            # 31 tests; 7 more with: PRAMAAN_API=http://127.0.0.1:8000 npm run test:live
+cd sdk/android && gradle :pramaan:testDebugUnitTest         # 13 tests (needs Gradle and the Android SDK)
+```
+
+The backend suite trains small models and takes several minutes on a laptop CPU.
+
+## Rebuild from data (optional)
+
+Not needed to run anything. Training needs the datasets, which are not in this repository: HMOG
+(`DATA/hmog_dataset.zip`), CMU DSL-StrongPassword (`DATA/keystroke/DSL-StrongPasswordData.csv`) and, for the RAKSHAM
+components, IBM AML and IEEE-CIS. Install `requirements.txt` for the full training environment, then:
+
+```bash
+python -m ml.models.biometrics.data      # HMOG gesture cache (once)
+python -m ml.models.keystroke.train --seed 0   # typing encoder (seeds 0-2)
+python -m ml.models.keystroke.evaluate   # held-out users vs baselines -> ml/reports/keystroke_cmu.md
+python -m ml.auth.evaluate               # simulate, train, evaluate -> ml/reports/auth.md + model
+python -m ml.auth.demo                   # packed demo gestures
+BIO_CALIB=ml/auth/artifacts/bio_calib.pkl python -m backend.record_auth_demo   # recording of the scenarios
+python -m backend.record_auth_traffic    # recording of one held-out day
+python -m backend.export_console_report  # evaluation reports -> frontend/public/data/model_report.json
+python sdk/spec/make_golden.py           # SDK golden vectors
+```
+
+## Cloud deployment
+
+[`docs/DEPLOY.md`](docs/DEPLOY.md) covers Docker and Google Cloud Run. The Dockerfile and deploy script **have not been run
+yet**; the service has only been run locally.
+
+## Project history
+
+PRAMAAN is built on RAKSHAM, the team's earlier scam-detection work, which contributed the touch-biometrics model, the
+payee-risk model and the API skeleton. Its write-ups are in [`docs/README_RAKSHAM.md`](docs/README_RAKSHAM.md) and
+[`docs/ARCHITECTURE_RAKSHAM.md`](docs/ARCHITECTURE_RAKSHAM.md).
+
+This repository carries the project's real commit history. It opens on 15 October 2026 with a file-by-file import of the
+earlier code, then adds the PRAMAAN service, console and SDKs, up to `f001f93` on 25 October 2026.
+
+Commits after `f001f93` were made for this submission:
+
+- `run.py`, a single command that starts the API and console
+- headline figures now read from the evaluation reports instead of being typed into the pages, which fixed stale numbers on
+  the `/scam` policy panel
+- the landing-page card and scenario table decide live when the API is up
+- latency re-measured on the current code
+- a duplicate-key bug in the landing-page card fixed
+- the repository cleaned up, and this README rewritten
+
+## Acknowledgements
+
+Touch data: the HMOG dataset. Typing data: the CMU Keystroke Dynamics benchmark (Killourhy and Maxion). The RAKSHAM components
+also use the IBM AML and IEEE-CIS Fraud Detection datasets.
