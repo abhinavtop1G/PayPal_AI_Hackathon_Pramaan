@@ -20,6 +20,7 @@ class FakePayPal:
         self.expires_in = expires_in
         self.tokens = 0
         self.decline_next = False
+        self.refuse_capture_next = False
         self.revoke_next = False
 
     def calls(self, path_part: str = "") -> list[httpx.Request]:
@@ -53,6 +54,11 @@ class FakePayPal:
             if order["status"] == "COMPLETED":
                 return httpx.Response(422, json={"name": "UNPROCESSABLE_ENTITY", "details": [{"issue": "ORDER_ALREADY_CAPTURED"}]})
             order["status"] = "COMPLETED"
+            if self.refuse_capture_next:  # the shape in PayPal's card-testing docs: a completed order whose capture was declined
+                self.refuse_capture_next = False
+                order["purchase_units"][0]["payments"] = {"captures": [
+                    {"id": "CAPX", "status": "DECLINED", "amount": order["purchase_units"][0]["amount"]}]}
+                return httpx.Response(201, json=order)
             order["purchase_units"][0]["payments"] = {"captures": [
                 {"id": "CAP1", "status": "COMPLETED", "amount": order["purchase_units"][0]["amount"]}]}
             return httpx.Response(201, json=order)
@@ -172,7 +178,7 @@ def test_creating_an_order_twice_returns_the_same_order(svc, paypal):
     cid = svc.start("genuine_routine")["checkout"]["id"]
     assert svc.create_order(cid)["order_id"] == svc.create_order(cid)["order_id"]
     assert len(paypal.calls("/v2/checkout/orders")) == 1
-    assert paypal.calls("/v2/checkout/orders")[0].headers["paypal-request-id"] == f"order-{cid}"
+    assert paypal.calls("/v2/checkout/orders")[0].headers["paypal-request-id"] == f"order-{cid}-0"
 
 
 # ---------------------------------------------------------------------- capture
@@ -223,6 +229,23 @@ def test_declined_instrument_can_be_retried_with_a_new_request_id(svc, paypal):
     assert svc.capture(cid, order_id)["checkout"]["capture"]["status"] == "COMPLETED"
     ids = [r.headers["paypal-request-id"] for r in paypal.calls("/capture")]
     assert len(set(ids)) == 2
+
+
+def test_a_capture_paypal_declined_gets_no_receipt_and_paying_again_needs_a_new_order(svc, paypal):
+    cid, order_id = start_open(svc, paypal)
+    paypal.refuse_capture_next = True
+    with pytest.raises(PayPalError) as e:
+        svc.capture(cid, order_id)
+    assert (e.value.issue, e.value.status) == ("CAPTURE_DECLINED", 422)
+    assert svc._load(cid)["capture"] is None
+    with pytest.raises(OrderMismatch):  # nothing was charged, so there is nothing to refund
+        svc.refund(cid)
+    fresh = svc.create_order(cid)["order_id"]
+    assert fresh != order_id
+    paypal.approve(fresh)
+    assert svc.capture(cid, fresh)["checkout"]["capture"]["status"] == "COMPLETED"
+    created = [r for r in paypal.calls("/v2/checkout/orders") if r.url.path == "/v2/checkout/orders"]
+    assert len({r.headers["paypal-request-id"] for r in created}) == 2  # the same id would get the old order back from PayPal
 
 
 def test_already_captured_at_paypal_is_read_back_not_an_error(svc, paypal):

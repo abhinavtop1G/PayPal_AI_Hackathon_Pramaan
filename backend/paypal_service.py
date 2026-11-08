@@ -68,7 +68,7 @@ class PayPalClient:
             try:
                 r = self._http.post("/v1/oauth2/token", auth=(self.client_id, self._secret), data={"grant_type": "client_credentials"})
             except httpx.HTTPError as e:
-                raise PayPalError(f"could not reach PayPal: {type(e).__name__}", 503, "UNREACHABLE") from e
+                raise PayPalError(f"Could not reach PayPal ({type(e).__name__}). Check your connection and try again.", 503, "UNREACHABLE") from e
             if r.status_code != 200:
                 raise PayPalError("PayPal rejected the sandbox credentials", r.status_code, _json(r).get("error") or "AUTHENTICATION_FAILED")
             body = r.json()
@@ -89,7 +89,7 @@ class PayPalClient:
             try:
                 r = self._http.request(method, path, json=body, headers=headers)
             except httpx.HTTPError as e:
-                raise PayPalError(f"could not reach PayPal: {type(e).__name__}", 503, "UNREACHABLE") from e
+                raise PayPalError(f"Could not reach PayPal ({type(e).__name__}). Check your connection and try again.", 503, "UNREACHABLE") from e
             if r.status_code == 401 and attempt == 0:  # the token was revoked or expired early: get a new one, once
                 self._forget_token()
                 continue
@@ -202,7 +202,7 @@ class PayPalCheckout:
         if doc["order_id"]:
             return {"checkout": _view(doc), "order_id": doc["order_id"]}
         client = self._require_client()
-        order = client.create_order(self._order_body(doc), request_id=f"order-{doc['id']}")
+        order = client.create_order(self._order_body(doc), request_id=f"order-{doc['id']}-{doc['capture_attempts']}")
         doc["order_id"] = order["id"]
         self._save(doc)
         self._audit(doc, "paypal_order_created")
@@ -230,6 +230,13 @@ class PayPalCheckout:
         cap = _capture_of(result)
         if cap is None:
             raise PayPalError("PayPal's capture response had no capture in it", 502, "NO_CAPTURE", result.get("debug_id"))
+        if cap.get("status") in ("DECLINED", "FAILED"):
+            # PayPal can complete the order and still refuse the money. That is no receipt, and paying again needs a new order.
+            self._audit(doc, "paypal_capture_declined", capture_id=cap.get("id"), status=cap.get("status"))
+            doc["order_id"] = None
+            self._save(doc)
+            raise PayPalError("PayPal declined this payment, so nothing was charged. Try again with another card.", 422,
+                              "CAPTURE_DECLINED", result.get("debug_id"))
         doc["capture"] = {"id": cap.get("id"), "status": cap.get("status"), "amount": (cap.get("amount") or {}).get("value"),
                           "currency": (cap.get("amount") or {}).get("currency_code")}
         self._save(doc)
