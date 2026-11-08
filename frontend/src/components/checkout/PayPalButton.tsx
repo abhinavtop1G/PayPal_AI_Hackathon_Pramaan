@@ -130,7 +130,8 @@ export function PayPalButton({ clientId, currency, checkoutId, onCaptured, onPro
           PayPal&apos;s button could not load. Check your internet connection, and that an ad blocker isn&apos;t blocking paypal.com.
         </p>
       )}
-      <div ref={host} />
+      {/* This page is dark. On a browser set to light mode, a frame that doesn't match its page gets an opaque white background. */}
+      <div ref={host} style={{ colorScheme: "light" }} />
     </div>
   );
 }
