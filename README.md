@@ -40,6 +40,7 @@ genuine customer isn't made to prove themselves on every purchase.
 | ![Product page](docs/screenshots/landing.png) | ![Operations overview](docs/screenshots/overview.png) |
 | ![Decision lab](docs/screenshots/decision-lab.png) | ![Live capture](docs/screenshots/live-capture.png) |
 | ![Policy tuner](docs/screenshots/policy-tuner.png) | ![Model report](docs/screenshots/model.png) |
+| ![Allowed payment, with the PayPal button](docs/screenshots/checkout-allow.png) | ![Blocked payment, stopped before PayPal](docs/screenshots/checkout-blocked.png) |
 
 ---
 
@@ -98,8 +99,13 @@ instructions include credentials, use those.
    (or create one), and copy its **Client ID** and **Secret**.
 3. Copy `.env.example` to `.env` in the repository root and fill in both values. Git ignores `.env`.
 4. Restart `run.py`. It should print `PayPal sandbox: connected.`
-5. To pay, log in to PayPal's popup with a sandbox **Personal** account from
-   [Sandbox Accounts](https://developer.paypal.com/dashboard/accounts) (View/Edit account shows its email and password).
+5. To pay, there are two ways, both test money only:
+   - **No login:** choose **Debit or Credit Card** and use PayPal's [test card](https://developer.paypal.com/tools/sandbox/card-testing/)
+     `4012 8888 8888 1881` with any future expiry, any 3-digit code and a made-up US address. Depending on the browser, PayPal
+     opens this form on the page or in a popup. If the popup asks you to log in, use a sandbox buyer instead.
+   - **Sandbox buyer:** click the PayPal button and log in to the popup with a sandbox **Personal** account from
+     [Sandbox Accounts](https://developer.paypal.com/dashboard/accounts) (View/Edit account shows its email and password). Never
+     use a real PayPal login there.
 
 Without credentials the checkout still makes every decision and shows the exact order it would send, but has no PayPal button.
 
@@ -291,14 +297,16 @@ tests/            backend test suite
 
 ```bash
 .venv/bin/python -m pip install pytest httpx
-.venv/bin/python -m pytest tests -q                         # 138 passed, 16 skipped (these need the training datasets or a GPU)
+.venv/bin/python -m pytest tests -q                         # 139 passed, 16 skipped (these need the training datasets or a GPU)
 cd frontend && npm test                                     # 4 tests: the policy tuner against the recorded decisions
 cd sdk/web && npm ci && npm test                            # 31 tests; 7 more with: PRAMAAN_API=http://127.0.0.1:8000 npm run test:live
 cd sdk/android && gradle :pramaan:testDebugUnitTest         # 13 tests (needs Gradle and the Android SDK)
 ```
 
-The backend suite trains small models and takes 6 to 15 minutes on a laptop CPU. Its PayPal tests use a local fake of PayPal's API,
-so they need no credentials or network.
+The backend suite trains small models and takes 6 to 20 minutes on a laptop CPU. Its PayPal tests use a local fake of PayPal's API,
+so they need no credentials or network. The checkout has also been run by hand against the real PayPal sandbox: a test-card payment
+captured and refunded, a refused card getting no receipt, and PayPal's popup opened and cancelled. Logging in to the popup as a
+sandbox buyer has not been run end to end.
 
 ## Rebuild from data (optional)
 
