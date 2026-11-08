@@ -2,6 +2,7 @@
   "name": "@pramaan/web-sdk",
   "version": "0.1.0",
   "description": "PRAMAAN browser SDK: collects behaviour and device signals on the page (touch gestures, typing rhythm, session timing) and calls the risk-authentication API.",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",

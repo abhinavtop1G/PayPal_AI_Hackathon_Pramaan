@@ -355,3 +355,8 @@ Commits after `f001f93` were made for this submission:
 
 Touch data: the HMOG dataset. Typing data: the CMU Keystroke Dynamics benchmark (Killourhy and Maxion). The RAKSHAM components
 also use the IBM AML and IEEE-CIS Fraud Detection datasets.
+
+## Licence
+
+The code is under the [MIT licence](LICENSE). It doesn't cover the datasets above: the HMOG gestures and CMU typing samples
+in [`ml/auth/artifacts/`](ml/auth/artifacts/) stay under their datasets' own terms.
