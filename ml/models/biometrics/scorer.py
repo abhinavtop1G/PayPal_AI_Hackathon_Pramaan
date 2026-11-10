@@ -9,6 +9,12 @@ service calibrates from the HMOG gesture cache and saves checkpoints/serve/bio_c
   * z-normalisation constants for each model's similarities, from valid users
   * the fused-score threshold at the valid-user EER
 Gestures are the per-gesture features of ml.models.biometrics.data.FEATURES (client-side extraction).
+
+A missing feature is read as the training average, so a window without the phone's motion sensors (a mouse on a
+laptop, or a browser that blocks motion access) is scored on geometry and timing alone, which the model was never
+validated for: plain mouse swipes passed as an enrolled phone profile about a third of the time. Profile and window
+must therefore agree on hand motion; when they don't, verify() returns comparable=False and no score instead of a
+verdict, and the risk model sees no touch evidence (bio_dev NaN).
 """
 import os
 import pickle
@@ -30,10 +36,22 @@ ART = Path("ml/models/biometrics/artifacts/hmog_bilstm.pt")
 # calibrating needs the HMOG gesture cache once; containers ship the saved file and point BIO_CALIB at it
 CALIB = Path(os.environ.get("BIO_CALIB", "checkpoints/serve/bio_calib.pkl"))
 LENGTHS = (10, 20)
+# hand motion (accelerometer / gyroscope around the touch) counts as present when at least half the gestures carry it
+MOTION = ("acc_mean", "gyr_mean")
+MIN_MOTION_SHARE = 0.5
 
 
 def _unit(x):
     return x / np.linalg.norm(x, axis=-1, keepdims=True).clip(min=1e-12)
+
+
+def _present(v) -> bool:
+    return v is not None and v == v  # None and NaN are missing
+
+
+def has_motion(gestures: list[dict]) -> bool:
+    """Whether a set of gestures carries hand-motion features, i.e. came from a phone with its motion sensors."""
+    return bool(gestures) and sum(any(_present(g.get(f)) for f in MOTION) for g in gestures) >= MIN_MOTION_SHARE * len(gestures)
 
 
 class BioScorer:
@@ -99,9 +117,10 @@ class BioScorer:
             w = np.stack([z[s:s + n] for s in range(0, len(z) - n + 1, max(1, n // 2))])
             prof[n] = {"lstm": _unit(_unit(self._lstm(w)).mean(0)), "lda": _unit(_unit(self._lda(n, w)).mean(0)),
                        "n_windows": len(w)}
+        prof["motion"] = has_motion(gestures)
         with self.lock:
             self.profiles[user_id] = prof
-        return {"user_id": user_id, "enrolled": True, "gestures": len(gestures),
+        return {"user_id": user_id, "enrolled": True, "gestures": len(gestures), "hand_motion": prof["motion"],
                 "windows": {f"n{n}": prof[n]["n_windows"] for n in LENGTHS}}
 
     def verify(self, user_id: str, gestures: list[dict]) -> dict:
@@ -110,16 +129,25 @@ class BioScorer:
         if len(gestures) < 10:
             raise ValueError("verification needs at least 10 gestures")
         n = 20 if len(gestures) >= 20 else 10
+        prof, c = self.profiles[user_id], self.calib[n]
+        window_motion, profile_motion = has_motion(gestures[-n:]), prof.get("motion", True)
+        base = {"user_id": user_id, "window_gestures": n, "threshold_at_eer": round(c["threshold"], 4),
+                "valid_eer": round(c["valid_eer"], 4), "profile_hand_motion": profile_motion, "window_hand_motion": window_motion}
+        if window_motion != profile_motion:
+            why = ("the profile was enrolled on a phone with its motion sensors and these gestures carry none (a mouse, or a "
+                   "browser without motion access)" if profile_motion else
+                   "the profile was enrolled without motion sensors (e.g. a mouse) and these gestures carry them")
+            return {**base, "comparable": False, "reason": f"Not comparable: {why}.", "similarity_lstm": None,
+                    "similarity_lda": None, "fused_score": None, "matches_profile": False, "behavioural_deviation": None}
         w = self._z(gestures)[-n:][None]
-        p, c = self.profiles[user_id][n], self.calib[n]
+        p = prof[n]
         s_lstm = float(_unit(self._lstm(w))[0] @ p["lstm"])
         s_lda = float(_unit(self._lda(n, w))[0] @ p["lda"])
         (m1, sd1), (m2, sd2) = c["norm"]["lstm"], c["norm"]["lda"]
         fused = ((s_lstm - m1) / sd1 + (s_lda - m2) / sd2) / 2
-        return {"user_id": user_id, "window_gestures": n, "similarity_lstm": round(s_lstm, 4), "similarity_lda": round(s_lda, 4),
-                "fused_score": round(fused, 4), "threshold_at_eer": round(c["threshold"], 4),
-                "matches_profile": fused >= c["threshold"], "behavioural_deviation": round(c["threshold"] - fused, 4),
-                "valid_eer": round(c["valid_eer"], 4)}
+        return {**base, "comparable": True, "reason": None, "similarity_lstm": round(s_lstm, 4), "similarity_lda": round(s_lda, 4),
+                "fused_score": round(fused, 4), "matches_profile": fused >= c["threshold"],
+                "behavioural_deviation": round(c["threshold"] - fused, 4)}
 
     def deviation_many(self, user_ids: list[str], windows: list[list[dict]], n: int = 10) -> np.ndarray:
         """Batched `verify(...)["behavioural_deviation"]` for many (enrolled user, n-gesture window) pairs."""

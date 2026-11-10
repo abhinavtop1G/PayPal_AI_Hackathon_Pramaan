@@ -42,8 +42,10 @@ class AuthEngine:
         beh = req.setdefault("behaviour", {})
         gestures = beh.pop("gestures", None)
         if beh.get("bio_dev") is None and gestures and self.bio is not None and req["user_id"] in self.bio.profiles:
-            if len(gestures) >= 10:
-                beh["bio_dev"] = float(self.bio.verify(req["user_id"], gestures)["behavioural_deviation"])
+            if len(gestures) >= 10:  # a window the profile can't be compared with (e.g. a mouse) leaves bio_dev missing
+                dev = self.bio.verify(req["user_id"], gestures)["behavioural_deviation"]
+                if dev is not None:
+                    beh["bio_dev"] = float(dev)
         timings["touch"], t = 1000 * (time.perf_counter() - t), time.perf_counter()
         keys = beh.pop("keystrokes", None)
         if beh.get("typing_dev") is None and keys and self.typing is not None and req["user_id"] in self.typing.profiles:

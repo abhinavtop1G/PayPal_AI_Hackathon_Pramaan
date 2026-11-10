@@ -125,12 +125,19 @@ export interface TypingVerifyResult {
 export interface TouchVerifyResult {
   user_id: string;
   window_gestures: number;
-  similarity_lstm: number;
-  similarity_lda: number;
-  fused_score: number;
+  /** false when the profile and the window disagree on hand motion (e.g. a phone profile vs. mouse gestures): the
+   *  model gives no verdict then, so the scores below are null and matches_profile is false */
+  comparable: boolean;
+  /** why the window could not be compared; null when it was */
+  reason: string | null;
+  profile_hand_motion: boolean;
+  window_hand_motion: boolean;
+  similarity_lstm: number | null;
+  similarity_lda: number | null;
+  fused_score: number | null;
   threshold_at_eer: number;
   matches_profile: boolean;
-  behavioural_deviation: number;
+  behavioural_deviation: number | null;
   valid_eer: number;
 }
 

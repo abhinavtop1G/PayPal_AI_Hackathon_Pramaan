@@ -145,6 +145,8 @@ class SessionService:
         if not self.consent.check(s["user"]["user_id"], "behavioural_biometrics"):
             return None
         r = self.bio.verify(s["bio_key"], ev["gestures"])
+        if not r["comparable"]:  # e.g. no hand-motion data against a phone profile: no touch evidence either way
+            return None
         return {"behavioural_deviation": r["behavioural_deviation"], "matches_profile": bool(r["matches_profile"]),
                 "fused_score": r["fused_score"]}
 

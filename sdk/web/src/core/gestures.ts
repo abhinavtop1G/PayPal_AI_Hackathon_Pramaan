@@ -10,7 +10,9 @@ export const GESTURE_FEATURES = [
   "acc_mean", "acc_std", "acc_pre", "acc_resist", "gyr_mean", "gyr_std", "gyr_pre", "gyr_resist", "rotated",
 ] as const;
 export type GestureFeatureName = (typeof GESTURE_FEATURES)[number];
-/** One gesture as the model sees it; null = not measured on this device (the model treats it as average). */
+/** One gesture as the model sees it; null = not measured on this device (the model treats it as average). A window
+ *  without motion readings is not compared with a profile enrolled with them (and vice versa): verify returns
+ *  comparable=false instead of a verdict. */
 export type GestureFeatures = Record<GestureFeatureName, number | null>;
 
 /** Width of the HMOG phone the model was trained on. Path lengths are rescaled to it, so a tap (< 20 px of travel)

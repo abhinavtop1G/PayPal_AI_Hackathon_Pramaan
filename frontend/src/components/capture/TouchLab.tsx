@@ -157,17 +157,30 @@ export function TouchLab({ bus, padRef }: { bus: SdkBus; padRef: (el: HTMLDivEle
           </div>
           {result && (
             <div className="squircle rounded-[var(--radius-card)] bg-fill-quaternary p-3.5">
-              <p className={`text-headline ${result.r.matches_profile ? "text-sys-green" : "text-sys-red"}`}>
-                {result.r.matches_profile ? `Looks like ${result.who} hands` : `Not ${result.who} hands`}
-              </p>
-              <p className="mt-1 text-caption-1 text-label-secondary">
-                BiLSTM + LDA fusion over {result.r.window_gestures} gestures: score {result.r.fused_score.toFixed(2)} vs threshold {result.r.threshold_at_eer.toFixed(2)} ·
-                bio_dev {result.r.behavioural_deviation > 0 ? "+" : ""}{result.r.behavioural_deviation.toFixed(2)} · model EER {(100 * result.r.valid_eer).toFixed(1)}%
-              </p>
+              {result.r.comparable && result.r.fused_score != null && result.r.behavioural_deviation != null ? (
+                <>
+                  <p className={`text-headline ${result.r.matches_profile ? "text-sys-green" : "text-sys-red"}`}>
+                    {result.r.matches_profile ? `Looks like ${result.who} hands` : `Not ${result.who} hands`}
+                  </p>
+                  <p className="mt-1 text-caption-1 text-label-secondary">
+                    BiLSTM + LDA fusion over {result.r.window_gestures} gestures: score {result.r.fused_score.toFixed(2)} vs threshold {result.r.threshold_at_eer.toFixed(2)} ·
+                    bio_dev {result.r.behavioural_deviation > 0 ? "+" : ""}{result.r.behavioural_deviation.toFixed(2)} · model EER {(100 * result.r.valid_eer).toFixed(1)}%
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-headline text-label-secondary">Can’t compare with {result.who} profile</p>
+                  <p className="mt-1 text-caption-1 text-label-secondary">
+                    {result.r.profile_hand_motion
+                      ? `This profile was enrolled on a phone, with its motion sensors. These ${result.r.window_gestures} gestures carry no motion readings (a mouse, or a browser without motion access), so the model gives no verdict, and a payment would count them as no touch evidence.`
+                      : `This profile was enrolled without motion sensors and these ${result.r.window_gestures} gestures carry them, so the model gives no verdict.`}
+                  </p>
+                </>
+              )}
             </div>
           )}
           <p className="text-caption-1 text-label-tertiary">
-            {client ? "Mouse drags are not finger gestures, so expect “not Asha”. Enrol your own and compare." :
+            {client ? "Asha’s profile comes from her phone’s touch screen and motion sensors. A mouse has neither, so the model won’t judge mouse drags against her: enrol your own and compare." :
               "Connect the API to verify windows against a profile; the features above are computed by the SDK in this page either way."}
           </p>
         </div>
