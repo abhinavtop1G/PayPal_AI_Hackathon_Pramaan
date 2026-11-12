@@ -342,7 +342,7 @@ function Footer() {
       <div className="mx-auto flex max-w-[78rem] flex-wrap items-start justify-between gap-6 px-5 py-10 text-caption-1 text-label-tertiary">
         <div className="max-w-[34rem]">
           <Wordmark href="/" sub="Parallel Risk-Adaptive Multi-modal Authentication & Anomaly Network" />
-          <p className="mt-3">Team CaffeineEaters: Abhinav Saini, Aditi Pundir, Mannat Kaur, Aryamann Sharma. Built on the RAKSHAM scam-detection work.</p>
+          <p className="mt-3">Team CaffeineEaters: Abhinav Saini, Vyom Khanna, Sanyam Ahuja, Parth Sharma. Built on the RAKSHAM scam-detection work.</p>
           <p className="mt-2">Attack and genuine behaviours are simulated; touch windows (HMOG) and typing attempts (CMU) are real data; challenge efficacies are assumptions. The numbers validate the service and compare designs, not real-world accuracy.</p>
         </div>
         <nav className="flex gap-8" aria-label="Footer">

@@ -1,7 +1,7 @@
 # PRAMAAN: fast, explainable authentication for online payments
 
 **PRAMAAN** (प्रमाण, "proof") stands for **P**arallel **R**isk-**A**daptive **M**ulti-modal **A**uthentication &
-**A**nomaly **N**etwork. Team **CaffeineEaters**: Abhinav Saini, Aditi Pundir, Mannat Kaur, Aryamann Sharma.
+**A**nomaly **N**etwork. Team **CaffeineEaters**: Abhinav Saini, Vyom Khanna, Sanyam Ahuja, Parth Sharma.
 
 For every login or payment, PRAMAAN combines **behaviour**, **device information** and **transaction patterns**,
 decides **allow / challenge / block** in real time, picks the step-up that actually stops the likely attack, and returns
