@@ -101,8 +101,10 @@ instructions include credentials, use those.
 4. Restart `run.py`. It should print `PayPal sandbox: connected.`
 5. To pay, there are two ways, both test money only:
    - **No login:** choose **Debit or Credit Card** and use PayPal's [test card](https://developer.paypal.com/tools/sandbox/card-testing/)
-     `4012 8888 8888 1881` with any future expiry, any 3-digit code and a made-up US address. Depending on the browser, PayPal
-     opens this form on the page or in a popup. If the popup asks you to log in, use a sandbox buyer instead.
+     `4005 5192 0000 0004` with any future expiry, any 3-digit code and a made-up US address. Depending on the browser, PayPal
+     opens this form on the page or in a popup. If the popup asks you to log in, use a sandbox buyer instead. If the page
+     says PayPal declined the card, use another number from that list: the sandbox can refuse a test card it accepted
+     before (in our tests it later declined both `4012 8888 8888 1881` and `4005 5192 0000 0004`).
    - **Sandbox buyer:** click the PayPal button and log in to the popup with a sandbox **Personal** account from
      [Sandbox Accounts](https://developer.paypal.com/dashboard/accounts) (View/Edit account shows its email and password). Never
      use a real PayPal login there.

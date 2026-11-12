@@ -255,7 +255,7 @@ function PayPalStep({ config, flow, checkout, busy, onRefund, onCaptured, onProb
   return (
     <Panel eyebrow="Step 2 · PayPal" title="Pay with PayPal" icon={CreditCard} tint="var(--color-sys-blue)">
       {price}
-      <p className="mb-3 mt-2 text-footnote text-label-secondary">Sandbox: test money only. Log in with a sandbox buyer, or choose Debit or Credit Card and use PayPal&apos;s test card 4012 8888 8888 1881 with any future expiry, any 3-digit code and a made-up US address.</p>
+      <p className="mb-3 mt-2 text-footnote text-label-secondary">Sandbox: test money only. Log in with a sandbox buyer, or choose Debit or Credit Card and use PayPal&apos;s test card 4005 5192 0000 0004 with any future expiry, any 3-digit code and a made-up US address.</p>
       <PayPalButton clientId={config.client_id} currency={config.currency} checkoutId={checkout.id} onCaptured={onCaptured} onProblem={onProblem} />
     </Panel>
   );
